@@ -794,6 +794,7 @@ export interface EditorStrings {
   slotNone: string;
   moveUp: string;
   moveDown: string;
+  moveToDay: string;
   remove: string;
   dragHint: string;
 
@@ -872,6 +873,7 @@ export const en: Strings = {
     slotNone: "Not on the grid",
     moveUp: "Move up",
     moveDown: "Move down",
+    moveToDay: "Move to another day",
     remove: "Remove",
     dragHint: "Drag an activity onto a day, or tap it and then tap a day",
 
@@ -945,6 +947,7 @@ export const bg: Strings = {
     slotNone: "Извън мрежата",
     moveUp: "Премести нагоре",
     moveDown: "Премести надолу",
+    moveToDay: "Премести в друг ден",
     remove: "Премахни",
     dragHint: "Влачете дейност върху ден или я докоснете и след това докоснете деня",
 
@@ -5451,6 +5454,25 @@ describe("schedule rows", () => {
       .toEqual(["judo", "english"]);
   });
 
+  it("moves a block to another day from the day dropdown", () => {
+    const { commit, host } = mount();
+    const select = rows(host, "mon")[0]!.querySelector<HTMLSelectElement>('[data-field="day"]')!;
+    select.value = "tue";
+    select.dispatchEvent(new Event("change"));
+
+    const person = commit.mock.calls[0]![0].people[0]!;
+    expect(person.schedule.mon!.map((block) => block.activity)).toEqual(["judo"]);
+    expect(person.schedule.tue!.map((block) => block.activity)).toEqual(["english", "english"]);
+  });
+
+  it("does nothing when the day dropdown is set to the day it is already on", () => {
+    const { commit, host } = mount();
+    const select = rows(host, "mon")[0]!.querySelector<HTMLSelectElement>('[data-field="day"]')!;
+    select.value = "mon";
+    select.dispatchEvent(new Event("change"));
+    expect(commit).not.toHaveBeenCalled();
+  });
+
   it("removes a block", () => {
     const { commit, host } = mount();
     rows(host, "mon")[0]!.querySelector<HTMLButtonElement>('[data-action="remove-block"]')!.click();
@@ -5536,6 +5558,7 @@ import type { Block, DayKey, Person, Slot } from "../types.js";
 import {
   addBlock,
   addSlot,
+  moveBlock,
   moveBlockBy,
   removeBlock,
   removePerson,
@@ -5812,6 +5835,27 @@ function renderBlockRow(
         ${config.activities.some((activity) => activity.id === block.activity)
           ? nothing
           : html`<option value=${block.activity} .selected=${true}>${block.activity}</option>`}
+      </select>
+
+      <select
+        data-field="day"
+        title=${strings.editor.moveToDay}
+        @change=${(event: Event) => {
+          const target = inputValue(event) as DayKey;
+          if (target === day) return;
+          const targetLength = (person.schedule[target] ?? []).length;
+          commit(
+            moveBlock(config, personIndex, { day, index }, { day: target, index: targetLength }),
+          );
+        }}
+      >
+        ${effectiveDays(config, person).map(
+          (candidate) => html`
+            <option value=${candidate} .selected=${candidate === day}>
+              ${strings.days[candidate].short}
+            </option>
+          `,
+        )}
       </select>
 
       ${config.layout === "grid"
