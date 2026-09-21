@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Repository, bundle and element names must agree
+        run: |
+          test -f dist/weekly-timetable-card.js
+          grep -q '"filename": "weekly-timetable-card.js"' hacs.json
+          grep -q 'customElement("weekly-timetable-card")' src/card.ts
+          grep -q 'outfile: "dist/weekly-timetable-card.js"' esbuild.config.mjs
+
+      - name: Committed bundle must match the sources
+        run: git diff --exit-code -- dist

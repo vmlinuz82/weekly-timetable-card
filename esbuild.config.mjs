@@ -11,7 +11,12 @@ const options = {
 };
 
 if (process.argv.includes("--watch")) {
-  const ctx = await context({ ...options, minify: false, sourcemap: "inline" });
+  const ctx = await context({
+    ...options,
+    outfile: "dev/bundle.js",
+    minify: false,
+    sourcemap: "inline",
+  });
   await ctx.watch();
   const server = await ctx.serve({ servedir: ".", port: 8234 });
   const host = server.host === "0.0.0.0" ? "localhost" : server.host;

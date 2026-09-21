@@ -1,0 +1,6 @@
+{
+  "name": "Weekly Timetable Card",
+  "render_readme": true,
+  "filename": "weekly-timetable-card.js",
+  "homeassistant": "2024.8.0"
+}
