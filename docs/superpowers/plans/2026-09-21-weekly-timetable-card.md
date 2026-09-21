@@ -5504,8 +5504,9 @@ describe("palette and tap-to-place", () => {
     );
     host.querySelector<HTMLElement>('[data-day="tue"]')!.click();
 
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.tue!.at(-1))
-      .toEqual({ activity: "judo" });
+    // Array.prototype.at is ES2022; this project's tsconfig lib is ES2021.
+    const tue = commit.mock.calls[0]![0].people[0]!.schedule.tue!;
+    expect(tue[tue.length - 1]).toEqual({ activity: "judo" });
     expect(onSelectActivity).toHaveBeenCalledWith(null);
   });
 
