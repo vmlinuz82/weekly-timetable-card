@@ -60,3 +60,15 @@ export function formatTime(value: string, hass: Hass | undefined, lang: Lang): s
     return trimmed;
   }
 }
+
+const MINUTES_PER_DAY = 24 * 60;
+
+/** Wraps around midnight in both directions. An unparseable value is returned unchanged. */
+export function addMinutes(time: string, minutes: number): string {
+  const match = TIME_PATTERN.exec(time.trim());
+  if (!match) return time;
+  const base = Number(match[1]) * 60 + Number(match[2]);
+  const total = ((base + minutes) % MINUTES_PER_DAY + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+  const hours = Math.floor(total / 60);
+  return `${String(hours).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}

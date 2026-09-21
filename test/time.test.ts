@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatTime, localeUsesHour12, resolveHour12 } from "../src/time.js";
+import { addMinutes, formatTime, localeUsesHour12, resolveHour12 } from "../src/time.js";
 
 const flat = (value: string) => value.replace(/ /g, " ");
 
@@ -60,5 +60,21 @@ describe("formatTime", () => {
 
   it("trims before parsing", () => {
     expect(formatTime(" 15:20 ", { locale: { time_format: "24" } }, "bg")).toBe("15:20");
+  });
+});
+
+describe("addMinutes", () => {
+  it("adds within the hour and across it", () => {
+    expect(addMinutes("08:00", 45)).toBe("08:45");
+    expect(addMinutes("08:45", 45)).toBe("09:30");
+  });
+
+  it("wraps around midnight in both directions", () => {
+    expect(addMinutes("23:30", 45)).toBe("00:15");
+    expect(addMinutes("00:15", -45)).toBe("23:30");
+  });
+
+  it("returns an unparseable value unchanged", () => {
+    expect(addMinutes("half four", 45)).toBe("half four");
   });
 });
