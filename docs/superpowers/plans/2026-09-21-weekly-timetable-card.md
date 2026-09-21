@@ -180,7 +180,8 @@ if (process.argv.includes("--watch")) {
   const ctx = await context({ ...options, minify: false, sourcemap: "inline" });
   await ctx.watch();
   const server = await ctx.serve({ servedir: ".", port: 8234 });
-  console.log(`dev harness: http://${server.hosts[0] ?? "localhost"}:${server.port}/dev/`);
+  const host = server.host === "0.0.0.0" ? "localhost" : server.host;
+  console.log(`dev harness: http://${host}:${server.port}/dev/`);
 } else {
   await build({ ...options, minify: true });
 }
@@ -3154,7 +3155,10 @@ describe("WeeklyTimetableCard", () => {
 
   it("advertises itself to the Add-card picker", () => {
     const entry = (window as unknown as { customCards?: Array<Record<string, unknown>> })
-      .customCards?.find((card) => card.type === "custom:weekly-timetable-card");
+      // HA's card picker prepends "custom:" itself when it builds the config,
+      // so the registry entry carries the bare element name. Verified against
+      // the upstream lovelace-timetable-card, which pushes "timetable-card".
+      .customCards?.find((card) => card.type === "weekly-timetable-card");
     expect(entry).toBeDefined();
     expect(entry!.preview).toBe(true);
   });
@@ -3705,7 +3709,8 @@ Open the printed URL, then check each of the following and fix any that are wron
 - Setting HA language to `bg` shows `ПОНЕДЕЛНИК`; `en-GB` shows `MONDAY`.
 - Clock `12` with `en-US` shows `until 4:00 PM`; clock `24` shows `до 16:00`.
 - Dragging Width down switches day names to short forms, then to a single stacked column.
-- 7 days at 900px is compact, not broken.
+- 7 days at 900px is still `full` density (≈129px per column) and must not look
+  cramped; drag Width down to ≈700px to see it switch to short day names.
 - Layout `grid` shows the slot ruler with the open-ended strip above it for Иван, and the "add time slots" prompt for Мария.
 - Theme `dark` keeps every block readable.
 
