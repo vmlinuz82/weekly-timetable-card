@@ -342,8 +342,10 @@ showing what was typed rather than `Invalid Date`.
 `weekly-timetable-card-editor`, returned from `static getConfigElement()`. A tab
 strip: **Settings** · one tab per person · **＋** · **Activities**.
 
-- **Settings** — title, layout, `days` as toggle chips that can be reordered by
-  drag, language, highlight-today, header colour.
+- **Settings** — title, layout, `days` as toggle chips, language,
+  highlight-today, header colour. Toggling a day inserts it at its natural
+  position without re-sorting the others, so a hand-ordered `days` list in YAML
+  survives editing; changing the order itself stays a YAML-level edit.
 - **Person** — name, emoji, colour; optional `days` override; the slot ruler
   (grid layout only); and the schedule, one panel per day.
 - **Activities** — label, colour swatch, add, remove, with a live chip preview.
@@ -394,10 +396,12 @@ cannot be bypassed by a new panel.
 ### Home Assistant component use
 
 `ha-textfield`, `ha-select`, `ha-switch` and similar are internal, undocumented HA
-components with no cross-version API guarantee. They are used for common inputs to
-get native look and theming, kept to a small surface so a breaking HA change is a
-handful of swaps. HA always offers "Show code editor", so a broken visual editor
-never blocks configuration.
+components with no cross-version API guarantee, and they cannot be instantiated
+outside Home Assistant — which would leave the editor both coupled to HA's
+internals and impossible to unit-test. The editor therefore uses native
+`<input>`, `<select>` and `<button>` styled with Home Assistant's CSS variables,
+so it follows the active theme without depending on HA's component internals. HA
+always offers "Show code editor" as a further fallback.
 
 ## Project structure
 
@@ -488,9 +492,9 @@ catches.
 
 | Risk | Mitigation |
 |---|---|
-| HA internal form components change across releases | Small surface, few components; "Show code editor" is always available as a fallback |
+| HA internal form components change across releases | Avoided outright: the editor uses native form elements themed with HA CSS variables, so there is no dependency on HA's internal components. "Show code editor" remains as a fallback |
 | Seven columns are dense on a tablet | Density tiers with authored short day names; stacked layout below 72px per column |
-| Drag-and-drop on touch is fragile | Pointer Events for one shared path; tap-to-place as an always-available alternative |
+| Drag-and-drop on touch is fragile | Pointer Events for one shared path; tap-to-place and a full set of buttons as always-available alternatives, with the drag layer calling the same mutations |
 | Lovelace resource caching hides a deployment | Version banner on load; versioned resource URL documented in the README |
 | HACS filename / repo name mismatch | All three names fixed to `weekly-timetable-card`, asserted in CI |
 | `color-mix` support | Baseline in all browsers HA supports; a solid-colour fallback is declared before the `color-mix` rule |
