@@ -6864,12 +6864,50 @@ git commit -m "Add drag-and-drop over the existing editor mutations"
 
 **Files:**
 - Create: `hacs.json`, `LICENSE`, `README.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`
+- Modify: `esbuild.config.mjs`, `.gitignore`, `dev/index.html` (separate the watch build from the committed bundle — see Step 1)
 
 **Interfaces:**
 - Consumes: the built `dist/weekly-timetable-card.js`.
 - Produces: a HACS-installable repository with CI.
 
-- [ ] **Step 1: Create `hacs.json`**
+- [ ] **Step 1: Stop the watch build clobbering the committed bundle**
+
+`npm run watch` currently writes an unminified ~430KB build with an inline
+sourcemap over `dist/weekly-timetable-card.js` — the same file that is committed
+and that the CI step below guards with `git diff --exit-code -- dist`. Anyone who
+runs the dev server before committing dirties the repository and fails CI. Give
+the watch build its own gitignored output instead.
+
+In `esbuild.config.mjs`, change the watch branch to write elsewhere:
+
+```js
+if (process.argv.includes("--watch")) {
+  const ctx = await context({
+    ...options,
+    outfile: "dev/bundle.js",
+    minify: false,
+    sourcemap: "inline",
+  });
+```
+
+In `.gitignore`, add:
+
+```gitignore
+dev/bundle.js
+```
+
+In `dev/index.html`, point the module script at the watch build:
+
+```html
+    <script type="module" src="./bundle.js"></script>
+```
+
+The harness is then driven by `npm run watch`; `npm run build` continues to
+produce the committed `dist/` bundle for release. Verify by running
+`npm run watch`, loading the harness, stopping it, and confirming
+`git status --porcelain` reports nothing under `dist/`.
+
+- [ ] **Step 2: Create `hacs.json`**
 
 ```json
 {
@@ -6880,7 +6918,7 @@ git commit -m "Add drag-and-drop over the existing editor mutations"
 }
 ```
 
-- [ ] **Step 2: Create `LICENSE`**
+- [ ] **Step 3: Create `LICENSE`**
 
 ```
 MIT License
@@ -6906,7 +6944,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 3: Create `.github/workflows/ci.yml`**
+- [ ] **Step 4: Create `.github/workflows/ci.yml`**
 
 ```yaml
 name: CI
@@ -6943,7 +6981,7 @@ jobs:
         run: git diff --exit-code -- dist
 ```
 
-- [ ] **Step 4: Create `.github/workflows/release.yml`**
+- [ ] **Step 5: Create `.github/workflows/release.yml`**
 
 ```yaml
 name: Release
@@ -6974,7 +7012,7 @@ jobs:
           generate_release_notes: true
 ```
 
-- [ ] **Step 5: Create `README.md`**
+- [ ] **Step 6: Create `README.md`**
 
 ````markdown
 # Weekly Timetable Card
@@ -7069,6 +7107,12 @@ renders:
 In `grid` layout, a block whose `start` and `end` match a slot exactly is placed
 on that slot. Everything else appears in a strip above the grid, so nothing is
 ever hidden.
+
+One consequence worth knowing: in `grid` layout the editor replaces a block's two
+time fields with a single slot dropdown, so a block that sits in the strip shows
+only "Not on the grid" and its actual times cannot be edited there. The times are
+preserved and still render on the card — switch the card to `blocks` layout to
+edit them.
 
 Quote your times. Unquoted `16:00` in a YAML dashboard is parsed as the number
 960, which the card converts back, but quoting is clearer.
@@ -7175,7 +7219,7 @@ Licensed MIT.
 960; картата го преобразува обратно, но с кавички е по-ясно.
 ````
 
-- [ ] **Step 6: Verify the CI checks locally**
+- [ ] **Step 7: Verify the CI checks locally**
 
 Run the same commands the workflow runs, so a red build is caught before pushing:
 
@@ -7190,14 +7234,14 @@ git diff --exit-code -- dist && echo CHECKS_OK
 
 Expected: `CHECKS_OK`.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add hacs.json LICENSE README.md .github
 git commit -m "Add HACS packaging, CI workflows and documentation"
 ```
 
-- [ ] **Step 8: Install once into real Home Assistant**
+- [ ] **Step 9: Install once into real Home Assistant**
 
 Not automatable, and the one thing the mock harness cannot prove. Copy
 `dist/weekly-timetable-card.js` to the instance's `/config/www/`, register the
