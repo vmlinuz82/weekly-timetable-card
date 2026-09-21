@@ -56,7 +56,7 @@ export const en: Strings = {
     label: "Label",
     addActivity: "Add activity",
     activityInUse: (label, count) =>
-      `"${label}" is used by ${count} block${count === 1 ? "" : "s"}.`,
+      `“${label}” is used by ${count} block${count === 1 ? "" : "s"}.`,
     confirmRemoveActivity: "Remove it anyway?",
 
     noSlots: "Add time slots to use the grid layout.",
