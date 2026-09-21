@@ -6,6 +6,7 @@ import {
   addPerson,
   addSlot,
   countActivityUses,
+  insertBlock,
   moveBlock,
   moveBlockBy,
   removeActivity,
@@ -206,6 +207,31 @@ describe("moving blocks", () => {
     const config = base();
     expect(moveBlockBy(config, 0, "mon", 0, -1)).toBe(config);
     expect(moveBlockBy(config, 0, "mon", 1, 1)).toBe(config);
+  });
+});
+
+describe("insertBlock", () => {
+  it("inserts at the given index", () => {
+    const next = immutable((config) =>
+      insertBlock(config, 0, "mon", 1, { activity: "judo" }),
+    );
+    expect(next.people[0]!.schedule.mon!.map((block) => block.activity)).toEqual([
+      "english", "judo", "judo",
+    ]);
+  });
+
+  it("inserts at the front and clamps past the end", () => {
+    expect(
+      insertBlock(base(), 0, "mon", 0, { activity: "judo" }).people[0]!.schedule.mon![0]!
+        .activity,
+    ).toBe("judo");
+    expect(insertBlock(base(), 0, "mon", 99, { activity: "judo" }).people[0]!.schedule.mon!)
+      .toHaveLength(3);
+  });
+
+  it("works on a day with no blocks yet", () => {
+    const next = insertBlock(base(), 1, "mon", 0, { activity: "judo" });
+    expect(next.people[1]!.schedule.mon!).toEqual([{ activity: "judo" }]);
   });
 });
 

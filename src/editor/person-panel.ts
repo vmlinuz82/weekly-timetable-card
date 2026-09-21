@@ -23,6 +23,7 @@ export interface PersonPanelOptions {
   personIndex: number;
   selectedActivity: string | null;
   onSelectActivity: (id: string | null) => void;
+  hoverDay: DayKey | null;
 }
 
 export function renderPersonPanel(
@@ -219,7 +220,7 @@ function renderDayGroup(
 
   return html`
     <div
-      class="day-group"
+      class="day-group ${options.hoverDay === day ? "drop-target" : ""}"
       data-day=${day}
       @click=${() => {
         if (!options.selectedActivity) return;

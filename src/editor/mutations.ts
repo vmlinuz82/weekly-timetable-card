@@ -154,6 +154,20 @@ export function removeBlock(
   return replacePerson(config, personIndex, withBlocks(person, day, blocks));
 }
 
+export function insertBlock(
+  config: CardConfig,
+  personIndex: number,
+  day: DayKey,
+  index: number,
+  block: Block,
+): CardConfig {
+  const person = config.people[personIndex];
+  if (!person) return config;
+  const blocks = [...blocksOf(person, day)];
+  blocks.splice(clamp(index, 0, blocks.length), 0, { ...block });
+  return replacePerson(config, personIndex, withBlocks(person, day, blocks));
+}
+
 export function moveBlock(
   config: CardConfig,
   personIndex: number,
