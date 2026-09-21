@@ -55,8 +55,8 @@ describe("renderBlocks", () => {
   it("exposes the day count so the grid template can size itself", () => {
     const ctx = makeContext({ raw, hass: BG_24H, now: MONDAY });
     const host = renderToHost(renderBlocks(ctx));
-    expect(host.querySelector(".week")!.getAttribute("style"))
-      .toContain("--wtc-day-count: 5");
+    const week = host.querySelector<HTMLElement>(".week")!;
+    expect(week.style.getPropertyValue("--wtc-day-count")).toBe("5");
   });
 
   it("stacks a day's blocks in order", () => {
