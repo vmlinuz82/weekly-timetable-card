@@ -3844,7 +3844,10 @@ const base = (): CardConfig =>
           tue: [{ activity: "english" }],
         },
       },
-      { name: "Мария", schedule: { mon: [], tue: [] } },
+      // Мария carries one `english` block so countActivityUses is actually
+      // exercised across people, not just across days. Her `mon` must stay
+      // empty — Task 17's insertBlock test inserts into it.
+      { name: "Мария", schedule: { mon: [], tue: [{ activity: "english" }] } },
     ],
   });
 
