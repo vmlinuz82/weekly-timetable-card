@@ -1,0 +1,120 @@
+import { describe, expect, it, vi } from "vitest";
+import "../src/editor/editor.js";
+import type { WeeklyTimetableCardEditor } from "../src/editor/editor.js";
+import type { CardConfig } from "../src/types.js";
+import { BG_24H, EN_12H } from "./helpers.js";
+
+const raw = {
+  days: ["mon", "tue"],
+  activities: [{ id: "english", label: "Английски", color: "#3b82f6" }],
+  people: [
+    { name: "Иван", schedule: { mon: [{ activity: "english" }], tue: [] } },
+    { name: "Мария", schedule: { mon: [], tue: [] } },
+  ],
+};
+
+async function mount(config: unknown = raw, hass = EN_12H) {
+  const editor = document.createElement(
+    "weekly-timetable-card-editor",
+  ) as WeeklyTimetableCardEditor;
+  editor.hass = hass;
+  editor.setConfig(config);
+  document.body.append(editor);
+  await editor.updateComplete;
+
+  const events: CardConfig[] = [];
+  editor.addEventListener("config-changed", (event) => {
+    events.push((event as CustomEvent<{ config: CardConfig }>).detail.config);
+  });
+  return { editor, events, shadow: editor.shadowRoot! };
+}
+
+describe("WeeklyTimetableCardEditor", () => {
+  it("is registered", () => {
+    expect(customElements.get("weekly-timetable-card-editor")).toBeDefined();
+  });
+
+  it("renders Settings, a tab per person, add and Activities", async () => {
+    const { shadow } = await mount();
+    const labels = [...shadow.querySelectorAll(".tab")].map((tab) => tab.textContent!.trim());
+    expect(labels).toEqual(["Settings", "Иван", "Мария", "＋", "Activities"]);
+  });
+
+  it("opens on the Settings panel", async () => {
+    const { shadow } = await mount();
+    expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
+  });
+
+  it("switches to a person panel", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
+    await editor.updateComplete;
+    expect(shadow.querySelector<HTMLInputElement>('[data-field="name"]')!.value).toBe("Иван");
+  });
+
+  it("switches to the Activities panel", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelector<HTMLButtonElement>('[data-tab="activities"]')!.click();
+    await editor.updateComplete;
+    expect(shadow.querySelector('[data-field="new-label"]')).not.toBeNull();
+  });
+
+  it("fires config-changed with a new object when a panel commits", async () => {
+    const { editor, events, shadow } = await mount();
+    const input = shadow.querySelector<HTMLInputElement>('[data-field="title"]')!;
+    input.value = "Седмична програма";
+    input.dispatchEvent(new Event("change"));
+    await editor.updateComplete;
+
+    expect(events).toHaveLength(1);
+    expect(events[0]!.title).toBe("Седмична програма");
+  });
+
+  it("fires a config-changed event that bubbles and is composed", async () => {
+    const { editor, shadow } = await mount();
+    const listener = vi.fn();
+    document.body.addEventListener("config-changed", listener);
+
+    const input = shadow.querySelector<HTMLInputElement>('[data-field="title"]')!;
+    input.value = "X";
+    input.dispatchEvent(new Event("change"));
+    await editor.updateComplete;
+
+    expect(listener).toHaveBeenCalledOnce();
+    document.body.removeEventListener("config-changed", listener);
+  });
+
+  it("adds a person and selects the new tab", async () => {
+    const { editor, events, shadow } = await mount();
+    shadow.querySelector<HTMLButtonElement>('[data-tab="add"]')!.click();
+    await editor.updateComplete;
+
+    expect(events[0]!.people).toHaveLength(3);
+    expect(shadow.querySelector<HTMLInputElement>('[data-field="name"]')!.value).toBe("");
+  });
+
+  it("falls back to Settings when the open person tab disappears", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[2]!.click();
+    await editor.updateComplete;
+
+    editor.setConfig({ ...raw, people: [raw.people[0]] });
+    await editor.updateComplete;
+    expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
+  });
+
+  it("renders its own chrome in the viewer's language", async () => {
+    const { shadow } = await mount(raw, BG_24H);
+    expect(shadow.querySelector(".tab")!.textContent!.trim()).toBe("Настройки");
+  });
+
+  it("keeps a tap-to-place selection across a re-render", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
+    await editor.updateComplete;
+
+    shadow.querySelector<HTMLButtonElement>(".palette-chip")!.click();
+    await editor.updateComplete;
+    expect(shadow.querySelector(".palette-chip")!.getAttribute("aria-pressed")).toBe("true");
+  });
+});

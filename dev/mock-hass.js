@@ -126,3 +126,12 @@ function apply() {
 controls.addEventListener("input", apply);
 controls.addEventListener("change", apply);
 apply();
+
+const editor = document.createElement("weekly-timetable-card-editor");
+editor.hass = card.hass;
+editor.setConfig(baseConfig());
+editor.addEventListener("config-changed", (event) => {
+  card.setConfig(event.detail.config);
+  editor.setConfig(event.detail.config);
+});
+document.querySelector("#editor-frame").append(editor);

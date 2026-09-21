@@ -4,6 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { contrastTextColor } from "./color.js";
 import { CARD_TYPE, DEFAULT_DAYS, getStubConfig, normaliseConfig } from "./config.js";
 import { densityFor } from "./density.js";
+import "./editor/editor.js";
 import { renderBlocks } from "./renderers/blocks.js";
 import { buildContext } from "./renderers/context.js";
 import { renderGrid } from "./renderers/grid.js";
@@ -22,6 +23,10 @@ export class WeeklyTimetableCard extends LitElement {
   @state() private _personIndex = 0;
 
   private _observer?: ResizeObserver;
+
+  static getConfigElement(): HTMLElement {
+    return document.createElement("weekly-timetable-card-editor");
+  }
 
   static getStubConfig(hass?: Hass): CardConfig {
     return getStubConfig(hass);

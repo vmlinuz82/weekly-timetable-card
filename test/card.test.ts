@@ -145,3 +145,11 @@ describe("WeeklyTimetableCard", () => {
     expect(stub.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);
   });
 });
+
+describe("editor wiring", () => {
+  it("returns the editor element for HA's config dialog", () => {
+    const element = (customElements.get("weekly-timetable-card") as typeof WeeklyTimetableCard)
+      .getConfigElement();
+    expect(element.tagName.toLowerCase()).toBe("weekly-timetable-card-editor");
+  });
+});
