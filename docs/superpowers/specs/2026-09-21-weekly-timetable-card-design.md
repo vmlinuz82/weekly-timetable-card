@@ -152,8 +152,11 @@ appended (`activity-2`). Ids are never regenerated from labels on load, because
 doing so would silently orphan every block after a rename.
 
 `getStubConfig(hass)` builds the example config shown when the card is first
-added, choosing the day order from `hass.locale.first_weekday` and the activity
-labels from the resolved language.
+added, with a Monday–Friday week and activity labels in the resolved language.
+`hass.locale.first_weekday` is not applied to the stub — a Sunday-first order over
+five days would yield `[sun, mon, tue, wed, thu]` and drop Friday from a school
+week. It is used instead to order the day toggle chips in the editor's Settings
+panel, where the full seven days are always present.
 
 ## Configuration example
 
