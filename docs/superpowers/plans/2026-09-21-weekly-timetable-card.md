@@ -1995,7 +1995,8 @@ The three layouts all draw the same block, so it lives in one module they share.
 **Interfaces:**
 - Consumes: `blockForm`, `findActivity`, `activityFill`, `activityBorder`, `formatTime`, `resolveLang`, `stringsFor`, `effectiveDays`, `todayKey`.
 - Produces:
-  - `cardStyles: CSSResult` from `src/styles.ts`
+  - `blockStyles: CSSResult` and `cardStyles: CSSResult` from `src/styles.ts`
+    (`cardStyles` composes `blockStyles`; the editor composes it too, in Task 13)
   - `interface RenderContext { config: CardConfig; person: Person; days: DayKey[]; strings: Strings; lang: Lang; hass?: Hass; density: Density; today: DayKey | null }`
   - `buildContext(params: { config: CardConfig; personIndex: number; hass?: Hass; density: Density; now?: Date }): RenderContext`
   - `blockTimeLabel(ctx: RenderContext, block: Block): string`
@@ -2007,7 +2008,47 @@ The three layouts all draw the same block, so it lives in one module they share.
 ```ts
 import { css } from "lit";
 
+/**
+ * A block looks the same wherever it appears — in the card, and in the editor's
+ * activity preview. Shared as its own CSSResult and composed into both style
+ * sheets, rather than duplicated or (worse) defined only in cardStyles, which
+ * would leave the editor's previews unstyled.
+ */
+export const blockStyles = css`
+  .block {
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+    /* The solid fallback is declared first so a browser without color-mix
+       still shows a readable block rather than a transparent one. */
+    background: var(--secondary-background-color);
+    background: var(--wtc-block-fill, var(--secondary-background-color));
+    border: 1px solid var(--divider-color);
+    border-color: var(--wtc-block-border, var(--divider-color));
+  }
+
+  .block.orphan {
+    border-style: dashed;
+    background: var(--secondary-background-color);
+  }
+
+  .block-time {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--secondary-text-color);
+  }
+
+  .block-label {
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--primary-text-color);
+  }
+`;
+
 export const cardStyles = css`
+  ${blockStyles}
+
   :host {
     display: block;
   }
@@ -2097,36 +2138,6 @@ export const cardStyles = css`
       var(--wtc-header-color, #1e3a5f) 7%,
       var(--card-background-color, #ffffff)
     );
-  }
-
-  .block {
-    border-radius: 8px;
-    padding: 8px 10px;
-    text-align: center;
-    /* The solid fallback is declared first so a browser without color-mix
-       still shows a readable block rather than a transparent one. */
-    background: var(--secondary-background-color);
-    background: var(--wtc-block-fill, var(--secondary-background-color));
-    border: 1px solid var(--divider-color);
-    border-color: var(--wtc-block-border, var(--divider-color));
-  }
-
-  .block.orphan {
-    border-style: dashed;
-    background: var(--secondary-background-color);
-  }
-
-  .block-time {
-    font-size: 11px;
-    line-height: 1.3;
-    color: var(--secondary-text-color);
-  }
-
-  .block-label {
-    font-size: 13px;
-    line-height: 1.3;
-    font-weight: 600;
-    color: var(--primary-text-color);
   }
 
   .empty {
@@ -2906,7 +2917,7 @@ describe("renderGrid", () => {
             people: [
               {
                 name: "Иван",
-                slots: raw.people[0].slots,
+                slots: raw.people[0]!.slots,
                 schedule: { mon: [{ activity: "maths", start: "08:00", end: "08:45" }], tue: [] },
               },
             ],
@@ -4369,7 +4380,8 @@ Panels are **pure functions** returning a `TemplateResult`, exactly like the ren
   - `interface PanelContext { config: CardConfig; strings: Strings; hass?: Hass; commit: (next: CardConfig) => void }`
   - `toggleDayList(days: DayKey[], day: DayKey, order: DayKey[]): DayKey[]`
   - `toHexInputValue(color: string, fallback: string): string`
-  - `editorStyles: CSSResult`
+  - `editorStyles: CSSResult` (composes `blockStyles` from Task 8, so the
+    Activities panel's preview chips are styled identically to the card's blocks)
   - `renderSettingsPanel(ctx: PanelContext): TemplateResult`
 
 - [ ] **Step 1: Extend the days test**
@@ -4497,6 +4509,8 @@ export function checkboxValue(event: Event): boolean {
 
 ```ts
 export const editorStyles = css`
+  ${blockStyles}
+
   :host {
     display: block;
   }
