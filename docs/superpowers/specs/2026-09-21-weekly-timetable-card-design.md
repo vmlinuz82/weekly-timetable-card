@@ -56,7 +56,7 @@ reference design.
 | 9 | Open-ended blocks render in a strip above the grid in `grid` layout | A block with no start has no position on a slot ruler; a strip keeps it visible rather than silently dropped. |
 | 10 | Times honour `hass.locale.time_format` | Times are stored structured, so an English user on 12-hour sees `3:20 PM` and a Bulgarian user `15:20` from one config. |
 | 11 | Distinct element name `weekly-timetable-card` | `customElements.define` throws on a duplicate name; the reference card registers `timetable-card`. |
-| 12 | Drag-and-drop in the initial build | Requested. |
+| 12 | Both the list editor and drag-and-drop in the initial build | Requested. Drag is the fast path layered over a complete set of buttons; nothing is reachable only by dragging. |
 | 13 | Standalone mock dev harness, no Home Assistant in the loop | Fastest iteration on layout and language. Real HA integration is verified manually by the author. |
 
 ## Data model
@@ -348,11 +348,17 @@ strip: **Settings** · one tab per person · **＋** · **Activities**.
 ### Editing the schedule
 
 Each day panel lists its blocks as rows: activity dropdown, start field, end
-field, remove button, drag handle; and an **＋ Add block** control. Clearing a
-time field produces the `until` or `after` form; clearing both produces the bare
-form. In `grid` layout the two time fields are replaced by a single slot
-dropdown, which writes that slot's `start` and `end` into the block — the same
-data, a different input.
+field, move-up and move-down buttons, remove button, and a drag handle; plus an
+**＋ Add block** control. Clearing a time field produces the `until` or `after`
+form; clearing both produces the bare form. In `grid` layout the two time fields
+are replaced by a single slot dropdown, which writes that slot's `start` and
+`end` into the block — the same data, a different input.
+
+The list editor is complete on its own: every operation — add, edit, reorder,
+move to another day, remove — has a button or field. Drag-and-drop is layered on
+top as a faster route to the same mutations, never as the only route. That keeps
+the editor usable by keyboard and assistive technology, and keeps it working when
+a touch drag fails to register on a wall-mounted tablet.
 
 ### Drag and drop
 
@@ -367,6 +373,11 @@ touch share one path.
 
 Every drop produces a new config object and fires `config-changed` once, so a drag
 is a single undoable edit rather than a stream of them.
+
+`dnd.ts` holds no schedule logic of its own. It resolves a gesture to a target and
+then calls the same `mutations.ts` helpers the buttons call, so reordering and
+moving are unit-tested as pure functions and the drag layer has nothing left to
+get wrong beyond hit-testing.
 
 ### Config-changed contract
 
@@ -463,7 +474,8 @@ layout; `highlight_today` marks exactly one column.
 
 **Editor.** Every mutation helper returns a new object and never mutates its
 input; deleting a referenced activity raises the warning; a slot dropdown change
-writes both `start` and `end`.
+writes both `start` and `end`; reorder helpers are correct at both ends of a list
+and moving a block to another day removes it from the source day exactly once.
 
 **Manual.** Drag-and-drop with mouse and touch; real Home Assistant installation,
 theming and editor dialog. Automating pointer-event sequences costs more than it
