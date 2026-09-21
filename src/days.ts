@@ -52,3 +52,20 @@ function usesSundayFirst(language?: string): boolean {
   const tag = language.toLowerCase();
   return tag === "en-us" || tag.startsWith("en-us");
 }
+
+/**
+ * Inserts at the position implied by `order` while leaving the existing
+ * relative order alone, so an author who hand-ordered days in YAML does not
+ * have that order re-sorted by a click in the editor.
+ */
+export function toggleDayList(days: DayKey[], day: DayKey, order: DayKey[]): DayKey[] {
+  if (days.includes(day)) {
+    if (days.length <= 1) return days;
+    return days.filter((entry) => entry !== day);
+  }
+  const rank = (entry: DayKey) => order.indexOf(entry);
+  const position = days.findIndex((entry) => rank(entry) > rank(day));
+  const next = [...days];
+  next.splice(position === -1 ? next.length : position, 0, day);
+  return next;
+}

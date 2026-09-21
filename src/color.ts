@@ -55,3 +55,10 @@ export function activityFill(color: string): string {
 export function activityBorder(color: string): string {
   return `color-mix(in srgb, ${color} 35%, ${CARD_BACKGROUND})`;
 }
+
+export function toHexInputValue(color: string, fallback: string): string {
+  const rgb = parseHexColor(color);
+  if (!rgb) return fallback;
+  const channel = (value: number) => value.toString(16).padStart(2, "0");
+  return `#${channel(rgb.r)}${channel(rgb.g)}${channel(rgb.b)}`;
+}

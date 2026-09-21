@@ -4,6 +4,7 @@ import {
   effectiveDays,
   isDayKey,
   normaliseDays,
+  toggleDayList,
   todayKey,
 } from "../src/days.js";
 import type { DayKey } from "../src/types.js";
@@ -82,5 +83,33 @@ describe("daysFromFirstWeekday", () => {
   it("treats 'language' as Sunday-first only for US English", () => {
     expect(daysFromFirstWeekday({ language: "en-US", locale: { first_weekday: "language" } })[0]).toBe("sun");
     expect(daysFromFirstWeekday({ language: "bg", locale: { first_weekday: "language" } })[0]).toBe("mon");
+  });
+});
+
+describe("toggleDayList", () => {
+  const order: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+  it("removes a selected day", () => {
+    expect(toggleDayList(["mon", "tue", "wed"], "tue", order)).toEqual(["mon", "wed"]);
+  });
+
+  it("inserts an unselected day at its canonical position", () => {
+    expect(toggleDayList(["mon", "wed"], "tue", order)).toEqual(["mon", "tue", "wed"]);
+    expect(toggleDayList(["mon", "tue"], "sat", order)).toEqual(["mon", "tue", "sat"]);
+  });
+
+  it("preserves an author's custom order rather than re-sorting", () => {
+    expect(toggleDayList(["fri", "mon"], "sun", order)).toEqual(["fri", "mon", "sun"]);
+  });
+
+  it("refuses to empty the list", () => {
+    const only: DayKey[] = ["mon"];
+    expect(toggleDayList(only, "mon", order)).toBe(only);
+  });
+
+  it("does not mutate the input", () => {
+    const days: DayKey[] = ["mon", "wed"];
+    toggleDayList(days, "tue", order);
+    expect(days).toEqual(["mon", "wed"]);
   });
 });

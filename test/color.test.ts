@@ -5,6 +5,7 @@ import {
   contrastTextColor,
   parseHexColor,
   relativeLuminance,
+  toHexInputValue,
 } from "../src/color.js";
 
 describe("parseHexColor", () => {
@@ -65,5 +66,17 @@ describe("activity colour derivation", () => {
     expect(activityBorder("#3b82f6")).toBe(
       "color-mix(in srgb, #3b82f6 35%, var(--card-background-color, #ffffff))",
     );
+  });
+});
+
+describe("toHexInputValue", () => {
+  it("normalises to the six-digit form an <input type=color> requires", () => {
+    expect(toHexInputValue("#FFF", "#1e3a5f")).toBe("#ffffff");
+    expect(toHexInputValue("1e3a5f", "#000000")).toBe("#1e3a5f");
+  });
+
+  it("falls back for a colour the input cannot represent", () => {
+    expect(toHexInputValue("var(--primary-color)", "#1e3a5f")).toBe("#1e3a5f");
+    expect(toHexInputValue("", "#1e3a5f")).toBe("#1e3a5f");
   });
 });
