@@ -1,0 +1,66 @@
+import type { Strings } from "./types.js";
+
+export const bg: Strings = {
+  days: {
+    mon: { full: "понеделник", short: "пн" },
+    tue: { full: "вторник", short: "вт" },
+    wed: { full: "сряда", short: "ср" },
+    thu: { full: "четвъртък", short: "чт" },
+    fri: { full: "петък", short: "пт" },
+    sat: { full: "събота", short: "сб" },
+    sun: { full: "неделя", short: "нд" },
+  },
+  until: (time) => `до ${time}`,
+  after: (time) => `след ${time}`,
+  range: (start, end) => `${start}–${end}`,
+  today: "Днес",
+  editor: {
+    tabSettings: "Настройки",
+    tabActivities: "Дейности",
+    addPerson: "Добави човек",
+    removePerson: "Премахни човек",
+    personNamePlaceholder: "Нов човек",
+
+    title: "Заглавие",
+    layout: "Изглед",
+    layoutBlocks: "Блокове",
+    layoutGrid: "Мрежа",
+    days: "Дни",
+    language: "Език",
+    languageAuto: "Автоматично",
+    languageEnglish: "Английски",
+    languageBulgarian: "Български",
+    highlightToday: "Отбелязвай днешния ден",
+    headerColor: "Цвят на заглавката",
+
+    name: "Име",
+    emoji: "Емоджи",
+    color: "Цвят",
+    daysOverride: "Дни за този човек",
+    daysOverrideHint: "Оставете празно, за да се използват дните на картата",
+    slots: "Часови интервали",
+    addSlot: "Добави интервал",
+    slotColumn: "Интервал",
+
+    addBlock: "Добави блок",
+    activity: "Дейност",
+    start: "Начало",
+    end: "Край",
+    slot: "Интервал",
+    slotNone: "Извън мрежата",
+    moveUp: "Премести нагоре",
+    moveDown: "Премести надолу",
+    remove: "Премахни",
+    dragHint: "Влачете дейност върху ден или я докоснете и след това докоснете деня",
+
+    label: "Название",
+    addActivity: "Добави дейност",
+    activityInUse: (label, count) =>
+      `„${label}" се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
+    confirmRemoveActivity: "Да се премахне ли въпреки това?",
+
+    noSlots: `Добавете часови интервали, за да използвате изгледа „Мрежа".`,
+    noBlocks: "Няма занимания",
+    orphanActivity: "Непозната дейност",
+  },
+};

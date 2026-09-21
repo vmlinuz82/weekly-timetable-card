@@ -1,0 +1,66 @@
+import type { Strings } from "./types.js";
+
+export const en: Strings = {
+  days: {
+    mon: { full: "Monday", short: "Mon" },
+    tue: { full: "Tuesday", short: "Tue" },
+    wed: { full: "Wednesday", short: "Wed" },
+    thu: { full: "Thursday", short: "Thu" },
+    fri: { full: "Friday", short: "Fri" },
+    sat: { full: "Saturday", short: "Sat" },
+    sun: { full: "Sunday", short: "Sun" },
+  },
+  until: (time) => `until ${time}`,
+  after: (time) => `after ${time}`,
+  range: (start, end) => `${start}–${end}`,
+  today: "Today",
+  editor: {
+    tabSettings: "Settings",
+    tabActivities: "Activities",
+    addPerson: "Add person",
+    removePerson: "Remove person",
+    personNamePlaceholder: "New person",
+
+    title: "Title",
+    layout: "Layout",
+    layoutBlocks: "Blocks",
+    layoutGrid: "Grid",
+    days: "Days",
+    language: "Language",
+    languageAuto: "Automatic",
+    languageEnglish: "English",
+    languageBulgarian: "Bulgarian",
+    highlightToday: "Highlight today",
+    headerColor: "Header colour",
+
+    name: "Name",
+    emoji: "Emoji",
+    color: "Colour",
+    daysOverride: "Days for this person",
+    daysOverrideHint: "Leave empty to use the card's days",
+    slots: "Time slots",
+    addSlot: "Add slot",
+    slotColumn: "Slot",
+
+    addBlock: "Add block",
+    activity: "Activity",
+    start: "Start",
+    end: "End",
+    slot: "Slot",
+    slotNone: "Not on the grid",
+    moveUp: "Move up",
+    moveDown: "Move down",
+    remove: "Remove",
+    dragHint: "Drag an activity onto a day, or tap it and then tap a day",
+
+    label: "Label",
+    addActivity: "Add activity",
+    activityInUse: (label, count) =>
+      `"${label}" is used by ${count} block${count === 1 ? "" : "s"}.`,
+    confirmRemoveActivity: "Remove it anyway?",
+
+    noSlots: "Add time slots to use the grid layout.",
+    noBlocks: "Nothing scheduled",
+    orphanActivity: "Unknown activity",
+  },
+};
