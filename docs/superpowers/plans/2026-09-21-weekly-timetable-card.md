@@ -6118,6 +6118,20 @@ describe("WeeklyTimetableCardEditor", () => {
     expect(shadow.querySelector(".tab")!.textContent!.trim()).toBe("Настройки");
   });
 
+  it("tears down drag listeners when the editor is removed from the DOM", async () => {
+    const { editor } = await mount();
+    const removeSpy = vi.spyOn(window, "removeEventListener");
+
+    editor.remove();
+    await Promise.resolve();
+
+    const removed = removeSpy.mock.calls.map((call) => call[0]);
+    expect(removed).toContain("pointermove");
+    expect(removed).toContain("pointerup");
+    expect(removed).toContain("pointercancel");
+    removeSpy.mockRestore();
+  });
+
   it("keeps a tap-to-place selection across a re-render", async () => {
     const { editor, shadow } = await mount();
     shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
@@ -6197,6 +6211,11 @@ export class WeeklyTimetableCardEditor extends LitElement {
       this._tab = "settings";
     }
     fireEvent(this, "config-changed", { config: next });
+  }
+
+  override disconnectedCallback(): void {
+    this._dnd.cancel();
+    super.disconnectedCallback();
   }
 
   override render(): TemplateResult | typeof nothing {
@@ -6699,6 +6718,16 @@ export class DndController {
   private readonly _onPointerCancel = (): void => {
     this._teardown();
   };
+
+  /**
+   * Abort any in-flight drag. The host must call this when it is removed:
+   * onPointerDown attaches window listeners that only _teardown removes, so a
+   * dialog closed mid-drag would leak all three together with a reference to
+   * the detached element.
+   */
+  cancel(): void {
+    this._teardown();
+  }
 
   private _teardown(): void {
     window.removeEventListener("pointermove", this._onPointerMove);
