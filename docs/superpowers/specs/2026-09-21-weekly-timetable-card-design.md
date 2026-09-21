@@ -66,7 +66,7 @@ type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 type Lang   = "en" | "bg";
 
 interface Activity {
-  id: string;      // stable reference, slugged from label on creation
+  id: string;      // stable reference, generated on creation; see "Activity ids"
   label: string;   // displayed as authored, never translated
   color: string;   // base colour; fill/border derived from it
 }
@@ -87,7 +87,7 @@ interface Person {
   name: string;
   emoji?: string;
   color?: string;                            // tab accent
-  days?: DayKey[];                           // overrides CardConfig.days
+  days?: DayKey[];                           // replaces CardConfig.days entirely
   slots?: Slot[];                            // grid layout only
   schedule: Partial<Record<DayKey, Block[]>>;
 }
@@ -131,6 +131,25 @@ the single place this mapping exists.
   effective day list, so renderers never branch on `undefined`.
 - Leaves `activity` ids that match no activity untouched. Orphans are a render
   concern, not a config error — see "Orphaned activity references".
+
+A person's `days`, when present, **replaces** the card-level list rather than
+intersecting with it. A person may therefore show days the card-level list omits,
+which is the point: one child has Saturday judo and another does not. Only one
+person's columns are visible at a time, so differing day sets never have to
+reconcile within a single view. `effectiveDays(config, person)` is the one
+function that resolves this, and every renderer goes through it.
+
+### Activity ids
+
+Ids are generated once, when an activity is created in the editor, and never
+change afterwards — renaming an activity leaves every block that references it
+intact. Generation lowercases the label, replaces any run of characters that are
+neither letters nor digits with a single hyphen, and trims hyphens from both ends.
+The character classes are Unicode-aware, so Cyrillic labels yield Cyrillic ids
+(`Английски` → `английски`), which are valid YAML keys and valid in the config.
+If the result is empty, or collides with an existing id, a numeric suffix is
+appended (`activity-2`). Ids are never regenerated from labels on load, because
+doing so would silently orphan every block after a rename.
 
 `getStubConfig(hass)` builds the example config shown when the card is first
 added, choosing the day order from `hass.locale.first_weekday` and the activity
