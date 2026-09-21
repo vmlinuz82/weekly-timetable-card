@@ -39,7 +39,10 @@ const base = (): CardConfig =>
           tue: [{ activity: "english" }],
         },
       },
-      { name: "Мария", schedule: { mon: [], tue: [] } },
+      // Мария carries one `english` block so countActivityUses is actually
+      // exercised across people, not just across days. Her `mon` must stay
+      // empty — Task 17's insertBlock test inserts into it.
+      { name: "Мария", schedule: { mon: [], tue: [{ activity: "english" }] } },
     ],
   });
 
@@ -221,10 +224,7 @@ describe("activities", () => {
   it("renaming does not change the id, so blocks keep resolving", () => {
     const next = immutable((config) => updateActivity(config, 0, { label: "English" }));
     expect(next.activities[0]).toEqual({ id: "english", label: "English", color: "#3b82f6" });
-    // The base() fixture has "english" in exactly two blocks (mon[0] and
-    // tue[0]) across both people — not three. This corrects an arithmetic
-    // mismatch in the brief's own test literal; see task-12-report.md.
-    expect(countActivityUses(next, "english")).toBe(2);
+    expect(countActivityUses(next, "english")).toBe(3);
   });
 
   it("removes an activity, leaving referencing blocks as orphans", () => {
@@ -234,8 +234,7 @@ describe("activities", () => {
   });
 
   it("counts uses across every person and day", () => {
-    // See the note above: the fixture has "english" in two blocks, not three.
-    expect(countActivityUses(base(), "english")).toBe(2);
+    expect(countActivityUses(base(), "english")).toBe(3);
     expect(countActivityUses(base(), "judo")).toBe(1);
     expect(countActivityUses(base(), "missing")).toBe(0);
   });
