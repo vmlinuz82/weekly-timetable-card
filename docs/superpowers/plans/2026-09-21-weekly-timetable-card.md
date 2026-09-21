@@ -6,7 +6,7 @@
 
 **Architecture:** A single Lit `LitElement` card plus a Lit editor element, both bundled by esbuild into one `dist/weekly-timetable-card.js`. All schedule data lives in the card's Lovelace config; the editor produces new config objects and fires `config-changed`. Rendering is split into three pure renderer modules (`blocks`, `grid`, `stacked`) selected by layout and by a measured density; every non-visual decision (block time form, config normalisation, time formatting, colour derivation, language resolution, grid placement, config mutations) is a pure function in its own module, unit-tested before its consumer exists.
 
-**Tech Stack:** TypeScript 5, Lit 3, esbuild, Vitest with happy-dom. No Home Assistant instance in the development loop — a standalone `dev/` harness renders the card against a mock `hass`.
+**Tech Stack:** TypeScript 5, Lit 3, esbuild, Vitest with jsdom. No Home Assistant instance in the development loop — a standalone `dev/` harness renders the card against a mock `hass`.
 
 **Spec:** `docs/superpowers/specs/2026-09-21-weekly-timetable-card-design.md`
 
@@ -23,6 +23,17 @@
 - A person's `days`, when present, **replaces** the card-level list; it never intersects with it.
 - Activity ids are generated once at creation and never regenerated from labels.
 - Every editor mutation returns a **new** config object. Mutating and firing makes HA compare references, see no change, and discard the edit.
+- The Vitest environment is **jsdom, not happy-dom**. happy-dom mangles Lit's
+  marker nodes: an expression at a template's top-level root, or a nested
+  `${...map()}` inside a sub-template, renders as `<?>` or vanishes, so tests
+  silently see a DOM the browser would never produce. jsdom renders all of these
+  correctly. Do not switch the environment back, and do not restructure production
+  markup to appease a test environment.
+- Never assert on a serialised `style` attribute string when the value was set by
+  Lit's `styleMap`. It writes custom properties with no space after the colon
+  (`--wtc-day-count:5;`), so an assertion like `toContain("--wtc-day-count: 5")`
+  can never pass. Assert the value instead:
+  `el.style.getPropertyValue("--wtc-day-count")` — verified working under jsdom.
 - `tsc --noEmit` and `vitest run` must both pass before every commit.
 - Commit messages: short title only, no body, no trailing attribution lines.
 
@@ -103,7 +114,7 @@ dispatches stacked density to `renderBlocks` for both layouts.
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
-    "happy-dom": "^15.0.0",
+    "jsdom": "^25.0.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }
@@ -143,7 +154,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    environment: "happy-dom",
+    environment: "jsdom",
     globals: true,
     include: ["test/**/*.test.ts"],
   },
@@ -1670,8 +1681,15 @@ export function localeUsesHour12(locale: string): boolean {
   }
 }
 
+/**
+ * A bare Lang code ("en") is ambiguous to Intl and resolves to US-style
+ * hour12 defaults, so the no-hass fallback must name a region explicitly or
+ * `resolveHour12(undefined, "en")` comes out 12-hour.
+ */
+const LANG_LOCALE: Record<Lang, string> = { en: "en-GB", bg: "bg" };
+
 function localeFor(hass: Hass | undefined, lang: Lang): string {
-  return hass?.language ?? lang;
+  return hass?.language ?? LANG_LOCALE[lang];
 }
 
 export function resolveHour12(hass: Hass | undefined, lang: Lang): boolean {
@@ -2482,14 +2500,13 @@ describe("renderBlock", () => {
 });
 ```
 
-- [ ] **Step 6: Run test to verify it fails**
+- [ ] **Step 6: Run test to verify it passes**
 
-Run: `npx vitest run test/renderers-block.test.ts`
-Expected: FAIL — cannot resolve `../src/renderers/block.js`.
-
-- [ ] **Step 7: Run test to verify it passes**
-
-The implementation was written in Steps 1–3, so this run is the verification.
+Note on step order: Steps 1–3 write the implementation before Step 5 writes the
+test, so there is no RED phase to observe here — the run below is the
+verification. To get genuine TDD evidence instead, do Steps 4–5 first, run the
+test and watch it fail to resolve `../src/renderers/block.js`, then do Steps 1–3
+and run it again.
 
 Run: `npx vitest run test/renderers-block.test.ts`
 Expected: PASS with 0 failures, and the run reports this file (not "No test files found").
@@ -2580,8 +2597,8 @@ describe("renderBlocks", () => {
   it("exposes the day count so the grid template can size itself", () => {
     const ctx = makeContext({ raw, hass: BG_24H, now: MONDAY });
     const host = renderToHost(renderBlocks(ctx));
-    expect(host.querySelector(".week")!.getAttribute("style"))
-      .toContain("--wtc-day-count: 5");
+    const week = host.querySelector<HTMLElement>(".week")!;
+    expect(week.style.getPropertyValue("--wtc-day-count")).toBe("5");
   });
 
   it("stacks a day's blocks in order", () => {
@@ -3230,9 +3247,9 @@ describe("WeeklyTimetableCard", () => {
 
   it("sets the header colour and a contrasting header text colour", async () => {
     const card = await makeCard({ ...raw, header_color: "#ffffff" });
-    const style = shadow(card).querySelector("ha-card")!.getAttribute("style") ?? "";
-    expect(style).toContain("--wtc-header-color: #ffffff");
-    expect(style).toContain("--wtc-header-text: #0f172a");
+    const haCard = shadow(card).querySelector<HTMLElement>("ha-card")!;
+    expect(haCard.style.getPropertyValue("--wtc-header-color")).toBe("#ffffff");
+    expect(haCard.style.getPropertyValue("--wtc-header-text")).toBe("#0f172a");
   });
 
   it("offers a stub config for the card picker", () => {
@@ -4363,7 +4380,7 @@ git commit -m "Add pure config mutations for the editor"
 
 ### Task 13: Panel context, editor styles and the Settings panel
 
-**Design note — native inputs.** The panels use plain `<input>`, `<select>` and `<button>` styled with Home Assistant's CSS variables, not `ha-textfield` / `ha-select` / `ha-switch`. Those are internal HA components with no cross-version API guarantee, and they cannot be instantiated under happy-dom, so using them would both couple us to HA internals and make the entire editor untestable. Native elements avoid both and still pick up the active theme.
+**Design note — native inputs.** The panels use plain `<input>`, `<select>` and `<button>` styled with Home Assistant's CSS variables, not `ha-textfield` / `ha-select` / `ha-switch`. Those are internal HA components with no cross-version API guarantee, and they cannot be instantiated under jsdom, so using them would both couple us to HA internals and make the entire editor untestable. Native elements avoid both and still pick up the active theme.
 
 Panels are **pure functions** returning a `TemplateResult`, exactly like the renderers. They receive the current config and a `commit` callback; they hold no state of their own. The editor element owns all state.
 
