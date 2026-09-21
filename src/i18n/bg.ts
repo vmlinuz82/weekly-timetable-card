@@ -56,10 +56,10 @@ export const bg: Strings = {
     label: "Название",
     addActivity: "Добави дейност",
     activityInUse: (label, count) =>
-      `„${label}" се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
+      `„${label}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
     confirmRemoveActivity: "Да се премахне ли въпреки това?",
 
-    noSlots: `Добавете часови интервали, за да използвате изгледа „Мрежа".`,
+    noSlots: `Добавете часови интервали, за да използвате изгледа „Мрежа“.`,
     noBlocks: "Няма занимания",
     orphanActivity: "Непозната дейност",
   },
