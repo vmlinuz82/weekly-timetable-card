@@ -138,6 +138,16 @@ export class DndController {
     this._teardown();
   };
 
+  /**
+   * Abort any in-flight drag. The host must call this when it is removed:
+   * onPointerDown attaches window listeners that only _teardown removes, so a
+   * dialog closed mid-drag would leak all three together with a reference to
+   * the detached element.
+   */
+  cancel(): void {
+    this._teardown();
+  }
+
   private _teardown(): void {
     window.removeEventListener("pointermove", this._onPointerMove);
     window.removeEventListener("pointerup", this._onPointerUp);

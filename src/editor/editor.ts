@@ -67,6 +67,11 @@ export class WeeklyTimetableCardEditor extends LitElement {
     fireEvent(this, "config-changed", { config: next });
   }
 
+  override disconnectedCallback(): void {
+    this._dnd.cancel();
+    super.disconnectedCallback();
+  }
+
   override render(): TemplateResult | typeof nothing {
     const config = this._config;
     if (!config) return nothing;

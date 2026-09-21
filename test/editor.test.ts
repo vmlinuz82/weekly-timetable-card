@@ -125,6 +125,20 @@ describe("WeeklyTimetableCardEditor", () => {
     expect(shadow.querySelector(".tab")!.textContent!.trim()).toBe("Настройки");
   });
 
+  it("tears down drag listeners when the editor is removed from the DOM", async () => {
+    const { editor } = await mount();
+    const removeSpy = vi.spyOn(window, "removeEventListener");
+
+    editor.remove();
+    await Promise.resolve();
+
+    const removed = removeSpy.mock.calls.map((call) => call[0]);
+    expect(removed).toContain("pointermove");
+    expect(removed).toContain("pointerup");
+    expect(removed).toContain("pointercancel");
+    removeSpy.mockRestore();
+  });
+
   it("keeps a tap-to-place selection across a re-render", async () => {
     const { editor, shadow } = await mount();
     shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
