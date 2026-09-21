@@ -18,15 +18,15 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
   const hasLoose = ctx.days.some((day) => placements.get(day)!.loose.length > 0);
   const sizing = styleMap({ "--wtc-day-count": String(ctx.days.length) });
 
-  // Wrapped in a single <div>: an expression that sits at a template's own
-  // root (not nested inside one of that template's elements) does not commit
-  // its content here (confirmed with a minimal Lit + happy-dom repro). The
-  // wrapper is invisible to styles.ts, which has no selector depending on
-  // `.grid`/`.strip` being a direct child of the host. The same rule is why
-  // the per-slot row below is built with flatMap into one array fed to
-  // `.grid`'s own children, instead of returning a two-item template (label
-  // + day cells) per slot: that per-slot template's day-cells expression
-  // would itself be root-level and silently drop its content.
+  // Wrapped in a single <div> so the whole template has one predictable root,
+  // rather than two independent conditional expressions as siblings. It is
+  // invisible to styles.ts, which has no selector depending on `.grid`/
+  // `.strip` being a direct child of the host. The per-slot row below is
+  // built with flatMap into one array fed straight to `.grid`'s own
+  // children — rather than a per-slot sub-template nesting a day-cells
+  // array inside it — so `.slot-label` and each `.grid-cell` land as direct
+  // children of `.grid`, which `grid-template-columns` requires to place
+  // them into columns correctly.
   return html`
     <div>
       ${hasLoose
