@@ -31,7 +31,19 @@ export class WeeklyTimetableCardEditor extends LitElement {
   }
 
   private _commit(next: CardConfig): void {
+    const previous = this._config;
     this._config = next;
+    // Self-heal the open tab rather than relying on the host to call setConfig
+    // again. Removing the open person shifts every later index down, so a stale
+    // {person: n} would silently start editing a DIFFERENT person — and
+    // setConfig's own guard cannot catch that, because index n still exists.
+    if (
+      typeof this._tab === "object" &&
+      (!next.people[this._tab.person] ||
+        (previous !== undefined && next.people.length < previous.people.length))
+    ) {
+      this._tab = "settings";
+    }
     fireEvent(this, "config-changed", { config: next });
   }
 

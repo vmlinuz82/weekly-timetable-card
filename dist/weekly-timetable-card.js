@@ -858,7 +858,7 @@ var Ve=Object.defineProperty;var qe=Object.getOwnPropertyDescriptor;var g=(r,t,e
         <span>${e.editor.headerColor}</span>
       </label>
     </div>
-  `}var A=class extends b{constructor(){super(...arguments);this._tab="settings";this._selectedActivity=null}setConfig(e){this._config=gt(e),typeof this._tab=="object"&&!this._config.people[this._tab.person]&&(this._tab="settings")}_commit(e){this._config=e,He(this,"config-changed",{config:e})}render(){let e=this._config;if(!e)return f;let o=ut(M(e,this.hass)),n={config:e,strings:o,hass:this.hass,commit:i=>this._commit(i)};return p`
+  `}var A=class extends b{constructor(){super(...arguments);this._tab="settings";this._selectedActivity=null}setConfig(e){this._config=gt(e),typeof this._tab=="object"&&!this._config.people[this._tab.person]&&(this._tab="settings")}_commit(e){let o=this._config;this._config=e,typeof this._tab=="object"&&(!e.people[this._tab.person]||o!==void 0&&e.people.length<o.people.length)&&(this._tab="settings"),He(this,"config-changed",{config:e})}render(){let e=this._config;if(!e)return f;let o=ut(M(e,this.hass)),n={config:e,strings:o,hass:this.hass,commit:i=>this._commit(i)};return p`
       <div class="tabs" role="tablist">
         <button
           class="tab"

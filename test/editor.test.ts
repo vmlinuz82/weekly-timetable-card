@@ -72,7 +72,7 @@ describe("WeeklyTimetableCardEditor", () => {
 
   it("fires a config-changed event that bubbles and is composed", async () => {
     const { editor, shadow } = await mount();
-    const listener = vi.fn();
+    const listener = vi.fn<(event: Event) => void>();
     document.body.addEventListener("config-changed", listener);
 
     const input = shadow.querySelector<HTMLInputElement>('[data-field="title"]')!;
@@ -81,7 +81,24 @@ describe("WeeklyTimetableCardEditor", () => {
     await editor.updateComplete;
 
     expect(listener).toHaveBeenCalledOnce();
+    // `composed` is what lets the event escape the editor's shadow root. Assert
+    // it directly: bubbling alone would reach document.body in this test even
+    // if composed were false, so a call-count assertion proves nothing here.
+    expect(listener.mock.calls[0]![0].composed).toBe(true);
     document.body.removeEventListener("config-changed", listener);
+  });
+
+  it("returns to Settings when the open person is removed from within the editor", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
+    await editor.updateComplete;
+
+    shadow.querySelector<HTMLButtonElement>('[data-action="remove-person"]')!.click();
+    await editor.updateComplete;
+
+    // Settings panel is showing, not a blank panel and not the other person's.
+    expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
+    expect(shadow.querySelector('[data-field="name"]')).toBeNull();
   });
 
   it("adds a person and selects the new tab", async () => {
