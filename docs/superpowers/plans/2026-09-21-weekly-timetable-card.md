@@ -4729,7 +4729,7 @@ import { renderToHost } from "./helpers.js";
 
 function mount(raw: unknown) {
   const config = normaliseConfig(raw);
-  const commit = vi.fn<[CardConfig], void>();
+  const commit = vi.fn<(next: CardConfig) => void>();
   const host = renderToHost(
     renderSettingsPanel({ config, strings: en, hass: undefined, commit }),
   );
@@ -4905,7 +4905,7 @@ export function renderSettingsPanel(ctx: PanelContext): TemplateResult {
         <select
           data-field="language"
           @change=${(event: Event) =>
-            commit(updateCard(config, { language: inputValue(event) as CardConfigLanguage }))}
+            commit(updateCard(config, { language: inputValue(event) as CardConfig["language"] }))}
         >
           <option value="auto" .selected=${config.language === "auto"}>
             ${strings.editor.languageAuto}
@@ -4943,8 +4943,6 @@ export function renderSettingsPanel(ctx: PanelContext): TemplateResult {
     </div>
   `;
 }
-
-type CardConfigLanguage = "auto" | "en" | "bg";
 ```
 
 - [ ] **Step 12: Run test to verify it passes**
@@ -4998,7 +4996,7 @@ const raw = {
 
 function mount(source: unknown = raw) {
   const config = normaliseConfig(source);
-  const commit = vi.fn<[CardConfig], void>();
+  const commit = vi.fn<(next: CardConfig) => void>();
   const host = renderToHost(
     renderActivitiesPanel({ config, strings: en, hass: undefined, commit }),
   );
@@ -5277,8 +5275,8 @@ const raw = {
 
 function mount(source: unknown = raw, personIndex = 0) {
   const config = normaliseConfig(source);
-  const commit = vi.fn<[CardConfig], void>();
-  const onSelectActivity = vi.fn<[string | null], void>();
+  const commit = vi.fn<(next: CardConfig) => void>();
+  const onSelectActivity = vi.fn<(id: string | null) => void>();
   const host = renderToHost(
     renderPersonPanel(
       { config, strings: en, hass: undefined, commit },
@@ -5483,7 +5481,7 @@ describe("palette and tap-to-place", () => {
 
   it("deselects when the selected chip is clicked again", () => {
     const config = normaliseConfig(raw);
-    const onSelectActivity = vi.fn<[string | null], void>();
+    const onSelectActivity = vi.fn<(id: string | null) => void>();
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit: vi.fn() },
@@ -5496,8 +5494,8 @@ describe("palette and tap-to-place", () => {
 
   it("appends the selected activity when a day group is clicked, then clears the selection", () => {
     const config = normaliseConfig(raw);
-    const commit = vi.fn<[CardConfig], void>();
-    const onSelectActivity = vi.fn<[string | null], void>();
+    const commit = vi.fn<(next: CardConfig) => void>();
+    const onSelectActivity = vi.fn<(id: string | null) => void>();
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit },
