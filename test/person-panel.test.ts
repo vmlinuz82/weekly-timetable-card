@@ -210,6 +210,25 @@ describe("schedule rows", () => {
       .toEqual(["judo", "english"]);
   });
 
+  it("moves a block to another day from the day dropdown", () => {
+    const { commit, host } = mount();
+    const select = rows(host, "mon")[0]!.querySelector<HTMLSelectElement>('[data-field="day"]')!;
+    select.value = "tue";
+    select.dispatchEvent(new Event("change"));
+
+    const person = commit.mock.calls[0]![0].people[0]!;
+    expect(person.schedule.mon!.map((block) => block.activity)).toEqual(["judo"]);
+    expect(person.schedule.tue!.map((block) => block.activity)).toEqual(["english", "english"]);
+  });
+
+  it("does nothing when the day dropdown is set to the day it is already on", () => {
+    const { commit, host } = mount();
+    const select = rows(host, "mon")[0]!.querySelector<HTMLSelectElement>('[data-field="day"]')!;
+    select.value = "mon";
+    select.dispatchEvent(new Event("change"));
+    expect(commit).not.toHaveBeenCalled();
+  });
+
   it("removes a block", () => {
     const { commit, host } = mount();
     rows(host, "mon")[0]!.querySelector<HTMLButtonElement>('[data-action="remove-block"]')!.click();

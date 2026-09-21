@@ -50,6 +50,7 @@ export const en: Strings = {
     slotNone: "Not on the grid",
     moveUp: "Move up",
     moveDown: "Move down",
+    moveToDay: "Move to another day",
     remove: "Remove",
     dragHint: "Drag an activity onto a day, or tap it and then tap a day",
 

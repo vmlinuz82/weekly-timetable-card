@@ -41,6 +41,7 @@ export interface EditorStrings {
   slotNone: string;
   moveUp: string;
   moveDown: string;
+  moveToDay: string;
   remove: string;
   dragHint: string;
 

@@ -6,6 +6,7 @@ import type { Block, DayKey, Person, Slot } from "../types.js";
 import {
   addBlock,
   addSlot,
+  moveBlock,
   moveBlockBy,
   removeBlock,
   removePerson,
@@ -282,6 +283,27 @@ function renderBlockRow(
         ${config.activities.some((activity) => activity.id === block.activity)
           ? nothing
           : html`<option value=${block.activity} .selected=${true}>${block.activity}</option>`}
+      </select>
+
+      <select
+        data-field="day"
+        title=${strings.editor.moveToDay}
+        @change=${(event: Event) => {
+          const target = inputValue(event) as DayKey;
+          if (target === day) return;
+          const targetLength = (person.schedule[target] ?? []).length;
+          commit(
+            moveBlock(config, personIndex, { day, index }, { day: target, index: targetLength }),
+          );
+        }}
+      >
+        ${effectiveDays(config, person).map(
+          (candidate) => html`
+            <option value=${candidate} .selected=${candidate === day}>
+              ${strings.days[candidate].short}
+            </option>
+          `,
+        )}
       </select>
 
       ${config.layout === "grid"
