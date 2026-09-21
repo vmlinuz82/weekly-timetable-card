@@ -1,0 +1,246 @@
+import { css } from "lit";
+
+/**
+ * A block looks the same wherever it appears — in the card, and in the editor's
+ * activity preview. Shared as its own CSSResult and composed into both style
+ * sheets, rather than duplicated or (worse) defined only in cardStyles, which
+ * would leave the editor's previews unstyled.
+ */
+export const blockStyles = css`
+  .block {
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+    /* The solid fallback is declared first so a browser without color-mix
+       still shows a readable block rather than a transparent one. */
+    background: var(--secondary-background-color);
+    background: var(--wtc-block-fill, var(--secondary-background-color));
+    border: 1px solid var(--divider-color);
+    border-color: var(--wtc-block-border, var(--divider-color));
+  }
+
+  .block.orphan {
+    border-style: dashed;
+    background: var(--secondary-background-color);
+  }
+
+  .block-time {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--secondary-text-color);
+  }
+
+  .block-label {
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--primary-text-color);
+  }
+`;
+
+export const cardStyles = css`
+  ${blockStyles}
+
+  :host {
+    display: block;
+  }
+
+  ha-card {
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .card-title {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-text-color);
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--divider-color);
+    border-radius: 999px;
+    background: var(--card-background-color);
+    color: var(--primary-text-color);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .tab[aria-selected="true"] {
+    border-color: var(--wtc-accent, var(--primary-color));
+    background: color-mix(
+      in srgb,
+      var(--wtc-accent, var(--primary-color)) 14%,
+      var(--card-background-color, #ffffff)
+    );
+    font-weight: 600;
+  }
+
+  .week {
+    display: grid;
+    grid-template-columns: repeat(var(--wtc-day-count, 5), minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .day {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--divider-color);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card-background-color);
+  }
+
+  .day-head {
+    padding: 10px 6px;
+    background: var(--wtc-header-color, #1e3a5f);
+    color: var(--wtc-header-text, #ffffff);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .day-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-content: start;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .day.today .day-body {
+    background: color-mix(
+      in srgb,
+      var(--wtc-header-color, #1e3a5f) 7%,
+      var(--card-background-color, #ffffff)
+    );
+  }
+
+  .empty {
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    text-align: center;
+  }
+
+  [data-density="compact"] .day-head {
+    padding: 8px 4px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  [data-density="compact"] .day-body {
+    gap: 6px;
+    padding: 6px;
+  }
+  [data-density="compact"] .block {
+    padding: 6px;
+  }
+  [data-density="compact"] .block-time {
+    font-size: 10px;
+  }
+  [data-density="compact"] .block-label {
+    font-size: 12px;
+  }
+
+  [data-density="stacked"] .week {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  [data-density="stacked"] .day-head {
+    padding-left: 12px;
+    text-align: left;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: max-content repeat(var(--wtc-day-count, 5), minmax(0, 1fr));
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .grid-head {
+    padding: 10px 6px;
+    border-radius: 8px;
+    background: var(--wtc-header-color, #1e3a5f);
+    color: var(--wtc-header-text, #ffffff);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .grid-corner {
+    background: transparent;
+  }
+
+  .slot-label {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--secondary-text-color);
+    white-space: nowrap;
+  }
+
+  .grid-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 40px;
+    padding: 4px;
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+  }
+
+  .grid-cell.today {
+    background: color-mix(
+      in srgb,
+      var(--wtc-header-color, #1e3a5f) 7%,
+      var(--card-background-color, #ffffff)
+    );
+  }
+
+  .strip {
+    display: grid;
+    grid-template-columns: max-content repeat(var(--wtc-day-count, 5), minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .strip-label {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--secondary-text-color);
+  }
+
+  .strip-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .no-slots {
+    padding: 16px;
+    color: var(--secondary-text-color);
+    text-align: center;
+  }
+`;
