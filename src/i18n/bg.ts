@@ -43,6 +43,7 @@ export const bg: Strings = {
     slotColumn: "Интервал",
 
     addBlock: "Добави блок",
+    addBlockNeedsActivity: "Първо добавете дейност",
     activity: "Дейност",
     start: "Начало",
     end: "Край",
@@ -55,6 +56,7 @@ export const bg: Strings = {
     dragHint: "Влачете дейност върху ден или я докоснете и след това докоснете деня",
 
     label: "Название",
+    newActivityLabel: "Име на нова дейност",
     addActivity: "Добави дейност",
     activityInUse: (label, count) =>
       `„${label}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,

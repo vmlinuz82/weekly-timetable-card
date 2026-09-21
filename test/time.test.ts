@@ -35,6 +35,18 @@ describe("resolveHour12", () => {
     expect(resolveHour12(undefined, "bg")).toBe(false);
     expect(resolveHour12(undefined, "en")).toBe(false);
   });
+
+  it("derives from the browser's own language when set to system", () => {
+    // navigator.language in the jsdom test environment is "en-US", which is
+    // hour-12 — distinct from both the Bulgarian card language and the
+    // British-English fallback locale, so this genuinely exercises the
+    // navigator.language branch rather than falling through to localeFor.
+    expect(navigator.language).toBe("en-US");
+    expect(resolveHour12({ language: "bg", locale: { time_format: "system" } }, "bg")).toBe(true);
+    expect(resolveHour12({ language: "en-GB", locale: { time_format: "system" } }, "en")).toBe(
+      true,
+    );
+  });
 });
 
 describe("formatTime", () => {

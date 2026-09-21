@@ -97,6 +97,9 @@ only "Not on the grid" and its actual times cannot be edited there. The times ar
 preserved and still render on the card — switch the card to `blocks` layout to
 edit them.
 
+Saving from the visual editor rewrites the config in normalised form, which
+makes hand-curated YAML more verbose.
+
 Quote your times. Unquoted `16:00` in a YAML dashboard is parsed as the number
 960, which the card converts back, but quoting is clearer.
 
@@ -201,6 +204,15 @@ Licensed MIT.
 
 Всички настройки са описани в таблиците по-горе. Добавете картата, потърсете
 **Weekly Timetable** и я настройте визуално — не е нужен YAML.
+
+Един детайл, който си струва да знаете: в изглед `grid` редакторът заменя двете
+полета за час на блока с падащо меню за интервал, така че блок, който попада в
+лентата отгоре, показва само „Извън мрежата“ и часовете му не могат да се
+редактират там. Часовете се запазват и продължават да се показват на картата —
+превключете картата на изглед `blocks`, за да ги редактирате.
+
+Запазването от визуалния редактор пренаписва конфигурацията в нормализиран вид,
+което прави ръчно писания YAML по-многословен.
 
 Слагайте часовете в кавички. Неоградено `16:00` в YAML се разчита като числото
 960; картата го преобразува обратно, но с кавички е по-ясно.

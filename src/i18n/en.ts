@@ -43,6 +43,7 @@ export const en: Strings = {
     slotColumn: "Slot",
 
     addBlock: "Add block",
+    addBlockNeedsActivity: "Add an activity first",
     activity: "Activity",
     start: "Start",
     end: "End",
@@ -55,6 +56,7 @@ export const en: Strings = {
     dragHint: "Drag an activity onto a day, or tap it and then tap a day",
 
     label: "Label",
+    newActivityLabel: "New activity name",
     addActivity: "Add activity",
     activityInUse: (label, count) =>
       `“${label}” is used by ${count} block${count === 1 ? "" : "s"}.`,

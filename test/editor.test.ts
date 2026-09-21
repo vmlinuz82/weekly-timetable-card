@@ -139,6 +139,25 @@ describe("WeeklyTimetableCardEditor", () => {
     removeSpy.mockRestore();
   });
 
+  it("clears a stranded tap-to-place selection when the open person is removed", async () => {
+    const { editor, shadow } = await mount();
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
+    await editor.updateComplete;
+
+    shadow.querySelector<HTMLButtonElement>(".palette-chip")!.click();
+    await editor.updateComplete;
+    expect(shadow.querySelector(".palette-chip")!.getAttribute("aria-pressed")).toBe("true");
+
+    shadow.querySelector<HTMLButtonElement>('[data-action="remove-person"]')!.click();
+    await editor.updateComplete;
+
+    // Re-open the remaining person's tab: a stranded selection would still be
+    // armed here and append a block on the next day-group click.
+    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
+    await editor.updateComplete;
+    expect(shadow.querySelector('.palette-chip[aria-pressed="true"]')).toBeNull();
+  });
+
   it("keeps a tap-to-place selection across a re-render", async () => {
     const { editor, shadow } = await mount();
     shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();

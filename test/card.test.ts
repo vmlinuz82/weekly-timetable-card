@@ -138,6 +138,31 @@ describe("WeeklyTimetableCard", () => {
     expect(haCard.style.getPropertyValue("--wtc-header-text")).toBe("#0f172a");
   });
 
+  it("recomputes density when the day count changes without a resize", async () => {
+    // jsdom has no ResizeObserver, so the card never measures a real width.
+    // Poke the cached width the observer would have recorded, the same way a
+    // real resize does, then trigger a re-render through a config change
+    // rather than a resize — that is exactly the gap this test guards.
+    const card = await makeCard({ ...raw, days: ["mon", "tue", "wed", "thu", "fri"] });
+    (card as unknown as { _measuredWidth: number })._measuredWidth = 400;
+    card.requestUpdate();
+    await card.updateComplete;
+    // 400px / 5 days = 80px per column: compact (>=72, <110).
+    expect(card.density).toBe("compact");
+
+    card.setConfig({
+      ...raw,
+      days: ["mon", "tue", "wed", "thu", "fri"],
+      people: [
+        { ...raw.people[0], days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] },
+        raw.people[1],
+      ],
+    });
+    await card.updateComplete;
+    // Same 400px, but now 7 days: 400/7 ≈ 57px per column: stacked (<72).
+    expect(card.density).toBe("stacked");
+  });
+
   it("offers a stub config for the card picker", () => {
     const stub = (customElements.get("weekly-timetable-card") as typeof WeeklyTimetableCard)
       .getStubConfig(BG_24H);

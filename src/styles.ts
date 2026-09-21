@@ -119,9 +119,12 @@ export const cardStyles = css`
     display: flex;
     flex: 1;
     flex-direction: column;
-    align-content: start;
     gap: 10px;
     padding: 10px;
+  }
+
+  .day.today .day-head {
+    background: color-mix(in srgb, var(--wtc-header-color, #1e3a5f) 85%, white 15%);
   }
 
   .day.today .day-body {
@@ -157,6 +160,20 @@ export const cardStyles = css`
   [data-density="compact"] .block-label {
     font-size: 12px;
   }
+  [data-density="compact"] .grid-head {
+    padding: 8px 4px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  [data-density="compact"] .slot-label {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+  [data-density="compact"] .grid-cell {
+    gap: 4px;
+    min-height: 32px;
+    padding: 3px;
+  }
 
   [data-density="stacked"] .week {
     grid-template-columns: 1fr;
@@ -167,11 +184,22 @@ export const cardStyles = css`
     text-align: left;
   }
 
-  .grid {
+  .grid-wrap {
     display: grid;
     grid-template-columns: max-content repeat(var(--wtc-day-count, 5), minmax(0, 1fr));
-    gap: 6px;
+    gap: 10px 6px;
+  }
+
+  .grid,
+  .grid-heads {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
     align-items: stretch;
+  }
+
+  .grid {
+    row-gap: 6px;
   }
 
   .grid-head {
@@ -184,6 +212,10 @@ export const cardStyles = css`
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-align: center;
+  }
+
+  .grid-head.today {
+    background: color-mix(in srgb, var(--wtc-header-color, #1e3a5f) 85%, white 15%);
   }
 
   .grid-corner {
@@ -219,9 +251,8 @@ export const cardStyles = css`
 
   .strip {
     display: grid;
-    grid-template-columns: max-content repeat(var(--wtc-day-count, 5), minmax(0, 1fr));
-    gap: 6px;
-    margin-bottom: 10px;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
   }
 
   .strip-label {
@@ -239,6 +270,7 @@ export const cardStyles = css`
   }
 
   .no-slots {
+    grid-column: 1 / -1;
     padding: 16px;
     color: var(--secondary-text-color);
     text-align: center;

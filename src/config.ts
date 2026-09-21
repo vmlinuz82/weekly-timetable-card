@@ -13,7 +13,7 @@ import type {
 } from "./types.js";
 
 export const CARD_TYPE = "custom:weekly-timetable-card";
-export const DEFAULT_DAYS: DayKey[] = ["mon", "tue", "wed", "thu", "fri"];
+export const DEFAULT_DAYS: readonly DayKey[] = ["mon", "tue", "wed", "thu", "fri"];
 export const DEFAULT_HEADER_COLOR = "#1e3a5f";
 const FALLBACK_ACTIVITY_COLOR = "#888888";
 

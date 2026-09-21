@@ -2,6 +2,8 @@ import { html, nothing, type TemplateResult } from "lit";
 import { blockForm } from "../block.js";
 import { toHexInputValue } from "../color.js";
 import { daysFromFirstWeekday, effectiveDays, toggleDayList } from "../days.js";
+import { resolveLang } from "../i18n/index.js";
+import { formatTime } from "../time.js";
 import type { Block, DayKey, Person, Slot } from "../types.js";
 import {
   addBlock,
@@ -247,7 +249,12 @@ function renderDayGroup(
                 ＋ ${strings.editor.addBlock}
               </button>
             `
-          : nothing}
+          : html`
+              <button class="chip" type="button" data-action="add-block" disabled>
+                ＋ ${strings.editor.addBlock}
+              </button>
+              <div class="hint">${strings.editor.addBlockNeedsActivity}</div>
+            `}
       </div>
     </div>
   `;
@@ -359,6 +366,16 @@ function renderBlockRow(
   `;
 }
 
+/** `start`/`end` formatted for display, without a describing word — the dropdown next to it already says "Not on the grid". */
+function rawTimesLabel(ctx: PanelContext, block: Block): string {
+  const lang = resolveLang(ctx.config, ctx.hass);
+  const fmt = (value: string) => formatTime(value, ctx.hass, lang);
+  if (block.start && block.end) return `${fmt(block.start)}–${fmt(block.end)}`;
+  if (block.end) return fmt(block.end);
+  if (block.start) return fmt(block.start);
+  return "";
+}
+
 function renderSlotSelect(
   ctx: PanelContext,
   personIndex: number,
@@ -372,6 +389,10 @@ function renderSlotSelect(
     blockForm(block) === "range"
       ? slots.find((slot) => slot.start === block.start && slot.end === block.end)
       : undefined;
+  // The dropdown replaces the time fields entirely in grid layout, so a block
+  // that matches no slot would otherwise look like it has no times at all —
+  // even though they are preserved and still render on the card.
+  const showRawTimes = current === undefined && (block.start !== undefined || block.end !== undefined);
 
   return html`
     <select
@@ -398,5 +419,6 @@ function renderSlotSelect(
         `,
       )}
     </select>
+    ${showRawTimes ? html`<span class="hint">${rawTimesLabel(ctx, block)}</span>` : nothing}
   `;
 }

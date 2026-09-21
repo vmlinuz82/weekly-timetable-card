@@ -64,7 +64,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
           class="grow"
           type="text"
           data-field="new-label"
-          placeholder=${strings.editor.label}
+          placeholder=${strings.editor.newActivityLabel}
         />
         <button
           class="icon-button"

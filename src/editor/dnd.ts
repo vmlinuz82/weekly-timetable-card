@@ -85,6 +85,7 @@ export class DndController {
   }
 
   readonly onPointerDown = (event: PointerEvent): void => {
+    if (!event.isPrimary || event.button !== 0) return;
     const source = parseDragSource(event.target as Element | null);
     if (!source) return;
     this._source = source;

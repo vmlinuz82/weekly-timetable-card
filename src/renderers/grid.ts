@@ -18,20 +18,33 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
   const hasLoose = ctx.days.some((day) => placements.get(day)!.loose.length > 0);
   const sizing = styleMap({ "--wtc-day-count": String(ctx.days.length) });
 
-  // Wrapped in a single <div> so the whole template has one predictable root,
-  // rather than two independent conditional expressions as siblings. It is
-  // invisible to styles.ts, which has no selector depending on `.grid`/
-  // `.strip` being a direct child of the host. The per-slot row below is
+  const dayHeadCells = ctx.days.map(
+    (day) => html`<div class="grid-head ${ctx.today === day ? "today" : ""}">${dayHeading(ctx, day)}</div>`,
+  );
+
+  // `.grid-wrap` owns the shared column tracks (day-count sized from its own
+  // `--wtc-day-count`), and `.strip`/`.grid`/`.grid-heads` each opt into those
+  // same tracks via `grid-template-columns: subgrid` rather than sizing their
+  // own max-content column independently — which is what previously let the
+  // two grids' day columns drift out of alignment. The per-slot row below is
   // built with flatMap into one array fed straight to `.grid`'s own
   // children — rather than a per-slot sub-template nesting a day-cells
   // array inside it — so `.slot-label` and each `.grid-cell` land as direct
-  // children of `.grid`, which `grid-template-columns` requires to place
-  // them into columns correctly.
+  // children of `.grid`, which subgrid requires to place them into columns
+  // correctly.
   return html`
-    <div>
+    <div class="grid-wrap" style=${sizing}>
+      ${slots.length === 0
+        ? html`
+            <div class="grid-heads">
+              <div class="grid-corner"></div>
+              ${dayHeadCells}
+            </div>
+          `
+        : nothing}
       ${hasLoose
         ? html`
-            <div class="strip" style=${sizing}>
+            <div class="strip">
               <div class="strip-label"></div>
               ${ctx.days.map(
                 (day) => html`
@@ -46,9 +59,9 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
       ${slots.length === 0
         ? html`<div class="no-slots">${ctx.strings.editor.noSlots}</div>`
         : html`
-            <div class="grid" style=${sizing}>
+            <div class="grid">
               <div class="grid-corner"></div>
-              ${ctx.days.map((day) => html`<div class="grid-head">${dayHeading(ctx, day)}</div>`)}
+              ${dayHeadCells}
               ${slots.flatMap((slot) => [
                 html`
                   <div class="slot-label">

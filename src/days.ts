@@ -5,7 +5,7 @@ export function isDayKey(value: unknown): value is DayKey {
   return typeof value === "string" && (DAY_KEYS as readonly string[]).includes(value);
 }
 
-export function normaliseDays(value: unknown, fallback: DayKey[]): DayKey[] {
+export function normaliseDays(value: unknown, fallback: readonly DayKey[]): DayKey[] {
   if (!Array.isArray(value)) return [...fallback];
   const out: DayKey[] = [];
   for (const entry of value) {
@@ -50,7 +50,7 @@ export function daysFromFirstWeekday(hass?: Hass): DayKey[] {
 function usesSundayFirst(language?: string): boolean {
   if (!language) return false;
   const tag = language.toLowerCase();
-  return tag === "en-us" || tag.startsWith("en-us");
+  return tag.startsWith("en-us");
 }
 
 /**

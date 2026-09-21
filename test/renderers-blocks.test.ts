@@ -60,7 +60,29 @@ describe("renderBlocks", () => {
   });
 
   it("stacks a day's blocks in order", () => {
-    const ctx = makeContext({ raw, hass: BG_24H, now: MONDAY });
+    // Deliberately out of chronological order (judo's 15:20 is earlier than
+    // english's 17:30): the configured array order, not a time-based sort, is
+    // what the renderer must preserve. Both blocks stay on Monday; only their
+    // relative times swap versus the module-level fixture.
+    const ctx = makeContext({
+      raw: {
+        ...raw,
+        people: [
+          {
+            ...raw.people[0]!,
+            schedule: {
+              ...raw.people[0]!.schedule,
+              mon: [
+                { activity: "english", start: "17:30", end: "18:30" },
+                { activity: "judo", start: "15:20", end: "16:20" },
+              ],
+            },
+          },
+        ],
+      },
+      hass: BG_24H,
+      now: MONDAY,
+    });
     const host = renderToHost(renderBlocks(ctx));
     const monday = host.querySelectorAll(".day")[0]!;
     expect([...monday.querySelectorAll(".block-label")].map((n) => n.textContent))

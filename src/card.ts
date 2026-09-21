@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, type TemplateResult } from "lit";
+import { LitElement, html, nothing, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { contrastTextColor } from "./color.js";
@@ -23,6 +23,13 @@ export class WeeklyTimetableCard extends LitElement {
   @state() private _personIndex = 0;
 
   private _observer?: ResizeObserver;
+  // Cached from the last ResizeObserver reading. `_dayCount()` also changes
+  // when a person with their own `days` override is selected or edited, with
+  // no resize in between, so density must be re-derived from this cached
+  // width on every update — not only inside the observer callback. Left at 0
+  // until the first real measurement (jsdom never provides one), which the
+  // guard in `willUpdate` treats as "don't know yet" rather than "stacked".
+  private _measuredWidth = 0;
 
   static getConfigElement(): HTMLElement {
     return document.createElement("weekly-timetable-card-editor");
@@ -50,6 +57,7 @@ export class WeeklyTimetableCard extends LitElement {
     if (typeof ResizeObserver === "undefined") return;
     this._observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
+      this._measuredWidth = width;
       const next = densityFor(width, this._dayCount());
       if (next !== this.density) this.density = next;
     });
@@ -60,6 +68,13 @@ export class WeeklyTimetableCard extends LitElement {
     this._observer?.disconnect();
     this._observer = undefined;
     super.disconnectedCallback();
+  }
+
+  override willUpdate(changed: PropertyValues<this>): void {
+    super.willUpdate(changed);
+    if (this._measuredWidth <= 0) return;
+    const next = densityFor(this._measuredWidth, this._dayCount());
+    if (next !== this.density) this.density = next;
   }
 
   private _dayCount(): number {

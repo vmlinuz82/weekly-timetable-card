@@ -34,6 +34,7 @@ export interface EditorStrings {
   slotColumn: string;
 
   addBlock: string;
+  addBlockNeedsActivity: string;
   activity: string;
   start: string;
   end: string;
@@ -46,6 +47,7 @@ export interface EditorStrings {
   dragHint: string;
 
   label: string;
+  newActivityLabel: string;
   addActivity: string;
   activityInUse: (label: string, count: number) => string;
   confirmRemoveActivity: string;

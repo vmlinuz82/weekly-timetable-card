@@ -193,11 +193,13 @@ describe("moving blocks", () => {
   });
 
   it("moveBlockBy shifts up and down", () => {
-    const down = moveBlockBy(base(), 0, "mon", 0, 1);
+    const down = immutable((config) => moveBlockBy(config, 0, "mon", 0, 1));
     expect(down.people[0]!.schedule.mon!.map((block) => block.activity)).toEqual([
       "judo", "english",
     ]);
-    const up = moveBlockBy(down, 0, "mon", 1, -1);
+    const up = immutable((config) =>
+      moveBlockBy(moveBlockBy(config, 0, "mon", 0, 1), 0, "mon", 1, -1),
+    );
     expect(up.people[0]!.schedule.mon!.map((block) => block.activity)).toEqual([
       "english", "judo",
     ]);
@@ -286,10 +288,16 @@ describe("slots", () => {
     expect(next.people[1]!.slots).toEqual([{ slot: 1, start: "08:00", end: "08:45" }]);
   });
 
-  it("patches and removes a slot", () => {
-    const patched = updateSlot(base(), 0, 0, { end: "09:00" });
+  it("patches a slot", () => {
+    const patched = immutable((config) => updateSlot(config, 0, 0, { end: "09:00" }));
     expect(patched.people[0]!.slots![0]!.end).toBe("09:00");
-    expect(removeSlot(patched, 0, 0).people[0]!.slots).toEqual([]);
+  });
+
+  it("removes a slot", () => {
+    const removed = immutable((config) =>
+      removeSlot(updateSlot(config, 0, 0, { end: "09:00" }), 0, 0),
+    );
+    expect(removed.people[0]!.slots).toEqual([]);
   });
 
   it("ignores out-of-range slot indices", () => {

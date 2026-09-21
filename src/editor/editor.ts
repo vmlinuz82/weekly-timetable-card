@@ -63,6 +63,11 @@ export class WeeklyTimetableCardEditor extends LitElement {
         (previous !== undefined && next.people.length < previous.people.length))
     ) {
       this._tab = "settings";
+      // A tap-to-place selection is scoped to whichever person tab was open
+      // when it was armed. Self-healing the tab without also clearing this
+      // would leave it stranded: opening a different person's tab and
+      // clicking a day group would silently append the armed activity there.
+      this._selectedActivity = null;
     }
     fireEvent(this, "config-changed", { config: next });
   }
