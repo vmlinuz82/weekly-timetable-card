@@ -137,7 +137,7 @@ console.info(
 
 window.customCards = window.customCards ?? [];
 window.customCards.push({
-  type: CARD_TYPE,
+  type: CARD_TYPE.replace(/^custom:/, ""),
   name: "Weekly Timetable Card",
   description: "Weekly timetable for one or more people, in English or Bulgarian",
   preview: true,

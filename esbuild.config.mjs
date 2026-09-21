@@ -14,7 +14,8 @@ if (process.argv.includes("--watch")) {
   const ctx = await context({ ...options, minify: false, sourcemap: "inline" });
   await ctx.watch();
   const server = await ctx.serve({ servedir: ".", port: 8234 });
-  console.log(`dev harness: http://${server.hosts[0] ?? "localhost"}:${server.port}/dev/`);
+  const host = server.host === "0.0.0.0" ? "localhost" : server.host;
+  console.log(`dev harness: http://${host}:${server.port}/dev/`);
 } else {
   await build({ ...options, minify: true });
 }

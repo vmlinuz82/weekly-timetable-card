@@ -37,7 +37,10 @@ describe("WeeklyTimetableCard", () => {
 
   it("advertises itself to the Add-card picker", () => {
     const entry = (window as unknown as { customCards?: Array<Record<string, unknown>> })
-      .customCards?.find((card) => card.type === "custom:weekly-timetable-card");
+      // HA's card picker prepends "custom:" itself when it builds the config,
+      // so the registry entry carries the bare element name. Verified against
+      // the upstream lovelace-timetable-card, which pushes "timetable-card".
+      .customCards?.find((card) => card.type === "weekly-timetable-card");
     expect(entry).toBeDefined();
     expect(entry!.preview).toBe(true);
   });
