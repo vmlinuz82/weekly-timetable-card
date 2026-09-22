@@ -68,6 +68,7 @@ describe("renderBlock", () => {
     const block = host.querySelector(".block")!;
     expect(block.classList.contains("orphan")).toBe(true);
     expect(textOf(host, ".block-title")).toBe("gone");
+    expect(host.querySelector(".block-subtitle")).toBeNull();
     expect(block.getAttribute("title")).toBe(bg.strings.editor.orphanActivity);
   });
 
@@ -84,8 +85,12 @@ describe("renderBlock", () => {
     );
     expect(textOf(host, ".block-time-top")).toBe("15:20");
     expect(textOf(host, ".block-time-bottom")).toBe("16:20");
+    expect(host.querySelector(".block-time > .block-time-top")).not.toBeNull();
+    expect(host.querySelector(".block-time > .block-time-bottom")).not.toBeNull();
     expect(textOf(host, ".block-title")).toBe("Английски");
     expect(textOf(host, ".block-subtitle")).toBe("Стая 12");
+    expect(host.querySelector(".block-text > .block-title")).not.toBeNull();
+    expect(host.querySelector(".block-text > .block-subtitle")).not.toBeNull();
     expect(host.querySelector(".block-label")).toBeNull();
   });
 
