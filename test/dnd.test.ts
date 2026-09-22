@@ -51,6 +51,48 @@ describe("parseDragSource", () => {
   });
 });
 
+describe("parseDragSource with allowRow", () => {
+  function rowFixture(): HTMLElement {
+    const host = document.createElement("div");
+    host.innerHTML = `
+      <div class="day-group" data-day="tue">
+        <div class="block-rows">
+          <div class="row" data-block-index="2">
+            <span class="drag-handle" data-drag-block="2" data-drag-day="tue">handle</span>
+            <select data-field="activity"><option>x</option></select>
+            <input type="time" data-field="start" />
+            <button data-action="remove-block">x</button>
+          </div>
+        </div>
+      </div>
+    `;
+    return host;
+  }
+
+  it("treats the row itself as a block source when rows are allowed", () => {
+    const row = rowFixture().querySelector<HTMLElement>("[data-block-index]")!;
+    expect(parseDragSource(row, true)).toEqual({ kind: "block", day: "tue", index: 2 });
+  });
+
+  it("ignores the row when rows are not allowed (touch keeps grip-only)", () => {
+    const row = rowFixture().querySelector<HTMLElement>("[data-block-index]")!;
+    expect(parseDragSource(row, false)).toBeNull();
+    expect(parseDragSource(row)).toBeNull();
+  });
+
+  it("never starts a drag from a control inside the row", () => {
+    const host = rowFixture();
+    for (const selector of ["select", "input", "button"]) {
+      expect(parseDragSource(host.querySelector(selector), true), selector).toBeNull();
+    }
+  });
+
+  it("still reads the grip regardless of the row flag", () => {
+    const grip = rowFixture().querySelector<HTMLElement>("[data-drag-block]")!;
+    expect(parseDragSource(grip, false)).toEqual({ kind: "block", day: "tue", index: 2 });
+  });
+});
+
 describe("insertionIndex", () => {
   const bounds: Bounds[] = [
     { top: 0, bottom: 20 },

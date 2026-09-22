@@ -174,6 +174,27 @@ describe("schedule rows", () => {
     expect(commit.mock.calls[0]![0].people[0]!.schedule.mon![0]!.activity).toBe("judo");
   });
 
+  it("clears a time with its clear button, producing the until form", () => {
+    // Chrome's native time picker offers no way to empty the field, and the
+    // open-ended forms are reached only by emptying it.
+    const { commit, host } = mount();
+    const row = rows(host, "mon")[0]!;
+    row.querySelector<HTMLButtonElement>('[data-action="clear-start"]')!.click();
+    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon![0]!)
+      .toEqual({ activity: "english", end: "16:20" });
+  });
+
+  it("offers a clear button only for a time that is set", () => {
+    const { host } = mount();
+    const range = rows(host, "mon")[0]!;
+    expect(range.querySelector('[data-action="clear-start"]')).not.toBeNull();
+    expect(range.querySelector('[data-action="clear-end"]')).not.toBeNull();
+
+    const untilOnly = rows(host, "tue")[0]!;
+    expect(untilOnly.querySelector('[data-action="clear-start"]')).toBeNull();
+    expect(untilOnly.querySelector('[data-action="clear-end"]')).not.toBeNull();
+  });
+
   it("clearing the start field produces the until form", () => {
     const { commit, host } = mount();
     const input = rows(host, "mon")[0]!.querySelector<HTMLInputElement>('[data-field="start"]')!;

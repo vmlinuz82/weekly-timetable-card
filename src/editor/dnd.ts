@@ -57,11 +57,28 @@ export interface DndCallbacks {
   requestUpdate: () => void;
 }
 
-export function parseDragSource(element: Element | null): DragSource | null {
+/** Controls that own their own pointer behaviour and must never start a drag. */
+const INTERACTIVE = "select, input, button, textarea, option, a";
+
+/**
+ * `allowRow` lets the whole block row start a drag, not just the grip.
+ *
+ * The grip is a 12px glyph, and a person reaching for a row grabs the row — so
+ * grip-only dragging reads as "drag does not work". Rows are enabled for mouse
+ * and pen but NOT for touch: a row covered by `touch-action: none` could no
+ * longer be used to scroll the panel, which on a tablet matters more than
+ * dragging does. Touch keeps the grip, which is what `touch-action: none` is
+ * scoped to.
+ */
+export function parseDragSource(
+  element: Element | null,
+  allowRow = false,
+): DragSource | null {
   // A pointer event's target is typed as Element, but a caller may hand us a
   // child text node (e.g. `node.firstChild`); climb to its parent element
   // before calling `.closest`, which only exists on Element.
   const start = element && element.nodeType !== Node.ELEMENT_NODE ? element.parentElement : element;
+
   const handle = start?.closest<HTMLElement>("[data-drag-block]");
   if (handle) {
     const day = handle.dataset.dragDay;
@@ -71,6 +88,16 @@ export function parseDragSource(element: Element | null): DragSource | null {
     }
     return null;
   }
+
+  if (allowRow && start && !start.closest(INTERACTIVE)) {
+    const row = start.closest<HTMLElement>("[data-block-index]");
+    const day = row?.closest<HTMLElement>("[data-day]")?.dataset.day;
+    const index = Number(row?.dataset.blockIndex);
+    if (row && isDayKey(day) && Number.isInteger(index) && index >= 0) {
+      return { kind: "block", day, index };
+    }
+  }
+
   const chip = start?.closest<HTMLElement>("[data-palette-activity]");
   const activityId = chip?.dataset.paletteActivity;
   return activityId ? { kind: "activity", activityId } : null;
@@ -123,7 +150,10 @@ export class DndController {
 
   readonly onPointerDown = (event: PointerEvent): void => {
     if (!event.isPrimary || event.button !== 0) return;
-    const source = parseDragSource(event.target as Element | null);
+    const source = parseDragSource(
+      event.target as Element | null,
+      event.pointerType !== "touch",
+    );
     if (!source) return;
     this._source = source;
     this._origin = { x: event.clientX, y: event.clientY };

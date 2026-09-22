@@ -439,7 +439,20 @@ export const editorStyles = css`
 
   .drag-handle {
     cursor: grab;
+    /* Scoped deliberately to the grip: a row covered by touch-action: none
+       could not be used to scroll the panel on a tablet. */
     touch-action: none;
+  }
+
+  /* The whole row is a drag source for mouse and pen, so it should say so. */
+  .block-rows .row {
+    cursor: grab;
+  }
+
+  .block-rows .row select,
+  .block-rows .row input,
+  .block-rows .row button {
+    cursor: auto;
   }
 
   .palette {

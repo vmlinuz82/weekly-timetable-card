@@ -328,6 +328,20 @@ function renderBlockRow(
               @change=${(event: Event) =>
                 commit(updateBlock(config, personIndex, day, index, { start: inputValue(event) || null }))}
             />
+            ${block.start
+              ? html`
+                  <button
+                    class="icon-button"
+                    type="button"
+                    data-action="clear-start"
+                    title=${strings.editor.clearTime}
+                    @click=${() =>
+                      commit(updateBlock(config, personIndex, day, index, { start: null }))}
+                  >
+                    ⌫
+                  </button>
+                `
+              : nothing}
             <input
               type="time"
               data-field="end"
@@ -335,6 +349,20 @@ function renderBlockRow(
               @change=${(event: Event) =>
                 commit(updateBlock(config, personIndex, day, index, { end: inputValue(event) || null }))}
             />
+            ${block.end
+              ? html`
+                  <button
+                    class="icon-button"
+                    type="button"
+                    data-action="clear-end"
+                    title=${strings.editor.clearTime}
+                    @click=${() =>
+                      commit(updateBlock(config, personIndex, day, index, { end: null }))}
+                  >
+                    ⌫
+                  </button>
+                `
+              : nothing}
           `}
 
       <button
