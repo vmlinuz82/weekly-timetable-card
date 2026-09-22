@@ -22,7 +22,7 @@ export function renderBlocks(ctx: RenderContext): TemplateResult {
 }
 
 function renderDayColumn(ctx: RenderContext, day: DayKey): TemplateResult {
-  const blocks = ctx.person.schedule[day] ?? [];
+  const blocks = ctx.config.schedule[day] ?? [];
   return html`
     <section class=${ctx.today === day ? "day today" : "day"}>
       <header class="day-head">${dayHeading(ctx, day)}</header>

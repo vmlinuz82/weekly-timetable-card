@@ -22,12 +22,12 @@ export class WeeklyTimetableCard extends LitElement {
   @state() private _config?: CardConfig;
 
   private _observer?: ResizeObserver;
-  // Cached from the last ResizeObserver reading. `_dayCount()` also changes
-  // when a person with their own `days` override is selected or edited, with
-  // no resize in between, so density must be re-derived from this cached
-  // width on every update — not only inside the observer callback. Left at 0
-  // until the first real measurement (jsdom never provides one), which the
-  // guard in `willUpdate` treats as "don't know yet" rather than "stacked".
+  // Cached from the last ResizeObserver reading. `_dayCount()` also changes when
+  // the day list is edited with no resize in between, so density must be
+  // re-derived from this cached width on every update — not only inside the
+  // observer callback. Left at 0 until the first real measurement (jsdom never
+  // provides one), which the guard in `willUpdate` treats as "don't know yet"
+  // rather than "stacked".
   private _measuredWidth = 0;
 
   static getConfigElement(): HTMLElement {
@@ -76,10 +76,7 @@ export class WeeklyTimetableCard extends LitElement {
   }
 
   private _dayCount(): number {
-    const config = this._config;
-    if (!config) return DEFAULT_DAYS.length;
-    const person = config.people[0];
-    return (person?.days ?? config.days).length;
+    return this._config?.days.length ?? DEFAULT_DAYS.length;
   }
 
   override render(): TemplateResult | typeof nothing {
@@ -88,7 +85,6 @@ export class WeeklyTimetableCard extends LitElement {
 
     const ctx = buildContext({
       config,
-      personIndex: 0,
       hass: this.hass,
       density: this.density,
     });

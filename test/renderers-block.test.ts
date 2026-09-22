@@ -9,7 +9,7 @@ const raw = {
     { id: "home", label: "Връщане вкъщи", color: "#22c55e" },
     { id: "free", label: "Свободен следобед", color: "#22c55e" },
   ],
-  people: [{ name: "Иван", schedule: {} }],
+  schedule: {},
 };
 
 const bg = makeContext({ raw, hass: BG_24H });

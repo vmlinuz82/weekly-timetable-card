@@ -2,7 +2,7 @@ import { html, nothing, type TemplateResult } from "lit";
 import { blockForm } from "../block.js";
 import { blockTimeLabel, type TimeLabelContext } from "../renderers/block.js";
 import { resolveLang } from "../i18n/index.js";
-import type { Block, DayKey, Person, Slot } from "../types.js";
+import type { Block, DayKey, Slot } from "../types.js";
 import {
   addBlock,
   addSlot,
@@ -19,25 +19,21 @@ function timeLabelContext(ctx: PanelContext): TimeLabelContext {
   return { strings: ctx.strings, hass: ctx.hass, lang: resolveLang(ctx.config, ctx.hass) };
 }
 
-export interface PersonPanelOptions {
+export interface SchedulePanelOptions {
   selectedActivity: string | null;
   onSelectActivity: (id: string | null) => void;
 }
 
-export function renderPersonPanel(
+export function renderSchedulePanel(
   ctx: PanelContext,
-  options: PersonPanelOptions,
+  options: SchedulePanelOptions,
 ): TemplateResult {
   const { config, strings } = ctx;
-  const personIndex = 0;
-  const person = config.people[personIndex];
-  if (!person) return html``;
-
   const days = config.days;
 
   return html`
     <div class="panel">
-      ${config.layout === "grid" ? renderSlots(ctx, personIndex, person) : nothing}
+      ${config.layout === "grid" ? renderSlots(ctx) : nothing}
 
       <div class="palette">
         ${config.activities.map(
@@ -59,18 +55,14 @@ export function renderPersonPanel(
       </div>
       <div class="hint">${strings.editor.placeHint}</div>
 
-      ${days.map((day) => renderDayGroup(ctx, options, person, day))}
+      ${days.map((day) => renderDayGroup(ctx, options, day))}
     </div>
   `;
 }
 
-function renderSlots(
-  ctx: PanelContext,
-  personIndex: number,
-  person: Person,
-): TemplateResult {
+function renderSlots(ctx: PanelContext): TemplateResult {
   const { config, strings, commit } = ctx;
-  const slots: Slot[] = person.slots ?? [];
+  const slots: Slot[] = config.slots ?? [];
   return html`
     <div class="day-group" data-section="slots">
       <h4>${strings.editor.slots}</h4>
@@ -84,21 +76,21 @@ function renderSlots(
                 data-field="slot-start"
                 .value=${slot.start}
                 @change=${(event: Event) =>
-                  commit(updateSlot(config, personIndex, index, { start: inputValue(event) }))}
+                  commit(updateSlot(config, index, { start: inputValue(event) }))}
               />
               <input
                 type="time"
                 data-field="slot-end"
                 .value=${slot.end}
                 @change=${(event: Event) =>
-                  commit(updateSlot(config, personIndex, index, { end: inputValue(event) }))}
+                  commit(updateSlot(config, index, { end: inputValue(event) }))}
               />
               <button
                 class="icon-button"
                 type="button"
                 data-action="remove-slot"
                 title=${strings.editor.remove}
-                @click=${() => commit(removeSlot(config, personIndex, index))}
+                @click=${() => commit(removeSlot(config, index))}
               >
                 ×
               </button>
@@ -109,7 +101,7 @@ function renderSlots(
           class="chip"
           type="button"
           data-action="add-slot"
-          @click=${() => commit(addSlot(config, personIndex))}
+          @click=${() => commit(addSlot(config))}
         >
           ＋ ${strings.editor.addSlot}
         </button>
@@ -120,13 +112,11 @@ function renderSlots(
 
 function renderDayGroup(
   ctx: PanelContext,
-  options: PersonPanelOptions,
-  person: Person,
+  options: SchedulePanelOptions,
   day: DayKey,
 ): TemplateResult {
   const { config, strings, commit } = ctx;
-  const personIndex = 0;
-  const blocks = person.schedule[day] ?? [];
+  const blocks = config.schedule[day] ?? [];
   const firstActivity = config.activities[0]?.id;
 
   return html`
@@ -135,7 +125,7 @@ function renderDayGroup(
       data-day=${day}
       @click=${() => {
         if (!options.selectedActivity) return;
-        commit(addBlock(config, personIndex, day, { activity: options.selectedActivity }));
+        commit(addBlock(config, day, { activity: options.selectedActivity }));
         options.onSelectActivity(null);
       }}
     >
@@ -152,7 +142,7 @@ function renderDayGroup(
                 data-action="add-block"
                 @click=${(event: Event) => {
                   event.stopPropagation();
-                  commit(addBlock(config, personIndex, day, { activity: firstActivity }));
+                  commit(addBlock(config, day, { activity: firstActivity }));
                 }}
               >
                 ＋ ${strings.editor.addBlock}
@@ -171,15 +161,13 @@ function renderDayGroup(
 
 function renderBlockRow(
   ctx: PanelContext,
-  options: PersonPanelOptions,
+  options: SchedulePanelOptions,
   day: DayKey,
   block: Block,
   index: number,
   total: number,
 ): TemplateResult {
   const { config, strings, commit } = ctx;
-  const personIndex = 0;
-  const person = config.people[personIndex]!;
 
   return html`
     <div class="row" data-block-index=${index} @click=${(event: Event) => event.stopPropagation()}>
@@ -187,7 +175,7 @@ function renderBlockRow(
         class="grow"
         data-field="activity"
         @change=${(event: Event) =>
-          commit(updateBlock(config, personIndex, day, index, { activity: inputValue(event) }))}
+          commit(updateBlock(config, day, index, { activity: inputValue(event) }))}
       >
         ${config.activities.map(
           (activity) => html`
@@ -207,10 +195,8 @@ function renderBlockRow(
         @change=${(event: Event) => {
           const target = inputValue(event) as DayKey;
           if (target === day) return;
-          const targetLength = (person.schedule[target] ?? []).length;
-          commit(
-            moveBlock(config, personIndex, { day, index }, { day: target, index: targetLength }),
-          );
+          const targetLength = (config.schedule[target] ?? []).length;
+          commit(moveBlock(config, { day, index }, { day: target, index: targetLength }));
         }}
       >
         ${config.days.map(
@@ -223,14 +209,14 @@ function renderBlockRow(
       </select>
 
       ${config.layout === "grid"
-        ? renderSlotSelect(ctx, personIndex, day, block, index, person.slots ?? [])
+        ? renderSlotSelect(ctx, day, block, index, config.slots ?? [])
         : html`
             <input
               type="time"
               data-field="start"
               .value=${block.start ?? ""}
               @change=${(event: Event) =>
-                commit(updateBlock(config, personIndex, day, index, { start: inputValue(event) || null }))}
+                commit(updateBlock(config, day, index, { start: inputValue(event) || null }))}
             />
             ${block.start
               ? html`
@@ -239,8 +225,7 @@ function renderBlockRow(
                     type="button"
                     data-action="clear-start"
                     title=${strings.editor.clearTime}
-                    @click=${() =>
-                      commit(updateBlock(config, personIndex, day, index, { start: null }))}
+                    @click=${() => commit(updateBlock(config, day, index, { start: null }))}
                   >
                     ⌫
                   </button>
@@ -251,7 +236,7 @@ function renderBlockRow(
               data-field="end"
               .value=${block.end ?? ""}
               @change=${(event: Event) =>
-                commit(updateBlock(config, personIndex, day, index, { end: inputValue(event) || null }))}
+                commit(updateBlock(config, day, index, { end: inputValue(event) || null }))}
             />
             ${block.end
               ? html`
@@ -260,8 +245,7 @@ function renderBlockRow(
                     type="button"
                     data-action="clear-end"
                     title=${strings.editor.clearTime}
-                    @click=${() =>
-                      commit(updateBlock(config, personIndex, day, index, { end: null }))}
+                    @click=${() => commit(updateBlock(config, day, index, { end: null }))}
                   >
                     ⌫
                   </button>
@@ -275,7 +259,7 @@ function renderBlockRow(
         data-action="move-up"
         title=${strings.editor.moveUp}
         ?disabled=${index === 0}
-        @click=${() => commit(moveBlockBy(config, personIndex, day, index, -1))}
+        @click=${() => commit(moveBlockBy(config, day, index, -1))}
       >
         ↑
       </button>
@@ -285,7 +269,7 @@ function renderBlockRow(
         data-action="move-down"
         title=${strings.editor.moveDown}
         ?disabled=${index >= total - 1}
-        @click=${() => commit(moveBlockBy(config, personIndex, day, index, 1))}
+        @click=${() => commit(moveBlockBy(config, day, index, 1))}
       >
         ↓
       </button>
@@ -294,7 +278,7 @@ function renderBlockRow(
         type="button"
         data-action="remove-block"
         title=${strings.editor.remove}
-        @click=${() => commit(removeBlock(config, personIndex, day, index))}
+        @click=${() => commit(removeBlock(config, day, index))}
       >
         ×
       </button>
@@ -304,7 +288,6 @@ function renderBlockRow(
 
 function renderSlotSelect(
   ctx: PanelContext,
-  personIndex: number,
   day: DayKey,
   block: Block,
   index: number,
@@ -326,14 +309,12 @@ function renderSlotSelect(
       @change=${(event: Event) => {
         const raw = inputValue(event);
         if (raw === "") {
-          commit(updateBlock(config, personIndex, day, index, { start: null, end: null }));
+          commit(updateBlock(config, day, index, { start: null, end: null }));
           return;
         }
         const slot = slots.find((candidate) => String(candidate.slot) === raw);
         if (!slot) return;
-        commit(
-          updateBlock(config, personIndex, day, index, { start: slot.start, end: slot.end }),
-        );
+        commit(updateBlock(config, day, index, { start: slot.start, end: slot.end }));
       }}
     >
       <option value="" .selected=${current === undefined}>${strings.editor.slotNone}</option>

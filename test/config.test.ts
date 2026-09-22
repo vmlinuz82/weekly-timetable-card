@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  CARD_TYPE,
   DEFAULT_HEADER_COLOR,
   getStubConfig,
   normaliseConfig,
   normaliseTimeString,
 } from "../src/config.js";
 
-const minimal = { people: [{ name: "Иван", schedule: {} }] };
+const minimal = { schedule: {} };
 
 describe("normaliseTimeString", () => {
   it("passes through a plain time", () => {
@@ -37,12 +38,6 @@ describe("normaliseTimeString", () => {
 });
 
 describe("normaliseConfig", () => {
-  it("throws when people is missing or empty", () => {
-    expect(() => normaliseConfig({})).toThrow(/people/);
-    expect(() => normaliseConfig({ people: [] })).toThrow(/people/);
-    expect(() => normaliseConfig(undefined)).toThrow(/people/);
-  });
-
   it("throws when activities is present but not a list", () => {
     expect(() => normaliseConfig({ ...minimal, activities: "no" })).toThrow(/activities/);
   });
@@ -73,68 +68,44 @@ describe("normaliseConfig", () => {
     expect(config.days).toEqual(["sun", "mon"]);
   });
 
-  it("gives every effective day an array so renderers never see undefined", () => {
-    const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "english" }] } }],
-    });
-    const person = config.people[0]!;
-    expect(person.schedule.mon).toHaveLength(1);
-    expect(person.schedule.fri).toEqual([]);
-  });
-
-  it("treats a person's days as a replacement, including days the card omits", () => {
-    const config = normaliseConfig({
-      days: ["mon", "tue"],
-      people: [{ name: "A", days: ["sat"], schedule: { sat: [{ activity: "judo" }] } }],
-    });
-    const person = config.people[0]!;
-    expect(person.days).toEqual(["sat"]);
-    expect(person.schedule.sat).toHaveLength(1);
-    expect(person.schedule.mon).toBeUndefined();
-  });
-
-  it("leaves person.days undefined when absent, so it inherits", () => {
-    expect(normaliseConfig(minimal).people[0]!.days).toBeUndefined();
+  it("gives every day an array so renderers never see undefined", () => {
+    const config = normaliseConfig({ schedule: { mon: [{ activity: "english" }] } });
+    expect(config.schedule.mon).toHaveLength(1);
+    expect(config.schedule.fri).toEqual([]);
   });
 
   it("preserves blocks for stored days outside the current list, so narrowing is reversible", () => {
     const config = normaliseConfig({
       days: ["mon", "tue"],
-      people: [
-        {
-          name: "A",
-          schedule: {
-            mon: [{ activity: "english" }],
-            fri: [{ activity: "judo" }],
-          },
-        },
-      ],
+      schedule: {
+        mon: [{ activity: "english" }],
+        fri: [{ activity: "judo" }],
+      },
     });
-    const person = config.people[0]!;
-    expect(person.schedule.tue).toEqual([]);
-    expect(person.schedule.fri).toEqual([{ activity: "judo" }]);
+    expect(config.schedule.tue).toEqual([]);
+    expect(config.schedule.fri).toEqual([{ activity: "judo" }]);
   });
 
   it("drops blocks with no usable activity id", () => {
     const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "" }, {}, { activity: "judo" }] } }],
+      schedule: { mon: [{ activity: "" }, {}, { activity: "judo" }] },
     });
-    expect(config.people[0]!.schedule.mon).toEqual([{ activity: "judo" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "judo" }]);
   });
 
   it("keeps an activity id that matches no activity, for the orphan renderer", () => {
     const config = normaliseConfig({
       activities: [{ id: "judo", label: "Джудо", color: "#f97316" }],
-      people: [{ name: "A", schedule: { mon: [{ activity: "gone" }] } }],
+      schedule: { mon: [{ activity: "gone" }] },
     });
-    expect(config.people[0]!.schedule.mon).toEqual([{ activity: "gone" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "gone" }]);
   });
 
   it("omits absent times rather than storing empty strings", () => {
     const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "x", start: "", end: "16:00" }] } }],
+      schedule: { mon: [{ activity: "x", start: "", end: "16:00" }] },
     });
-    expect(config.people[0]!.schedule.mon![0]).toEqual({ activity: "x", end: "16:00" });
+    expect(config.schedule.mon![0]).toEqual({ activity: "x", end: "16:00" });
   });
 
   it("normalises activities and drops unusable ones", () => {
@@ -153,29 +124,53 @@ describe("normaliseConfig", () => {
 
   it("normalises slots and drops ones without both times", () => {
     const config = normaliseConfig({
-      people: [
-        {
-          name: "A",
-          slots: [
-            { slot: 1, start: "08:00", end: "08:45" },
-            { slot: 2, start: "08:45" },
-            { start: "09:00", end: "09:45" },
-          ],
-          schedule: {},
-        },
+      slots: [
+        { slot: 1, start: "08:00", end: "08:45" },
+        { slot: 2, start: "08:45" },
+        { start: "09:00", end: "09:45" },
       ],
+      schedule: {},
     });
-    expect(config.people[0]!.slots).toEqual([
+    expect(config.slots).toEqual([
       { slot: 1, start: "08:00", end: "08:45" },
       { slot: 3, start: "09:00", end: "09:45" },
     ]);
   });
 
   it("does not mutate the input", () => {
-    const raw = { people: [{ name: "A", schedule: {} }] };
+    const raw = { schedule: {} };
     const snapshot = JSON.stringify(raw);
     normaliseConfig(raw);
     expect(JSON.stringify(raw)).toBe(snapshot);
+  });
+
+  it("rejects a legacy people config rather than guessing", () => {
+    expect(() =>
+      normaliseConfig({
+        type: CARD_TYPE,
+        people: [{ name: "Sami", schedule: { mon: [] } }],
+      }),
+    ).toThrow(/people/);
+  });
+
+  it("reads slots and schedule from the top level", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      days: ["mon"],
+      slots: [{ slot: 1, start: "08:00", end: "08:45" }],
+      schedule: { mon: [{ activity: "english", start: "15:20", end: "16:20" }] },
+    });
+    expect(config.slots).toEqual([{ slot: 1, start: "08:00", end: "08:45" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "english", start: "15:20", end: "16:20" }]);
+  });
+
+  it("preserves schedule entries for days outside the day list", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      days: ["mon"],
+      schedule: { sat: [{ activity: "judo" }] },
+    });
+    expect(config.schedule.sat).toEqual([{ activity: "judo" }]);
   });
 });
 
@@ -203,11 +198,9 @@ describe("getStubConfig", () => {
   it("references only activities it defines", () => {
     const config = getStubConfig();
     const ids = new Set(config.activities.map((a) => a.id));
-    for (const person of config.people) {
-      for (const blocks of Object.values(person.schedule)) {
-        for (const block of blocks ?? []) {
-          expect(ids.has(block.activity)).toBe(true);
-        }
+    for (const blocks of Object.values(config.schedule)) {
+      for (const block of blocks ?? []) {
+        expect(ids.has(block.activity)).toBe(true);
       }
     }
   });

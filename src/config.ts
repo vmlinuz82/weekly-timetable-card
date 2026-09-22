@@ -8,7 +8,6 @@ import type {
   DayKey,
   Hass,
   Lang,
-  Person,
   Slot,
 } from "./types.js";
 
@@ -37,8 +36,14 @@ export function normaliseTimeString(value: unknown): string | undefined {
 export function normaliseConfig(raw: unknown): CardConfig {
   const source = (raw ?? {}) as Record<string, unknown>;
 
-  if (!Array.isArray(source.people) || source.people.length === 0) {
-    throw new Error("weekly-timetable-card: `people` must be a non-empty list");
+  // A card holds one timetable, so `schedule` and `slots` are top-level keys.
+  // `people` is rejected rather than ignored: silently dropping a key that
+  // carries the whole schedule would render an empty card with no explanation.
+  if (source.people !== undefined) {
+    throw new Error(
+      "weekly-timetable-card: unknown key `people` — a card shows one timetable. " +
+        "Put `slots` and `schedule` at the top level.",
+    );
   }
   if (source.activities !== undefined && !Array.isArray(source.activities)) {
     throw new Error("weekly-timetable-card: `activities` must be a list");
@@ -48,49 +53,12 @@ export function normaliseConfig(raw: unknown): CardConfig {
   const activities = (Array.isArray(source.activities) ? source.activities : [])
     .map(normaliseActivity)
     .filter((activity): activity is Activity => activity !== null);
-  const people = source.people.map((person) => normalisePerson(person, days));
-
-  return {
-    type: typeof source.type === "string" ? source.type : CARD_TYPE,
-    title: typeof source.title === "string" ? source.title : undefined,
-    layout: source.layout === "grid" ? "grid" : "blocks",
-    days,
-    language: source.language === "en" || source.language === "bg" ? source.language : "auto",
-    highlight_today: source.highlight_today !== false,
-    header_color:
-      typeof source.header_color === "string" && source.header_color.trim().length > 0
-        ? source.header_color.trim()
-        : DEFAULT_HEADER_COLOR,
-    activities,
-    people,
-  };
-}
-
-function normaliseActivity(raw: unknown): Activity | null {
-  const source = (raw ?? {}) as Record<string, unknown>;
-  const id = typeof source.id === "string" ? source.id.trim() : "";
-  if (id.length === 0) return null;
-  const label = typeof source.label === "string" && source.label.trim().length > 0
-    ? source.label.trim()
-    : id;
-  const color = typeof source.color === "string" && source.color.trim().length > 0
-    ? source.color.trim()
-    : FALLBACK_ACTIVITY_COLOR;
-  return { id, label, color };
-}
-
-function normalisePerson(raw: unknown, cardDays: DayKey[]): Person {
-  const source = (raw ?? {}) as Record<string, unknown>;
-  const ownDays = Array.isArray(source.days)
-    ? normaliseDays(source.days, cardDays)
-    : undefined;
-  const days = ownDays ?? cardDays;
 
   const rawSchedule = (source.schedule ?? {}) as Record<string, unknown>;
   const schedule: Partial<Record<DayKey, Block[]>> = {};
-  // Every effective day gets an array so renderers never branch on undefined,
-  // and any other stored day is preserved so narrowing `days` is reversible
-  // rather than quietly deleting that day's blocks on the next reload.
+  // Every listed day gets an array so renderers never branch on undefined, and
+  // any other stored day is preserved so narrowing `days` is reversible rather
+  // than quietly deleting that day's blocks on the next reload.
   const kept = new Set<DayKey>(days);
   for (const key of Object.keys(rawSchedule)) {
     if (isDayKey(key)) kept.add(key);
@@ -109,17 +77,35 @@ function normalisePerson(raw: unknown, cardDays: DayKey[]): Person {
         .filter((slot): slot is Slot => slot !== null)
     : undefined;
 
-  const person: Person = {
-    name: typeof source.name === "string" ? source.name : "",
+  const config: CardConfig = {
+    type: typeof source.type === "string" ? source.type : CARD_TYPE,
+    title: typeof source.title === "string" ? source.title : undefined,
+    layout: source.layout === "grid" ? "grid" : "blocks",
+    days,
+    language: source.language === "en" || source.language === "bg" ? source.language : "auto",
+    highlight_today: source.highlight_today !== false,
+    header_color:
+      typeof source.header_color === "string" && source.header_color.trim().length > 0
+        ? source.header_color.trim()
+        : DEFAULT_HEADER_COLOR,
+    activities,
     schedule,
   };
-  if (typeof source.emoji === "string" && source.emoji.length > 0) person.emoji = source.emoji;
-  if (typeof source.color === "string" && source.color.trim().length > 0) {
-    person.color = source.color.trim();
-  }
-  if (ownDays) person.days = ownDays;
-  if (slots) person.slots = slots;
-  return person;
+  if (slots) config.slots = slots;
+  return config;
+}
+
+function normaliseActivity(raw: unknown): Activity | null {
+  const source = (raw ?? {}) as Record<string, unknown>;
+  const id = typeof source.id === "string" ? source.id.trim() : "";
+  if (id.length === 0) return null;
+  const label = typeof source.label === "string" && source.label.trim().length > 0
+    ? source.label.trim()
+    : id;
+  const color = typeof source.color === "string" && source.color.trim().length > 0
+    ? source.color.trim()
+    : FALLBACK_ACTIVITY_COLOR;
+  return { id, label, color };
 }
 
 function normaliseBlock(raw: unknown): Block | null {
@@ -165,8 +151,8 @@ const STUB_ACTIVITIES: Record<Lang, Activity[]> = {
   ],
 };
 
-// A name needs no translation, so both languages show the same example person.
-const STUB_NAME: Record<Lang, string> = { en: "Sami", bg: "Sami" };
+// A name needs no translation, so both languages show the same example.
+const STUB_TITLE: Record<Lang, string> = { en: "Sami", bg: "Sami" };
 
 /**
  * `first_weekday` is deliberately not applied here: a Sunday-first rotation of a
@@ -184,34 +170,27 @@ export function getStubConfig(hass?: Hass): CardConfig {
 
   return {
     type: CARD_TYPE,
-    title: undefined,
+    title: STUB_TITLE[lang],
     layout: "blocks",
     days: [...DEFAULT_DAYS],
     language: "auto",
     highlight_today: true,
     header_color: DEFAULT_HEADER_COLOR,
     activities: STUB_ACTIVITIES[lang].map((activity) => ({ ...activity })),
-    people: [
-      {
-        name: STUB_NAME[lang],
-        emoji: "🥋",
-        color: "#f472b6",
-        schedule: {
-          mon: schoolDay("judo"),
-          tue: [{ activity: "daycare", end: "16:00" }],
-          wed: schoolDay("judo"),
-          thu: [
-            { activity: "daycare", end: "16:00" },
-            { activity: "break", start: "16:00", end: "16:30" },
-            { activity: "chess", start: "16:30", end: "17:30" },
-          ],
-          fri: [
-            { activity: "daycare", end: "16:00" },
-            { activity: "break", start: "16:00", end: "16:30" },
-            { activity: "chess", start: "16:30", end: "17:30" },
-          ],
-        },
-      },
-    ],
+    schedule: {
+      mon: schoolDay("judo"),
+      tue: [{ activity: "daycare", end: "16:00" }],
+      wed: schoolDay("judo"),
+      thu: [
+        { activity: "daycare", end: "16:00" },
+        { activity: "break", start: "16:00", end: "16:30" },
+        { activity: "chess", start: "16:30", end: "17:30" },
+      ],
+      fri: [
+        { activity: "daycare", end: "16:00" },
+        { activity: "break", start: "16:00", end: "16:30" },
+        { activity: "chess", start: "16:30", end: "17:30" },
+      ],
+    },
   };
 }

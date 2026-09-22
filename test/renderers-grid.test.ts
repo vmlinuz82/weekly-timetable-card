@@ -12,22 +12,17 @@ const raw = {
     { id: "daycare", label: "Занималня", color: "#64748b" },
     { id: "judo", label: "Джудо", color: "#f97316" },
   ],
-  people: [
-    {
-      name: "Иван",
-      slots: [
-        { slot: 1, start: "08:00", end: "08:45" },
-        { slot: 2, start: "08:45", end: "09:30" },
-      ],
-      schedule: {
-        mon: [
-          { activity: "maths", start: "08:00", end: "08:45" },
-          { activity: "daycare", end: "16:00" },
-        ],
-        tue: [{ activity: "judo", start: "17:30", end: "18:30" }],
-      },
-    },
+  slots: [
+    { slot: 1, start: "08:00", end: "08:45" },
+    { slot: 2, start: "08:45", end: "09:30" },
   ],
+  schedule: {
+    mon: [
+      { activity: "maths", start: "08:00", end: "08:45" },
+      { activity: "daycare", end: "16:00" },
+    ],
+    tue: [{ activity: "judo", start: "17:30", end: "18:30" }],
+  },
 };
 
 describe("renderGrid", () => {
@@ -65,13 +60,8 @@ describe("renderGrid", () => {
         makeContext({
           raw: {
             ...raw,
-            people: [
-              {
-                name: "Иван",
-                slots: raw.people[0]!.slots,
-                schedule: { mon: [{ activity: "maths", start: "08:00", end: "08:45" }], tue: [] },
-              },
-            ],
+            slots: raw.slots,
+            schedule: { mon: [{ activity: "maths", start: "08:00", end: "08:45" }], tue: [] },
           },
           hass: BG_24H,
           now: MONDAY,
@@ -87,13 +77,14 @@ describe("renderGrid", () => {
     expect(host.querySelectorAll(".grid-cell.today")).toHaveLength(2);
   });
 
-  it("prompts for slots and shows only the strip when a person defines none", () => {
+  it("prompts for slots and shows only the strip when none are defined", () => {
     const host = renderToHost(
       renderGrid(
         makeContext({
           raw: {
             ...raw,
-            people: [{ name: "Иван", schedule: { mon: [{ activity: "judo" }], tue: [] } }],
+            slots: undefined,
+            schedule: { mon: [{ activity: "judo" }], tue: [] },
           },
           hass: BG_24H,
           now: MONDAY,
@@ -113,7 +104,7 @@ describe("renderGrid", () => {
     expect(marked[0]!.textContent!.trim()).toBe("понеделник");
   });
 
-  it("still names the day columns when a person has no slots", () => {
+  it("still names the day columns when no slots are defined", () => {
     // The .grid element owns the day headers, and it is replaced by the
     // no-slots prompt — so the strip above would otherwise sit under
     // unlabelled columns.
@@ -122,7 +113,8 @@ describe("renderGrid", () => {
         makeContext({
           raw: {
             ...raw,
-            people: [{ name: "Иван", schedule: { mon: [{ activity: "judo" }], tue: [] } }],
+            slots: undefined,
+            schedule: { mon: [{ activity: "judo" }], tue: [] },
           },
           hass: BG_24H,
           now: MONDAY,
@@ -140,16 +132,11 @@ describe("renderGrid", () => {
         makeContext({
           raw: {
             ...raw,
-            people: [
-              {
-                name: "Иван",
-                slots: [
-                  { slot: 2, start: "08:45", end: "09:30" },
-                  { slot: 1, start: "08:00", end: "08:45" },
-                ],
-                schedule: { mon: [], tue: [] },
-              },
+            slots: [
+              { slot: 2, start: "08:45", end: "09:30" },
+              { slot: 1, start: "08:00", end: "08:45" },
             ],
+            schedule: { mon: [], tue: [] },
           },
           hass: BG_24H,
           now: MONDAY,

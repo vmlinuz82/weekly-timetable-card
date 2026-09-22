@@ -8,10 +8,7 @@ import { BG_24H, EN_12H } from "./helpers.js";
 const raw = {
   days: ["mon", "tue"],
   activities: [{ id: "english", label: "Английски", color: "#3b82f6" }],
-  people: [
-    { name: "Иван", schedule: { mon: [{ activity: "english" }], tue: [] } },
-    { name: "Мария", schedule: { mon: [], tue: [] } },
-  ],
+  schedule: { mon: [{ activity: "english" }], tue: [] },
 };
 
 async function mount(config: unknown = raw, hass = EN_12H) {

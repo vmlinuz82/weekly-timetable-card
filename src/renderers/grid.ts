@@ -8,11 +8,11 @@ import { dayHeading } from "./blocks.js";
 import type { RenderContext } from "./context.js";
 
 export function renderGrid(ctx: RenderContext): TemplateResult {
-  const slots = [...(ctx.person.slots ?? [])].sort((a, b) => a.slot - b.slot);
+  const slots = [...(ctx.config.slots ?? [])].sort((a, b) => a.slot - b.slot);
 
   const placements = new Map<DayKey, GridPlacement>();
   for (const day of ctx.days) {
-    placements.set(day, gridPlacement(slots, ctx.person.schedule[day] ?? []));
+    placements.set(day, gridPlacement(slots, ctx.config.schedule[day] ?? []));
   }
 
   const hasLoose = ctx.days.some((day) => placements.get(day)!.loose.length > 0);

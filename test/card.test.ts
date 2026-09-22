@@ -10,10 +10,7 @@ const raw = {
     { id: "english", label: "Английски", color: "#3b82f6" },
     { id: "maths", label: "Математика", color: "#22c55e" },
   ],
-  people: [
-    { name: "Иван", emoji: "🥋", schedule: { mon: [{ activity: "english" }], tue: [] } },
-    { name: "Мария", emoji: "🎻", schedule: { mon: [{ activity: "maths" }], tue: [] } },
-  ],
+  schedule: { mon: [{ activity: "english" }], tue: [] },
 };
 
 async function makeCard(config: unknown, hass = BG_24H): Promise<WeeklyTimetableCard> {
@@ -48,7 +45,7 @@ describe("WeeklyTimetableCard", () => {
 
   it("propagates a config error from setConfig so HA can display it", () => {
     const card = document.createElement("weekly-timetable-card") as WeeklyTimetableCard;
-    expect(() => card.setConfig({})).toThrow(/people/);
+    expect(() => card.setConfig({ people: [] })).toThrow(/people/);
   });
 
   it("renders the blocks layout by default", async () => {
@@ -61,13 +58,8 @@ describe("WeeklyTimetableCard", () => {
     const card = await makeCard({
       ...raw,
       layout: "grid",
-      people: [
-        {
-          name: "Иван",
-          slots: [{ slot: 1, start: "08:00", end: "08:45" }],
-          schedule: { mon: [{ activity: "english", start: "08:00", end: "08:45" }], tue: [] },
-        },
-      ],
+      slots: [{ slot: 1, start: "08:00", end: "08:45" }],
+      schedule: { mon: [{ activity: "english", start: "08:00", end: "08:45" }], tue: [] },
     });
     expect(shadow(card).querySelector(".grid")).not.toBeNull();
   });
@@ -134,11 +126,7 @@ describe("WeeklyTimetableCard", () => {
 
     card.setConfig({
       ...raw,
-      days: ["mon", "tue", "wed", "thu", "fri"],
-      people: [
-        { ...raw.people[0], days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] },
-        raw.people[1],
-      ],
+      days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     });
     await card.updateComplete;
     // Same 400px, but now 7 days: 400/7 ≈ 57px per column: stacked (<72).
@@ -148,7 +136,7 @@ describe("WeeklyTimetableCard", () => {
   it("offers a stub config for the card picker", () => {
     const stub = (customElements.get("weekly-timetable-card") as typeof WeeklyTimetableCard)
       .getStubConfig(BG_24H);
-    expect(stub.people).toHaveLength(1);
+    expect(stub.schedule.mon).toBeDefined();
     expect(stub.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);
   });
 });

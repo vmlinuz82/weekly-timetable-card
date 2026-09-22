@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { normaliseConfig } from "../src/config.js";
-import { renderPersonPanel } from "../src/editor/person-panel.js";
+import { renderSchedulePanel } from "../src/editor/schedule-panel.js";
 import { en } from "../src/i18n/en.js";
 import type { CardConfig } from "../src/types.js";
 import { renderToHost } from "./helpers.js";
@@ -11,25 +11,17 @@ const raw = {
     { id: "english", label: "Английски", color: "#3b82f6" },
     { id: "judo", label: "Джудо", color: "#f97316" },
   ],
-  people: [
-    {
-      name: "Иван",
-      emoji: "🥋",
-      color: "#f472b6",
-      slots: [
-        { slot: 1, start: "08:00", end: "08:45" },
-        { slot: 2, start: "08:45", end: "09:30" },
-      ],
-      schedule: {
-        mon: [
-          { activity: "english", start: "15:20", end: "16:20" },
-          { activity: "judo", start: "17:30", end: "18:30" },
-        ],
-        tue: [{ activity: "english", end: "16:00" }],
-      },
-    },
-    { name: "Мария", schedule: { mon: [], tue: [] } },
+  slots: [
+    { slot: 1, start: "08:00", end: "08:45" },
+    { slot: 2, start: "08:45", end: "09:30" },
   ],
+  schedule: {
+    mon: [
+      { activity: "english", start: "15:20", end: "16:20" },
+      { activity: "judo", start: "17:30", end: "18:30" },
+    ],
+    tue: [{ activity: "english", end: "16:00" }],
+  },
 };
 
 function mount(source: unknown = raw) {
@@ -37,7 +29,7 @@ function mount(source: unknown = raw) {
   const commit = vi.fn<(next: CardConfig) => void>();
   const onSelectActivity = vi.fn<(id: string | null) => void>();
   const host = renderToHost(
-    renderPersonPanel(
+    renderSchedulePanel(
       { config, strings: en, hass: undefined, commit },
       { selectedActivity: null, onSelectActivity },
     ),
@@ -62,7 +54,7 @@ describe("slots", () => {
   it("appends a slot", () => {
     const { commit, host } = mount({ ...raw, layout: "grid" });
     host.querySelector<HTMLButtonElement>('[data-action="add-slot"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.slots).toHaveLength(3);
+    expect(commit.mock.calls[0]![0].slots).toHaveLength(3);
   });
 
   it("edits and removes a slot", () => {
@@ -70,15 +62,15 @@ describe("slots", () => {
     const end = host.querySelectorAll<HTMLInputElement>('[data-field="slot-end"]')[0]!;
     end.value = "09:00";
     end.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.slots![0]!.end).toBe("09:00");
+    expect(commit.mock.calls[0]![0].slots![0]!.end).toBe("09:00");
 
     host.querySelectorAll<HTMLButtonElement>('[data-action="remove-slot"]')[0]!.click();
-    expect(commit.mock.calls[1]![0].people[0]!.slots).toHaveLength(1);
+    expect(commit.mock.calls[1]![0].slots).toHaveLength(1);
   });
 });
 
 describe("schedule rows", () => {
-  it("renders one group per effective day and one row per block", () => {
+  it("renders one group per day and one row per block", () => {
     const { host } = mount();
     expect(host.querySelectorAll("[data-day]")).toHaveLength(2);
     expect(rows(host, "mon")).toHaveLength(2);
@@ -105,7 +97,7 @@ describe("schedule rows", () => {
     const select = rows(host, "mon")[0]!.querySelector<HTMLSelectElement>('[data-field="activity"]')!;
     select.value = "judo";
     select.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon![0]!.activity).toBe("judo");
+    expect(commit.mock.calls[0]![0].schedule.mon![0]!.activity).toBe("judo");
   });
 
   it("clears a time with its clear button, producing the until form", () => {
@@ -114,7 +106,7 @@ describe("schedule rows", () => {
     const { commit, host } = mount();
     const row = rows(host, "mon")[0]!;
     row.querySelector<HTMLButtonElement>('[data-action="clear-start"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon![0]!)
+    expect(commit.mock.calls[0]![0].schedule.mon![0]!)
       .toEqual({ activity: "english", end: "16:20" });
   });
 
@@ -134,7 +126,7 @@ describe("schedule rows", () => {
     const input = rows(host, "mon")[0]!.querySelector<HTMLInputElement>('[data-field="start"]')!;
     input.value = "";
     input.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon![0]!)
+    expect(commit.mock.calls[0]![0].schedule.mon![0]!)
       .toEqual({ activity: "english", end: "16:20" });
   });
 
@@ -143,12 +135,12 @@ describe("schedule rows", () => {
     const select = rows(host, "tue")[0]!.querySelector<HTMLSelectElement>('[data-field="slot"]')!;
     select.value = "2";
     select.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.tue![0]!)
+    expect(commit.mock.calls[0]![0].schedule.tue![0]!)
       .toEqual({ activity: "english", start: "08:45", end: "09:30" });
 
     select.value = "";
     select.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[1]![0].people[0]!.schedule.tue![0]!)
+    expect(commit.mock.calls[1]![0].schedule.tue![0]!)
       .toEqual({ activity: "english" });
   });
 
@@ -172,7 +164,7 @@ describe("schedule rows", () => {
     expect(last.querySelector<HTMLButtonElement>('[data-action="move-down"]')!.disabled).toBe(true);
 
     first.querySelector<HTMLButtonElement>('[data-action="move-down"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon!.map((b) => b.activity))
+    expect(commit.mock.calls[0]![0].schedule.mon!.map((b) => b.activity))
       .toEqual(["judo", "english"]);
   });
 
@@ -182,9 +174,9 @@ describe("schedule rows", () => {
     select.value = "tue";
     select.dispatchEvent(new Event("change"));
 
-    const person = commit.mock.calls[0]![0].people[0]!;
-    expect(person.schedule.mon!.map((block) => block.activity)).toEqual(["judo"]);
-    expect(person.schedule.tue!.map((block) => block.activity)).toEqual(["english", "english"]);
+    const next = commit.mock.calls[0]![0];
+    expect(next.schedule.mon!.map((block) => block.activity)).toEqual(["judo"]);
+    expect(next.schedule.tue!.map((block) => block.activity)).toEqual(["english", "english"]);
   });
 
   it("does nothing when the day dropdown is set to the day it is already on", () => {
@@ -198,13 +190,13 @@ describe("schedule rows", () => {
   it("removes a block", () => {
     const { commit, host } = mount();
     rows(host, "mon")[0]!.querySelector<HTMLButtonElement>('[data-action="remove-block"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.mon!).toHaveLength(1);
+    expect(commit.mock.calls[0]![0].schedule.mon!).toHaveLength(1);
   });
 
   it("adds a block to a day with the first activity", () => {
     const { commit, host } = mount();
     host.querySelector<HTMLButtonElement>('[data-day="tue"] [data-action="add-block"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.schedule.tue!).toEqual([
+    expect(commit.mock.calls[0]![0].schedule.tue!).toEqual([
       { activity: "english", end: "16:00" },
       { activity: "english" },
     ]);
@@ -227,7 +219,7 @@ describe("palette and tap-to-place", () => {
     const config = normaliseConfig(raw);
     const onSelectActivity = vi.fn<(id: string | null) => void>();
     const host = renderToHost(
-      renderPersonPanel(
+      renderSchedulePanel(
         { config, strings: en, hass: undefined, commit: vi.fn() },
         { selectedActivity: "judo", onSelectActivity },
       ),
@@ -241,14 +233,14 @@ describe("palette and tap-to-place", () => {
     const commit = vi.fn<(next: CardConfig) => void>();
     const onSelectActivity = vi.fn<(id: string | null) => void>();
     const host = renderToHost(
-      renderPersonPanel(
+      renderSchedulePanel(
         { config, strings: en, hass: undefined, commit },
         { selectedActivity: "judo", onSelectActivity },
       ),
     );
     host.querySelector<HTMLElement>('[data-day="tue"]')!.click();
 
-    const tueBlocks = commit.mock.calls[0]![0].people[0]!.schedule.tue!;
+    const tueBlocks = commit.mock.calls[0]![0].schedule.tue!;
     expect(tueBlocks[tueBlocks.length - 1]).toEqual({ activity: "judo" });
     expect(onSelectActivity).toHaveBeenCalledWith(null);
   });

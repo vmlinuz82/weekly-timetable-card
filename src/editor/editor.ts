@@ -7,7 +7,7 @@ import type { CardConfig, Hass } from "../types.js";
 import { renderActivitiesPanel } from "./activities-panel.js";
 import { fireEvent } from "./fire-event.js";
 import type { PanelContext } from "./panel-context.js";
-import { renderPersonPanel } from "./person-panel.js";
+import { renderSchedulePanel } from "./schedule-panel.js";
 import { renderSettingsPanel } from "./settings-panel.js";
 
 type Tab = "settings" | "schedule" | "activities";
@@ -92,7 +92,7 @@ export class WeeklyTimetableCardEditor extends LitElement {
   private _renderPanel(ctx: PanelContext): TemplateResult {
     if (this._tab === "settings") return renderSettingsPanel(ctx);
     if (this._tab === "activities") return renderActivitiesPanel(ctx);
-    return renderPersonPanel(ctx, {
+    return renderSchedulePanel(ctx, {
       selectedActivity: this._selectedActivity,
       onSelectActivity: (id) => {
         this._selectedActivity = id;

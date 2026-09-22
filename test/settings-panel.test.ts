@@ -14,7 +14,7 @@ function mount(raw: unknown) {
   return { config, commit, host };
 }
 
-const raw = { people: [{ name: "Иван", schedule: {} }] };
+const raw = { schedule: {} };
 
 describe("renderSettingsPanel", () => {
   it("shows the current values", () => {

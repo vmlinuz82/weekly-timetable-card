@@ -10,7 +10,7 @@ const raw = {
     { id: "english", label: "Английски", color: "#3b82f6" },
     { id: "judo", label: "Джудо", color: "#f97316" },
   ],
-  people: [{ name: "Иван", schedule: { mon: [{ activity: "english" }] } }],
+  schedule: { mon: [{ activity: "english" }] },
 };
 
 function mount(source: unknown = raw) {
