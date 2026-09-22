@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import "../src/card.js";
 import type { WeeklyTimetableCard } from "../src/card.js";
+import { getStubConfig } from "../src/config.js";
 import { BG_24H, EN_12H } from "./helpers.js";
 
 const raw = {
@@ -93,23 +94,14 @@ describe("WeeklyTimetableCard", () => {
       .toBe("Седмична програма");
   });
 
-  it("shows tabs only when there is more than one person", async () => {
-    const many = await makeCard(raw);
-    expect(shadow(many).querySelectorAll(".tab")).toHaveLength(2);
+  it("never renders person tabs", async () => {
+    const el = document.createElement("weekly-timetable-card") as WeeklyTimetableCard;
+    document.body.append(el);
+    el.setConfig(getStubConfig());
+    await el.updateComplete;
 
-    const one = await makeCard({ ...raw, people: [raw.people[0]] });
-    expect(shadow(one).querySelector(".tabs")).toBeNull();
-  });
-
-  it("switches person when a tab is clicked", async () => {
-    const card = await makeCard(raw);
-    const tabs = shadow(card).querySelectorAll<HTMLButtonElement>(".tab");
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Английски");
-
-    tabs[1]!.click();
-    await card.updateComplete;
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Математика");
-    expect(tabs[1]!.getAttribute("aria-selected")).toBe("true");
+    expect(el.shadowRoot!.querySelector(".tabs")).toBeNull();
+    el.remove();
   });
 
   it("re-renders in the viewer's language when hass changes", async () => {
@@ -119,16 +111,6 @@ describe("WeeklyTimetableCard", () => {
     card.hass = EN_12H;
     await card.updateComplete;
     expect(shadow(card).querySelector(".day-head")!.textContent!.trim()).toBe("Monday");
-  });
-
-  it("clamps the active person when the config shrinks", async () => {
-    const card = await makeCard(raw);
-    shadow(card).querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
-    await card.updateComplete;
-
-    card.setConfig({ ...raw, people: [raw.people[0]] });
-    await card.updateComplete;
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Английски");
   });
 
   it("sets the header colour and a contrasting header text colour", async () => {

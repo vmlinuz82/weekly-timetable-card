@@ -16,10 +16,8 @@ export const bg: Strings = {
   today: "Днес",
   editor: {
     tabSettings: "Настройки",
+    tabSchedule: "Разписание",
     tabActivities: "Дейности",
-    addPerson: "Добави човек",
-    removePerson: "Премахни човек",
-    personNamePlaceholder: "Нов човек",
 
     title: "Заглавие",
     layout: "Изглед",
@@ -33,11 +31,6 @@ export const bg: Strings = {
     highlightToday: "Отбелязвай днешния ден",
     headerColor: "Цвят на заглавката",
 
-    name: "Име",
-    emoji: "Емоджи",
-    color: "Цвят",
-    daysOverride: "Дни за този човек",
-    daysOverrideHint: "Оставете празно, за да се използват дните на картата",
     slots: "Часови интервали",
     addSlot: "Добави интервал",
     slotColumn: "Интервал",

@@ -7,10 +7,8 @@ export interface DayNames {
 
 export interface EditorStrings {
   tabSettings: string;
+  tabSchedule: string;
   tabActivities: string;
-  addPerson: string;
-  removePerson: string;
-  personNamePlaceholder: string;
 
   title: string;
   layout: string;
@@ -24,11 +22,6 @@ export interface EditorStrings {
   highlightToday: string;
   headerColor: string;
 
-  name: string;
-  emoji: string;
-  color: string;
-  daysOverride: string;
-  daysOverrideHint: string;
   slots: string;
   addSlot: string;
   slotColumn: string;

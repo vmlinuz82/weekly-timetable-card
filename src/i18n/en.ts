@@ -16,10 +16,8 @@ export const en: Strings = {
   today: "Today",
   editor: {
     tabSettings: "Settings",
+    tabSchedule: "Schedule",
     tabActivities: "Activities",
-    addPerson: "Add person",
-    removePerson: "Remove person",
-    personNamePlaceholder: "New person",
 
     title: "Title",
     layout: "Layout",
@@ -33,11 +31,6 @@ export const en: Strings = {
     highlightToday: "Highlight today",
     headerColor: "Header colour",
 
-    name: "Name",
-    emoji: "Emoji",
-    color: "Colour",
-    daysOverride: "Days for this person",
-    daysOverrideHint: "Leave empty to use the card's days",
     slots: "Time slots",
     addSlot: "Add slot",
     slotColumn: "Slot",

@@ -1,8 +1,6 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { blockForm } from "../block.js";
 import { blockTimeLabel, type TimeLabelContext } from "../renderers/block.js";
-import { toHexInputValue } from "../color.js";
-import { daysFromFirstWeekday, effectiveDays, toggleDayList } from "../days.js";
 import { resolveLang } from "../i18n/index.js";
 import type { Block, DayKey, Person, Slot } from "../types.js";
 import {
@@ -11,22 +9,17 @@ import {
   moveBlock,
   moveBlockBy,
   removeBlock,
-  removePerson,
   removeSlot,
   updateBlock,
-  updatePerson,
   updateSlot,
 } from "./mutations.js";
-import { checkboxValue, inputValue, type PanelContext } from "./panel-context.js";
+import { inputValue, type PanelContext } from "./panel-context.js";
 
 function timeLabelContext(ctx: PanelContext): TimeLabelContext {
   return { strings: ctx.strings, hass: ctx.hass, lang: resolveLang(ctx.config, ctx.hass) };
 }
 
-const DEFAULT_PERSON_COLOR = "#f472b6";
-
 export interface PersonPanelOptions {
-  personIndex: number;
   selectedActivity: string | null;
   onSelectActivity: (id: string | null) => void;
 }
@@ -35,102 +28,15 @@ export function renderPersonPanel(
   ctx: PanelContext,
   options: PersonPanelOptions,
 ): TemplateResult {
-  const { config, strings, commit } = ctx;
-  const { personIndex } = options;
+  const { config, strings } = ctx;
+  const personIndex = 0;
   const person = config.people[personIndex];
   if (!person) return html``;
 
-  const order = daysFromFirstWeekday(ctx.hass);
-  const days = effectiveDays(config, person);
+  const days = config.days;
 
   return html`
     <div class="panel">
-      <div class="row">
-        <input
-          type="text"
-          class="grow"
-          data-field="name"
-          .value=${person.name}
-          placeholder=${strings.editor.personNamePlaceholder}
-          @change=${(event: Event) =>
-            commit(updatePerson(config, personIndex, { name: inputValue(event) }))}
-        />
-        <input
-          type="text"
-          data-field="emoji"
-          style="width: 3.5rem"
-          .value=${person.emoji ?? ""}
-          placeholder=${strings.editor.emoji}
-          @change=${(event: Event) =>
-            commit(updatePerson(config, personIndex, { emoji: inputValue(event) || null }))}
-        />
-        <input
-          type="color"
-          data-field="person-color"
-          .value=${toHexInputValue(person.color ?? DEFAULT_PERSON_COLOR, DEFAULT_PERSON_COLOR)}
-          @change=${(event: Event) =>
-            commit(updatePerson(config, personIndex, { color: inputValue(event) }))}
-        />
-        <button
-          class="icon-button"
-          type="button"
-          data-action="clear-person-color"
-          title=${strings.editor.color}
-          @click=${() => commit(updatePerson(config, personIndex, { color: null }))}
-        >
-          ⌫
-        </button>
-        <button
-          class="icon-button"
-          type="button"
-          data-action="remove-person"
-          title=${strings.editor.removePerson}
-          ?disabled=${config.people.length <= 1}
-          @click=${() => commit(removePerson(config, personIndex))}
-        >
-          ×
-        </button>
-      </div>
-
-      <label class="field inline">
-        <input
-          type="checkbox"
-          data-field="own-days"
-          .checked=${person.days !== undefined}
-          @change=${(event: Event) =>
-            commit(
-              updatePerson(config, personIndex, {
-                days: checkboxValue(event) ? [...config.days] : null,
-              }),
-            )}
-        />
-        <span>${strings.editor.daysOverride}</span>
-      </label>
-      ${person.days === undefined
-        ? html`<div class="hint">${strings.editor.daysOverrideHint}</div>`
-        : html`
-            <div class="chips">
-              ${order.map(
-                (day) => html`
-                  <button
-                    type="button"
-                    class="chip"
-                    data-person-day=${day}
-                    aria-pressed=${person.days!.includes(day) ? "true" : "false"}
-                    @click=${() =>
-                      commit(
-                        updatePerson(config, personIndex, {
-                          days: toggleDayList(person.days!, day, order),
-                        }),
-                      )}
-                  >
-                    ${strings.days[day].short}
-                  </button>
-                `,
-              )}
-            </div>
-          `}
-
       ${config.layout === "grid" ? renderSlots(ctx, personIndex, person) : nothing}
 
       <div class="palette">
@@ -219,7 +125,7 @@ function renderDayGroup(
   day: DayKey,
 ): TemplateResult {
   const { config, strings, commit } = ctx;
-  const { personIndex } = options;
+  const personIndex = 0;
   const blocks = person.schedule[day] ?? [];
   const firstActivity = config.activities[0]?.id;
 
@@ -272,7 +178,7 @@ function renderBlockRow(
   total: number,
 ): TemplateResult {
   const { config, strings, commit } = ctx;
-  const { personIndex } = options;
+  const personIndex = 0;
   const person = config.people[personIndex]!;
 
   return html`
@@ -307,7 +213,7 @@ function renderBlockRow(
           );
         }}
       >
-        ${effectiveDays(config, person).map(
+        ${config.days.map(
           (candidate) => html`
             <option value=${candidate} .selected=${candidate === day}>
               ${strings.days[candidate].short}

@@ -3,19 +3,16 @@ import { normaliseConfig } from "../src/config.js";
 import {
   addActivity,
   addBlock,
-  addPerson,
   addSlot,
   countActivityUses,
   moveBlock,
   moveBlockBy,
   removeActivity,
   removeBlock,
-  removePerson,
   removeSlot,
   updateActivity,
   updateBlock,
   updateCard,
-  updatePerson,
   updateSlot,
 } from "../src/editor/mutations.js";
 import type { CardConfig } from "../src/types.js";
@@ -62,61 +59,6 @@ describe("updateCard", () => {
     expect(next.layout).toBe("grid");
     expect(next.title).toBe("X");
     expect(next.people).toHaveLength(2);
-  });
-});
-
-describe("people", () => {
-  it("appends a person with an empty schedule", () => {
-    const next = immutable((config) => addPerson(config, "Нов"));
-    expect(next.people).toHaveLength(3);
-    expect(next.people[2]).toEqual({ name: "Нов", schedule: {} });
-  });
-
-  it("removes a person", () => {
-    const next = immutable((config) => removePerson(config, 0));
-    expect(next.people.map((person) => person.name)).toEqual(["Мария"]);
-  });
-
-  it("refuses to remove the last person", () => {
-    const config = normaliseConfig({ people: [{ name: "Solo", schedule: {} }] });
-    expect(removePerson(config, 0)).toBe(config);
-  });
-
-  it("patches a person's name", () => {
-    const next = immutable((config) => updatePerson(config, 1, { name: "Мери" }));
-    expect(next.people[1]!.name).toBe("Мери");
-    expect(next.people[0]!.name).toBe("Иван");
-  });
-
-  it("clears an optional field with null and sets it with a value", () => {
-    const withEmoji = updatePerson(base(), 0, { emoji: "🎻", color: "#123456" });
-    expect(withEmoji.people[0]!.emoji).toBe("🎻");
-    const cleared = updatePerson(withEmoji, 0, { emoji: null, color: null });
-    expect("emoji" in cleared.people[0]!).toBe(false);
-    expect("color" in cleared.people[0]!).toBe(false);
-  });
-
-  it("clears a day override with null so the person inherits again", () => {
-    const narrowed = updatePerson(base(), 0, { days: ["sat"] });
-    expect(narrowed.people[0]!.days).toEqual(["sat"]);
-    const restored = updatePerson(narrowed, 0, { days: null });
-    expect("days" in restored.people[0]!).toBe(false);
-  });
-
-  it("treats an empty day list as clearing the override", () => {
-    const next = updatePerson(base(), 0, { days: [] });
-    expect("days" in next.people[0]!).toBe(false);
-  });
-
-  it("creates empty schedule arrays for days the override adds", () => {
-    const next = updatePerson(base(), 0, { days: ["mon", "sat"] });
-    expect(next.people[0]!.schedule.sat).toEqual([]);
-    expect(next.people[0]!.schedule.mon).toHaveLength(2);
-  });
-
-  it("ignores an out-of-range person index", () => {
-    const config = base();
-    expect(updatePerson(config, 9, { name: "X" })).toBe(config);
   });
 });
 

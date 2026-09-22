@@ -18,14 +18,6 @@ export interface BlockPatch {
   end?: string | null;
 }
 
-export interface PersonPatch {
-  name?: string;
-  emoji?: string | null;
-  color?: string | null;
-  days?: DayKey[] | null;
-  slots?: Slot[] | null;
-}
-
 const DEFAULT_SLOT_START = "08:00";
 const DEFAULT_SLOT_MINUTES = 45;
 
@@ -50,53 +42,6 @@ function withBlocks(person: Person, day: DayKey, blocks: Block[]): Person {
 
 export function updateCard(config: CardConfig, patch: Partial<CardConfig>): CardConfig {
   return { ...config, ...patch };
-}
-
-export function addPerson(config: CardConfig, name: string): CardConfig {
-  return { ...config, people: [...config.people, { name, schedule: {} }] };
-}
-
-export function removePerson(config: CardConfig, index: number): CardConfig {
-  if (config.people.length <= 1 || !config.people[index]) return config;
-  return { ...config, people: config.people.filter((_, i) => i !== index) };
-}
-
-export function updatePerson(
-  config: CardConfig,
-  index: number,
-  patch: PersonPatch,
-): CardConfig {
-  const person = config.people[index];
-  if (!person) return config;
-
-  const next: Person = { ...person, schedule: { ...person.schedule } };
-
-  if (patch.name !== undefined) next.name = patch.name;
-
-  if (patch.emoji !== undefined) {
-    if (patch.emoji === null || patch.emoji === "") delete next.emoji;
-    else next.emoji = patch.emoji;
-  }
-
-  if (patch.color !== undefined) {
-    if (patch.color === null || patch.color === "") delete next.color;
-    else next.color = patch.color;
-  }
-
-  if (patch.slots !== undefined) {
-    if (patch.slots === null) delete next.slots;
-    else next.slots = patch.slots.map((slot) => ({ ...slot }));
-  }
-
-  if (patch.days !== undefined) {
-    if (patch.days === null || patch.days.length === 0) delete next.days;
-    else next.days = [...patch.days];
-    for (const day of next.days ?? config.days) {
-      if (!next.schedule[day]) next.schedule[day] = [];
-    }
-  }
-
-  return replacePerson(config, index, next);
 }
 
 export function addBlock(

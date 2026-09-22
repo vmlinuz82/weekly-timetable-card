@@ -32,14 +32,14 @@ const raw = {
   ],
 };
 
-function mount(source: unknown = raw, personIndex = 0) {
+function mount(source: unknown = raw) {
   const config = normaliseConfig(source);
   const commit = vi.fn<(next: CardConfig) => void>();
   const onSelectActivity = vi.fn<(id: string | null) => void>();
   const host = renderToHost(
     renderPersonPanel(
       { config, strings: en, hass: undefined, commit },
-      { personIndex, selectedActivity: null, onSelectActivity },
+      { selectedActivity: null, onSelectActivity },
     ),
   );
   return { config, commit, onSelectActivity, host };
@@ -47,72 +47,6 @@ function mount(source: unknown = raw, personIndex = 0) {
 
 const rows = (host: HTMLElement, day: string) =>
   [...host.querySelectorAll<HTMLElement>(`[data-day="${day}"] [data-block-index]`)];
-
-describe("person fields", () => {
-  it("shows name, emoji and colour", () => {
-    const { host } = mount();
-    expect(host.querySelector<HTMLInputElement>('[data-field="name"]')!.value).toBe("Иван");
-    expect(host.querySelector<HTMLInputElement>('[data-field="emoji"]')!.value).toBe("🥋");
-    expect(host.querySelector<HTMLInputElement>('[data-field="person-color"]')!.value)
-      .toBe("#f472b6");
-  });
-
-  it("commits a name change", () => {
-    const { commit, host } = mount();
-    const input = host.querySelector<HTMLInputElement>('[data-field="name"]')!;
-    input.value = "Ivan";
-    input.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.name).toBe("Ivan");
-  });
-
-  it("clears the person colour", () => {
-    const { commit, host } = mount();
-    host.querySelector<HTMLButtonElement>('[data-action="clear-person-color"]')!.click();
-    expect("color" in commit.mock.calls[0]![0].people[0]!).toBe(false);
-  });
-
-  it("removes the person", () => {
-    const { commit, host } = mount();
-    host.querySelector<HTMLButtonElement>('[data-action="remove-person"]')!.click();
-    expect(commit.mock.calls[0]![0].people.map((person) => person.name)).toEqual(["Мария"]);
-  });
-});
-
-describe("day override", () => {
-  it("is unchecked and hides the chips when the person inherits", () => {
-    const { host } = mount();
-    expect(host.querySelector<HTMLInputElement>('[data-field="own-days"]')!.checked).toBe(false);
-    expect(host.querySelectorAll(".chip[data-person-day]")).toHaveLength(0);
-  });
-
-  it("seeds the override from the card days when checked", () => {
-    const { commit, host } = mount();
-    const toggle = host.querySelector<HTMLInputElement>('[data-field="own-days"]')!;
-    toggle.checked = true;
-    toggle.dispatchEvent(new Event("change"));
-    expect(commit.mock.calls[0]![0].people[0]!.days).toEqual(["mon", "tue"]);
-  });
-
-  it("clears the override when unchecked", () => {
-    const { commit, host } = mount({
-      ...raw,
-      people: [{ ...raw.people[0], days: ["mon", "sat"] }, raw.people[1]],
-    });
-    const toggle = host.querySelector<HTMLInputElement>('[data-field="own-days"]')!;
-    toggle.checked = false;
-    toggle.dispatchEvent(new Event("change"));
-    expect("days" in commit.mock.calls[0]![0].people[0]!).toBe(false);
-  });
-
-  it("toggles a day within the override", () => {
-    const { commit, host } = mount({
-      ...raw,
-      people: [{ ...raw.people[0], days: ["mon", "tue"] }, raw.people[1]],
-    });
-    host.querySelector<HTMLButtonElement>('.chip[data-person-day="sat"]')!.click();
-    expect(commit.mock.calls[0]![0].people[0]!.days).toEqual(["mon", "tue", "sat"]);
-  });
-});
 
 describe("slots", () => {
   it("are hidden in the blocks layout", () => {
@@ -295,7 +229,7 @@ describe("palette and tap-to-place", () => {
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit: vi.fn() },
-        { personIndex: 0, selectedActivity: "judo", onSelectActivity },
+        { selectedActivity: "judo", onSelectActivity },
       ),
     );
     host.querySelectorAll<HTMLButtonElement>(".palette-chip")[1]!.click();
@@ -309,7 +243,7 @@ describe("palette and tap-to-place", () => {
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit },
-        { personIndex: 0, selectedActivity: "judo", onSelectActivity },
+        { selectedActivity: "judo", onSelectActivity },
       ),
     );
     host.querySelector<HTMLElement>('[data-day="tue"]')!.click();
