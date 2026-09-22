@@ -32,7 +32,7 @@ numbered-slot grid. One card, several people, configured visually.
 ### HACS
 
 1. HACS → three-dot menu → **Custom repositories**
-2. Add `https://github.com/kosio/weekly-timetable-card`, category **Dashboard**
+2. Add `https://github.com/vmlinuz82/weekly-timetable-card`, category **Dashboard**
 3. Find **Weekly Timetable Card** → **Download**
 4. Hard-refresh the browser (`Ctrl+Shift+R`)
 
@@ -192,7 +192,7 @@ Licensed MIT.
 ### Инсталиране
 
 **Чрез HACS:** HACS → менюто с три точки → **Custom repositories** → добавете
-`https://github.com/kosio/weekly-timetable-card`, категория **Dashboard** →
+`https://github.com/vmlinuz82/weekly-timetable-card`, категория **Dashboard** →
 намерете **Weekly Timetable Card** → **Download** → презаредете браузъра с
 `Ctrl+Shift+R`.
 

@@ -161,5 +161,5 @@ window.customCards.push({
   name: "Weekly Timetable Card",
   description: "Weekly timetable for one or more people, in English or Bulgarian",
   preview: true,
-  documentationURL: "https://github.com/kosio/weekly-timetable-card",
+  documentationURL: "https://github.com/vmlinuz82/weekly-timetable-card",
 });
