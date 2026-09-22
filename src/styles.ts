@@ -49,12 +49,14 @@ export const blockStyles = css`
     line-height: 1.3;
     font-weight: 600;
     color: var(--primary-text-color);
+    overflow-wrap: break-word;
   }
 
   .block-subtitle {
     font-size: 11px;
     line-height: 1.3;
     color: var(--secondary-text-color);
+    overflow-wrap: break-word;
   }
 `;
 

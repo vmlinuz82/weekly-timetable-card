@@ -41,6 +41,8 @@ const CLUB_DAY = [
   { activity: "chess", start: "16:30", end: "17:30" },
 ];
 
+const MORNING_ENGLISH = { activity: "english", start: "08:00", end: "08:45" };
+
 const baseConfig = () => ({
   type: "custom:weekly-timetable-card",
   title: "Sami",
@@ -56,7 +58,7 @@ const baseConfig = () => ({
     { slot: 3, start: "09:50", end: "10:35" },
   ],
   schedule: {
-    mon: SCHOOL_DAY("judo"),
+    mon: [MORNING_ENGLISH, ...SCHOOL_DAY("judo")],
     tue: [{ activity: "daycare", end: "16:00" }, { activity: "free", start: "16:00" }],
     wed: SCHOOL_DAY("judo"),
     thu: CLUB_DAY,
@@ -69,6 +71,7 @@ const baseConfig = () => ({
 const card = document.querySelector("weekly-timetable-card");
 const frame = document.querySelector("#frame");
 const controls = document.querySelector(".controls");
+let editor;
 
 function readControls() {
   const value = (name) => controls.querySelector(`[name="${name}"]`).value;
@@ -100,13 +103,17 @@ function apply() {
   frame.style.width = `${state.width}px`;
   document.documentElement.dataset.theme = state.theme;
   controls.querySelector("#width-readout").textContent = `${state.width}px`;
+
+  if (editor) {
+    editor.hass = card.hass;
+  }
 }
 
 controls.addEventListener("input", apply);
 controls.addEventListener("change", apply);
 apply();
 
-const editor = document.createElement("weekly-timetable-card-editor");
+editor = document.createElement("weekly-timetable-card-editor");
 editor.hass = card.hass;
 editor.setConfig(baseConfig());
 editor.addEventListener("config-changed", (event) => {

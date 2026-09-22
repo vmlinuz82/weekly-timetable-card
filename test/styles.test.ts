@@ -38,9 +38,26 @@ describe("compact density coverage", () => {
   });
 });
 
+const hasProperty = (selector: string, property: string): boolean => {
+  const selectorPattern = selector.replace(/[[\]().*+?^$|{}\\]/g, "\\$&");
+  // Match selector followed by { and eventually the property before the next selector
+  const pattern = new RegExp(`${selectorPattern}\\s*\\{[^}]*${property}[^}]*\\}`);
+  return pattern.test(css);
+};
+
 describe("the matcher itself fails on a renamed selector", () => {
   it("does not match a selector that merely contains the name", () => {
     // Guards the guard: proves hasRule is stricter than a substring check.
     expect(hasRule('[data-density="compact"] .grid-head-does-not-exist')).toBe(false);
+  });
+});
+
+describe("block text overflow handling", () => {
+  it("wraps block titles to prevent overflow", () => {
+    expect(hasProperty(".block-title", "overflow-wrap"), "block-title must have overflow-wrap").toBe(true);
+  });
+
+  it("wraps block subtitles to prevent overflow", () => {
+    expect(hasProperty(".block-subtitle", "overflow-wrap"), "block-subtitle must have overflow-wrap").toBe(true);
   });
 });
