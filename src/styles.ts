@@ -147,10 +147,6 @@ export const cardStyles = css`
     gap: 6px;
     padding: 6px;
   }
-  [data-density="compact"] .block {
-    padding: 5px 7px;
-    gap: 6px;
-  }
   /* Below the full threshold the two columns stop paying for themselves: a
      ~129px day column leaves the title about 35px, and it shreds into two or
      three characters per line. Stack the block internally instead — the time on
@@ -161,6 +157,7 @@ export const cardStyles = css`
   [data-density="compact"] .block {
     flex-direction: column;
     align-items: stretch;
+    padding: 5px 7px;
     gap: 2px;
   }
   [data-density="compact"] .block-time {

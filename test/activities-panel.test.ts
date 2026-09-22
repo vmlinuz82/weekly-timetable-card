@@ -22,6 +22,24 @@ function mount(source: unknown = raw) {
   return { config, commit, host };
 }
 
+/**
+ * The config shape the editor holds the moment the author clears the title
+ * field: normalised once at load, then mutated in memory and never passed
+ * through normaliseConfig again, so its own id fallback does not apply.
+ */
+function mountBlankTitle() {
+  const config = normaliseConfig(raw);
+  const blanked: CardConfig = {
+    ...config,
+    activities: [{ ...config.activities[0]!, title: "" }, config.activities[1]!],
+  };
+  const commit = vi.fn<(next: CardConfig) => void>();
+  const host = renderToHost(
+    renderActivitiesPanel({ config: blanked, strings: en, hass: undefined, commit }),
+  );
+  return { commit, host };
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -157,20 +175,20 @@ describe("renderActivitiesPanel", () => {
   });
 
   it("shows the id in the preview chip when the in-editor title is blank", () => {
-    // Not normaliseConfig's fallback: this is the config shape the editor holds
-    // the moment the author clears the title field, which never re-normalises.
-    const config = normaliseConfig(raw);
-    const blanked: CardConfig = {
-      ...config,
-      activities: [{ ...config.activities[0]!, title: "" }, config.activities[1]!],
-    };
-    const host = renderToHost(
-      renderActivitiesPanel({ config: blanked, strings: en, hass: undefined, commit: vi.fn() }),
-    );
-
+    const { host } = mountBlankTitle();
     expect(host.querySelectorAll(".block-title")[0]!.textContent!.trim()).toBe("english");
     // The input keeps the real stored value, or there is nothing to type into.
     expect(host.querySelectorAll<HTMLInputElement>('[data-field="title"]')[0]!.value).toBe("");
+  });
+
+  it("names the activity in the removal warning when its title is blank", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const { host } = mountBlankTitle();
+    host.querySelectorAll<HTMLButtonElement>('[data-action="remove-activity"]')[0]!.click();
+
+    // Otherwise the dialog reads as if the activity had no name at all.
+    expect(confirmSpy).toHaveBeenCalledOnce();
+    expect(confirmSpy.mock.calls[0]![0]).toContain("english");
   });
 
   it("edits the second row's subtitle without touching the first", () => {

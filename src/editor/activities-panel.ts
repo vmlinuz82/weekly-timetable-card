@@ -19,7 +19,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
   const onRemove = (index: number, activity: Activity) => {
     const uses = countActivityUses(config, activity.id);
     if (uses > 0) {
-      const message = `${strings.editor.activityInUse(activity.title, uses)} ${
+      const message = `${strings.editor.activityInUse(activityTitle(activity), uses)} ${
         strings.editor.confirmRemoveActivity
       }`;
       if (!window.confirm(message)) return;
