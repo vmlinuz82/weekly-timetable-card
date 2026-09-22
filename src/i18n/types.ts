@@ -43,6 +43,7 @@ export interface EditorStrings {
   moveUp: string;
   moveDown: string;
   moveToDay: string;
+  clearTime: string;
   remove: string;
   dragHint: string;
 
