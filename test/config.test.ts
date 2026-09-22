@@ -7,7 +7,7 @@ import {
   normaliseTimeString,
 } from "../src/config.js";
 
-const minimal = { schedule: {} };
+const minimal = {};
 
 describe("normaliseTimeString", () => {
   it("passes through a plain time", () => {
@@ -38,6 +38,11 @@ describe("normaliseTimeString", () => {
 });
 
 describe("normaliseConfig", () => {
+  it("treats a fully empty or undefined config as valid, rendering an empty week", () => {
+    expect(() => normaliseConfig(undefined)).not.toThrow();
+    expect(normaliseConfig({}).schedule.mon).toEqual([]);
+  });
+
   it("throws when activities is present but not a list", () => {
     expect(() => normaliseConfig({ ...minimal, activities: "no" })).toThrow(/activities/);
   });
@@ -175,6 +180,11 @@ describe("normaliseConfig", () => {
 });
 
 describe("getStubConfig", () => {
+  it("titles the stub with the example subject's name", () => {
+    const config = getStubConfig();
+    expect(config.title).toBe("Sami");
+  });
+
   it("builds a Monday-to-Friday week regardless of first_weekday", () => {
     const config = getStubConfig({ locale: { first_weekday: "sunday" } });
     expect(config.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);

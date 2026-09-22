@@ -31,6 +31,9 @@ const base = (): CardConfig =>
         { activity: "judo", start: "17:30", end: "18:30" },
       ],
       tue: [{ activity: "english" }],
+      // Outside `days`, so it stays in every fixture as a check that a
+      // mutation on the listed days never touches a day the card omits.
+      sat: [{ activity: "judo" }],
     },
   });
 
@@ -45,10 +48,18 @@ function immutable(run: (config: CardConfig) => CardConfig): CardConfig {
 }
 
 describe("updateCard", () => {
-  it("patches card-level fields", () => {
+  it("patches card-level fields without touching fields outside the patch", () => {
     const next = immutable((config) => updateCard(config, { layout: "grid", title: "X" }));
     expect(next.layout).toBe("grid");
     expect(next.title).toBe("X");
+    expect(next.schedule).toEqual(base().schedule);
+  });
+
+  it("narrowing days preserves the full schedule, so narrowing stays reversible", () => {
+    const config = base();
+    const next = updateCard(config, { days: ["mon"] });
+    expect(next.days).toEqual(["mon"]);
+    expect(next.schedule).toEqual(config.schedule);
   });
 });
 
@@ -61,6 +72,8 @@ describe("blocks", () => {
       { activity: "english" },
       { activity: "judo", end: "16:00" },
     ]);
+    // A day outside `days` must survive a mutation on a listed day untouched.
+    expect(next.schedule.sat).toEqual([{ activity: "judo" }]);
   });
 
   it("patches a block's activity", () => {
@@ -112,6 +125,8 @@ describe("moving blocks", () => {
     const next = moveBlock(base(), { day: "mon", index: 0 }, { day: "tue", index: 0 });
     expect(next.schedule.mon!.map((block) => block.activity)).toEqual(["judo"]);
     expect(next.schedule.tue!.map((block) => block.activity)).toEqual(["english", "english"]);
+    // A cross-day move touches only its two days, not a day outside `days`.
+    expect(next.schedule.sat).toEqual([{ activity: "judo" }]);
   });
 
   it("clamps a target index past the end", () => {
@@ -161,7 +176,7 @@ describe("activities", () => {
 
   it("counts uses across every day", () => {
     expect(countActivityUses(base(), "english")).toBe(2);
-    expect(countActivityUses(base(), "judo")).toBe(1);
+    expect(countActivityUses(base(), "judo")).toBe(2);
     expect(countActivityUses(base(), "missing")).toBe(0);
   });
 

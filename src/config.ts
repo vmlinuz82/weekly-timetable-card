@@ -151,8 +151,10 @@ const STUB_ACTIVITIES: Record<Lang, Activity[]> = {
   ],
 };
 
-// A name needs no translation, so both languages show the same example.
-const STUB_TITLE: Record<Lang, string> = { en: "Sami", bg: "Sami" };
+// The stub demonstrates a complete config, and with one timetable per card the
+// title is where the subject's name goes. A name needs no translation, so
+// both languages show the same one.
+const STUB_TITLE = "Sami";
 
 /**
  * `first_weekday` is deliberately not applied here: a Sunday-first rotation of a
@@ -170,7 +172,7 @@ export function getStubConfig(hass?: Hass): CardConfig {
 
   return {
     type: CARD_TYPE,
-    title: STUB_TITLE[lang],
+    title: STUB_TITLE,
     layout: "blocks",
     days: [...DEFAULT_DAYS],
     language: "auto",
