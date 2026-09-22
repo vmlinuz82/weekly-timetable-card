@@ -1,8 +1,8 @@
 # Step 9 — verification in a real Home Assistant
 
-Everything else in this project is verified automatically (259 tests) or was
-checked by eye in the `dev/` harness. This file covers the one thing neither can
-reach: how the card behaves inside a real Home Assistant.
+Everything else in this project is verified automatically by the suite
+(`npm test`) or was checked by eye in the `dev/` harness. This file covers the
+one thing neither can reach: how the card behaves inside a real Home Assistant.
 
 It needs a logged-in HA session, so it is a person's job rather than an agent's.
 It takes about five minutes.
@@ -15,7 +15,7 @@ bundle:
 | Thing | Confirmed |
 |---|---|
 | Bundle is self-contained | No external imports; loads as a Lovelace resource with no import map |
-| Version banner | Prints `WEEKLY-TIMETABLE-CARD v0.1.0` on module load |
+| Version banner | Prints `WEEKLY-TIMETABLE-CARD` and the built version on module load |
 | Card picker registry entry | `{ type: "weekly-timetable-card", name, description, preview: true, documentationURL }` — bare name, because HA prepends `custom:` itself |
 | `getConfigElement()` | Returns a `weekly-timetable-card-editor` that has `setConfig` |
 | `getStubConfig()` | Returns `type: custom:weekly-timetable-card` with one person |
@@ -44,8 +44,10 @@ bump the `?v=` number whenever you replace the file.
    live preview tile showing the example timetable.
    *If it is missing:* the resource did not load — check the browser console for
    a 404 on `/local/weekly-timetable-card.js`.
-2. **Banner.** The console shows `WEEKLY-TIMETABLE-CARD v0.1.0` on page load.
-   *If absent:* Lovelace served a cached copy; bump `?v=`.
+2. **Banner.** The console shows `WEEKLY-TIMETABLE-CARD` followed by a version
+   on page load, and that version matches the release you installed.
+   *If absent, or if it names an older version:* Lovelace served a cached copy;
+   bump `?v=`.
 3. **Editor.** Click the card → Edit. The visual editor opens inside HA's
    dialog, all five tabs work, and an edit survives **Save** and a page reload.
    *This is the check most worth doing* — it is the only one that exercises HA's

@@ -56,10 +56,10 @@ curl -L -o /config/www/weekly-timetable-card.js \
 ```
 
 **Confirm which version is live.** Open the browser console; the card logs its
-version as it loads:
+version as it loads — compare it against the version you just installed:
 
 ```
-WEEKLY-TIMETABLE-CARD v0.0.2
+WEEKLY-TIMETABLE-CARD v0.1.0
 ```
 
 This matters more than it looks. Lovelace caches resources by URL indefinitely,
