@@ -18,10 +18,12 @@ bundle:
 | Version banner | Prints `WEEKLY-TIMETABLE-CARD` and the built version on module load |
 | Card picker registry entry | `{ type: "weekly-timetable-card", name, description, preview: true, documentationURL }` — bare name, because HA prepends `custom:` itself |
 | `getConfigElement()` | Returns a `weekly-timetable-card-editor` that has `setConfig` |
-| `getStubConfig()` | Returns `type: custom:weekly-timetable-card` with one person |
+| `getStubConfig()` | Returns `type: custom:weekly-timetable-card` with a complete example timetable |
 | `getLayoutOptions()` | `{ grid_columns: "full", grid_rows: "auto" }` |
 | `config-changed` event | Fires with `bubbles: true` and `composed: true` (asserted, and the assertion was falsified to prove it bites) |
 | Both layouts, dark mode, 5/7 days, 330px stacked collapse, EN/BG chrome, 12/24-hour times, the editor | All exercised in a real browser |
+| The two-column block (stacked time left, title and subtitle right) | Exercised in a real browser |
+| The activity subtitle, shown under the title | Exercised in a real browser |
 
 ## Install
 
@@ -49,7 +51,7 @@ bump the `?v=` number whenever you replace the file.
    *If absent, or if it names an older version:* Lovelace served a cached copy;
    bump `?v=`.
 3. **Editor.** Click the card → Edit. The visual editor opens inside HA's
-   dialog, all five tabs work, and an edit survives **Save** and a page reload.
+   dialog, all three tabs work, and an edit survives **Save** and a page reload.
    *This is the check most worth doing* — it is the only one that exercises HA's
    own config round-trip.
 4. **Theme.** Switch your HA theme between light and dark. Blocks should stay
@@ -57,7 +59,7 @@ bump the `?v=` number whenever you replace the file.
    literal, not themed — override it with `header_color`).
 5. **Per-user language.** Log in as a second HA user whose profile language
    differs. The same dashboard should render its chrome in that user's language
-   while the activity labels stay exactly as authored.
+   while the activity titles and subtitles stay exactly as authored.
 
 ## If something fails
 

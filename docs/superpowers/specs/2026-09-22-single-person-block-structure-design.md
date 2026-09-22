@@ -259,8 +259,11 @@ configuration must be rewritten by hand anyway, and anyone rewriting it will
 type `title:`, the alias would have been permanent code at the trust boundary
 with no consumer.
 
-A config still using `label` therefore fails loudly — `title` is required — and
-does not silently render blank titles.
+A config still using `label` does not throw and produces no console warning:
+`normaliseActivity` falls back to the activity's id, so the card renders
+`english` where the author wrote `English`. That fallback is visible on the
+card and points the author at the activity to fix, rather than rendering a
+blank title.
 
 ## Visual editor
 
@@ -311,7 +314,7 @@ merge time, not a code decision.
 | Existing dashboard breaks on update | Accepted and chosen deliberately. The rejection names the keys the card does expect, so the error is self-explanatory without a migration guide. |
 | Two-column blocks change grid row heights and compact-tier spacing | Verified in a browser in the dev harness, not by assertion — jsdom does not resolve adopted stylesheets, so `test/styles.test.ts` can only assert that a rule exists, not what it computes to. |
 | The stacked time column is narrow at phone widths | The time column is content-sized, and times are fixed-width strings; the words `until`/`след` are the widest content and set the floor. Checked at 330px stacked. |
-| Renaming `label` breaks the activity palette silently | `title` is required by `normaliseConfig`, so a config still using `label` fails loudly rather than rendering blank titles. |
+| Renaming `label` breaks the activity palette silently | `normaliseActivity` falls back to the activity's id when `title` is missing, so a config still using `label` renders the id (e.g. `english`) instead of a blank title — visible on the card and pointing the author at the activity to fix. |
 
 ## Testing
 
