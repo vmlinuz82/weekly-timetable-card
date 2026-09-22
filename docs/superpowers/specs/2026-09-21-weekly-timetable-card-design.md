@@ -266,8 +266,8 @@ applied as a `data-density` attribute on the root; CSS keys off that attribute.
 Each activity carries one base colour. Fill and border are derived so a single
 config renders as light pastels on a light theme and muted chips on a dark one:
 
-- fill: `color-mix(in srgb, var(--activity-color) 14%, var(--card-background-color))`
-- border: `color-mix(in srgb, var(--activity-color) 35%, var(--card-background-color))`
+- fill: `color-mix(in srgb, var(--activity-color) 35%, var(--card-background-color))`
+- border: `color-mix(in srgb, var(--activity-color) 60%, var(--card-background-color))`
 - label text: `var(--primary-text-color)`
 - time text: `var(--secondary-text-color)`
 

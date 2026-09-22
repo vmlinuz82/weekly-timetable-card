@@ -61,10 +61,10 @@ describe("contrastTextColor", () => {
 describe("activity colour derivation", () => {
   it("mixes the activity colour into the card background so both themes work", () => {
     expect(activityFill("#3b82f6")).toBe(
-      "color-mix(in srgb, #3b82f6 14%, var(--card-background-color, #ffffff))",
+      "color-mix(in srgb, #3b82f6 35%, var(--card-background-color, #ffffff))",
     );
     expect(activityBorder("#3b82f6")).toBe(
-      "color-mix(in srgb, #3b82f6 35%, var(--card-background-color, #ffffff))",
+      "color-mix(in srgb, #3b82f6 60%, var(--card-background-color, #ffffff))",
     );
   });
 });
