@@ -214,7 +214,8 @@ internally**: `flex-direction: column`, with `.block-time` becoming a row so the
 two times sit side by side on one line above the text, which then gets the full
 block width. Two columns do not survive a ~129px day column — the title is left
 about 35px and shreds into two or three characters per line. This also raises
-`DENSITY_FULL_MIN` from 110 to 150, so the compact tier now begins where the two
+`DENSITY_FULL_MIN` from 110 to 150 and `DENSITY_COMPACT_MIN` from 72 to 110, so
+each tier now begins where the two
 columns stop working rather than where the old single-column block did.
 
 The stacked tier is untouched: there each day spans the card's full width, where

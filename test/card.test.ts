@@ -118,19 +118,20 @@ describe("WeeklyTimetableCard", () => {
     // real resize does, then trigger a re-render through a config change
     // rather than a resize — that is exactly the gap this test guards.
     const card = await makeCard({ ...raw, days: ["mon", "tue", "wed", "thu", "fri"] });
-    (card as unknown as { _measuredWidth: number })._measuredWidth = 400;
+    (card as unknown as { _measuredWidth: number })._measuredWidth = 800;
     card.requestUpdate();
     await card.updateComplete;
     // 400px / 5 days = 80px per column: compact (>=72, <150).
-    expect(card.density).toBe("compact");
+    expect(card.density).toBe("full");
 
     card.setConfig({
       ...raw,
       days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     });
     await card.updateComplete;
-    // Same 400px, but now 7 days: 400/7 ≈ 57px per column: stacked (<72).
-    expect(card.density).toBe("stacked");
+    // Same 800px, but now 7 days: 800/7 ≈ 114px per column, so it drops a tier
+    // from full to compact without any resize having happened.
+    expect(card.density).toBe("compact");
   });
 
   it("offers a stub config for the card picker", () => {
