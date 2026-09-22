@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { addMinutes, formatTime, localeUsesHour12, resolveHour12 } from "../src/time.js";
 
-const flat = (value: string) => value.replace(/ /g, " ");
+/**
+ * Since ICU 72, `Intl` separates the time from AM/PM with U+202F (narrow
+ * no-break space) rather than U+0020 — and ICU 76 reverted it. Node 22.x has
+ * shipped both, and all three workflows pin a floating `node-version: 22`, so
+ * the assertions below must accept either. The class holds U+0020 and U+202F —
+ * indistinguishable on screen, so check the bytes before editing this line.
+ */
+const flat = (value: string) => value.replace(/[  ]/g, " ");
 
 describe("localeUsesHour12", () => {
   it("is true for US English and false for Bulgarian and British English", () => {

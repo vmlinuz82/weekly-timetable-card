@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { findActivity, slugifyActivityId, uniqueActivityId } from "../src/activity.js";
+import {
+  activityTitle,
+  findActivity,
+  slugifyActivityId,
+  uniqueActivityId,
+} from "../src/activity.js";
 import type { Activity } from "../src/types.js";
 
 describe("slugifyActivityId", () => {
@@ -49,5 +54,20 @@ describe("findActivity", () => {
 
   it("returns undefined for an orphaned reference", () => {
     expect(findActivity(activities, "gone")).toBeUndefined();
+  });
+});
+
+describe("activityTitle", () => {
+  it("returns the title when there is one", () => {
+    expect(activityTitle({ id: "english", title: "Английски", color: "#3b82f6" }))
+      .toBe("Английски");
+  });
+
+  it("falls back to the id for a blank or whitespace-only title", () => {
+    // normaliseActivity does this too, but only at config-parse time — the
+    // editor renders its own un-normalised config, where a just-cleared title
+    // is still "" and would otherwise render as nothing at all.
+    expect(activityTitle({ id: "english", title: "", color: "#3b82f6" })).toBe("english");
+    expect(activityTitle({ id: "english", title: "   ", color: "#3b82f6" })).toBe("english");
   });
 });

@@ -14,8 +14,10 @@ import { cardStyles } from "../src/styles.js";
  */
 const css = cardStyles.cssText;
 
+const escapeForRegExp = (text: string): string => text.replace(/[[\]().*+?^$|{}\\]/g, "\\$&");
+
 const hasRule = (selector: string): boolean =>
-  new RegExp(`${selector.replace(/[[\]().*+?^$|{}\\]/g, "\\$&")}\\s*\\{`).test(css);
+  new RegExp(`${escapeForRegExp(selector)}\\s*\\{`).test(css);
 
 describe("compact density coverage", () => {
   it("tightens both layouts, not just blocks", () => {
@@ -23,6 +25,7 @@ describe("compact density coverage", () => {
       '[data-density="compact"] .day-head',
       '[data-density="compact"] .day-body',
       '[data-density="compact"] .block',
+      '[data-density="compact"] .block-time',
       '[data-density="compact"] .block-title',
       '[data-density="compact"] .grid-head',
       '[data-density="compact"] .slot-label',
@@ -38,10 +41,17 @@ describe("compact density coverage", () => {
   });
 });
 
-const hasProperty = (selector: string, property: string): boolean => {
-  const selectorPattern = selector.replace(/[[\]().*+?^$|{}\\]/g, "\\$&");
-  // Match selector followed by { and eventually the property before the next selector
-  const pattern = new RegExp(`${selectorPattern}\\s*\\{[^}]*${property}[^}]*\\}`);
+/**
+ * The value is matched too: asserting the property alone would be satisfied by
+ * `overflow-wrap: normal`, which is the default and the exact regression this
+ * guards against. `[^}]*` confines the search to the selector's own rule block.
+ */
+const hasProperty = (selector: string, property: string, value: string): boolean => {
+  const pattern = new RegExp(
+    `${escapeForRegExp(selector)}\\s*\\{[^}]*${escapeForRegExp(property)}\\s*:\\s*${escapeForRegExp(
+      value,
+    )}\\s*[;}]`,
+  );
   return pattern.test(css);
 };
 
@@ -54,10 +64,22 @@ describe("the matcher itself fails on a renamed selector", () => {
 
 describe("block text overflow handling", () => {
   it("wraps block titles to prevent overflow", () => {
-    expect(hasProperty(".block-title", "overflow-wrap"), "block-title must have overflow-wrap").toBe(true);
+    expect(
+      hasProperty(".block-title", "overflow-wrap", "break-word"),
+      "block-title must have overflow-wrap: break-word",
+    ).toBe(true);
   });
 
   it("wraps block subtitles to prevent overflow", () => {
-    expect(hasProperty(".block-subtitle", "overflow-wrap"), "block-subtitle must have overflow-wrap").toBe(true);
+    expect(
+      hasProperty(".block-subtitle", "overflow-wrap", "break-word"),
+      "block-subtitle must have overflow-wrap: break-word",
+    ).toBe(true);
+  });
+
+  it("is not satisfied by the default value", () => {
+    // Guards the guard, as the hasRule case above does: proves hasProperty
+    // reads the value and not just the property name.
+    expect(hasProperty(".block-title", "overflow-wrap", "normal")).toBe(false);
   });
 });

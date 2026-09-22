@@ -207,9 +207,20 @@ for blocks in the strip. `renderBlocks` never passes it.
 ### Styles
 
 `.block` becomes a two-column layout with the time column sized to its content
-and the text column taking the remainder. The compact density tier tightens both
-columns; stacked mode is unaffected structurally, because it only changes how
-day columns are laid out, not what is inside a block.
+and the text column taking the remainder.
+
+The compact density tier tightens both columns **and stacks the block
+internally**: `flex-direction: column`, with `.block-time` becoming a row so the
+two times sit side by side on one line above the text, which then gets the full
+block width. Two columns do not survive a ~129px day column — the title is left
+about 35px and shreds into two or three characters per line. This also raises
+`DENSITY_FULL_MIN` from 110 to 150, so the compact tier now begins where the two
+columns stop working rather than where the old single-column block did.
+
+The stacked tier is untouched: there each day spans the card's full width, where
+two columns are the right shape. It is unaffected structurally in any case,
+because it only changes how day columns are laid out, not what is inside a
+block.
 
 Two details are **defaults, not requirements** — nothing in the request settles
 them, and the reference screenshot would: the time column's text alignment
@@ -259,11 +270,15 @@ configuration must be rewritten by hand anyway, and anyone rewriting it will
 type `title:`, the alias would have been permanent code at the trust boundary
 with no consumer.
 
-A config still using `label` does not throw and produces no console warning:
-`normaliseActivity` falls back to the activity's id, so the card renders
-`english` where the author wrote `English`. That fallback is visible on the
-card and points the author at the activity to fix, rather than rendering a
-blank title.
+A config still using `label` does not throw: `normaliseActivity` falls back to
+the activity's id, so the card renders `english` where the author wrote
+`English`. That fallback is visible on the card and points the author at the
+activity to fix, rather than rendering a blank title.
+
+The fallback alone was too quiet, though — `people` throws a clear error while
+`label` just rendered raw ids with nothing naming `title`. `normaliseActivity`
+also emits a `console.warn` naming the activity when an entry carries `label`
+and no `title`. A warning, not an alias: `label` is still not accepted.
 
 ## Visual editor
 

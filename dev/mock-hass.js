@@ -118,6 +118,12 @@ editor.hass = card.hass;
 editor.setConfig(baseConfig());
 editor.addEventListener("config-changed", (event) => {
   card.setConfig(event.detail.config);
+  // Feeding the config straight back through setConfig re-normalises it on
+  // every commit, which real Home Assistant does not reliably do. That makes
+  // this harness blind to bugs in un-normalised editor state — a whitespace-only
+  // subtitle and a blank title both looked fine here and were wrong in HA.
+  // Kept as is anyway: it keeps the harness a single source of truth. Verify
+  // anything that depends on normalisation timing in HA, not here.
   editor.setConfig(event.detail.config);
 });
 document.querySelector("#editor-frame").append(editor);

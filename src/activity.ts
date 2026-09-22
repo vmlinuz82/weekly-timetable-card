@@ -24,6 +24,18 @@ export function uniqueActivityId(label: string, existing: readonly string[]): st
   return `${base}-${n}`;
 }
 
+/**
+ * `normaliseActivity` already falls back to the id for a blank title, but it
+ * runs only at config-parse time and the editor renders its own un-normalised
+ * config. Without this at the presentation layer, clearing a title leaves the
+ * preview chip, the palette chip and every block-row option blank — during
+ * exactly the session in which the author is trying to fix it. Never use it for
+ * an `<input>` value: those must show the real stored string, empty or not.
+ */
+export function activityTitle(activity: Activity): string {
+  return activity.title.trim() || activity.id;
+}
+
 export function findActivity(
   activities: readonly Activity[],
   id: string,

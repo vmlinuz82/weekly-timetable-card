@@ -20,8 +20,11 @@ numbered-slot grid. One card, one timetable, configured visually.
   English for another. Times follow their 12/24-hour preference too.
 - **Visual editor** — a button or field for every operation, plus
   tap-to-place: tap an activity, then tap a day to add it there.
-- **Responsive** — full day names, then short ones, then a stacked single column,
-  measured from the card's own width rather than the screen's.
+- **Responsive** — measured from the card's own width rather than the screen's.
+  Wide: full day names and each block's time beside its title. Narrower: short
+  day names, tighter spacing, and the time moves onto its own line above the
+  title so the title keeps the full block width. Narrowest: the week becomes a
+  stacked single column, one day after another.
 - **Theme-aware** — activity colours are mixed into the card background, so one
   configuration works in both light and dark themes.
 

@@ -99,6 +99,12 @@ function normaliseActivity(raw: unknown): Activity | null {
   const source = (raw ?? {}) as Record<string, unknown>;
   const id = typeof source.id === "string" ? source.id.trim() : "";
   if (id.length === 0) return null;
+  // A warning, not an alias: `label` is not accepted. Without this the rename is
+  // the one silent half of the migration — the author fixes the `people` error,
+  // reloads, and sees every title render as a raw id with nothing naming `title`.
+  if (typeof source.label === "string" && typeof source.title !== "string") {
+    console.warn(`weekly-timetable-card: activity "${id}" uses \`label\`, which is now \`title\`.`);
+  }
   const title = typeof source.title === "string" && source.title.trim().length > 0
     ? source.title.trim()
     : id;

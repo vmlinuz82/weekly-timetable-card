@@ -1,5 +1,6 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
+import { activityTitle } from "../activity.js";
 import { activityBorder, activityFill, toHexInputValue } from "../color.js";
 import type { Activity } from "../types.js";
 import {
@@ -26,6 +27,13 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
     commit(removeActivity(config, index));
   };
 
+  // The title and subtitle inputs trim here, at the input site, rather than in
+  // updateActivity, which stays a plain spread: only normaliseConfig trims, and
+  // the editor's in-memory config never passes through it. A whitespace-only
+  // subtitle is truthy, so it would render an empty .block-subtitle — a phantom
+  // line on every block using that activity, including HA's live preview inside
+  // the edit dialog. "   " trims to "", which the renderer already treats as
+  // absent and normaliseConfig drops on the next load.
   return html`
     <div class="panel">
       ${config.activities.map(
@@ -44,7 +52,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
               data-field="title"
               .value=${activity.title}
               @change=${(event: Event) =>
-                commit(updateActivity(config, index, { title: inputValue(event) }))}
+                commit(updateActivity(config, index, { title: inputValue(event).trim() }))}
             />
             <input
               class="grow"
@@ -53,7 +61,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
               placeholder=${strings.editor.activitySubtitle}
               .value=${activity.subtitle ?? ""}
               @change=${(event: Event) =>
-                commit(updateActivity(config, index, { subtitle: inputValue(event) }))}
+                commit(updateActivity(config, index, { subtitle: inputValue(event).trim() }))}
             />
             <button
               class="icon-button"
@@ -106,7 +114,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
               })}
             >
               <div class="block-text">
-                <div class="block-title">${activity.title}</div>
+                <div class="block-title">${activityTitle(activity)}</div>
                 ${activity.subtitle
                   ? html`<div class="block-subtitle">${activity.subtitle}</div>`
                   : nothing}

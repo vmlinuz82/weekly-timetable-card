@@ -28,6 +28,13 @@ export class WeeklyTimetableCardEditor extends LitElement {
 
   private _commit(next: CardConfig): void {
     this._config = next;
+    // A tap-to-place selection survives a re-render by design, including the
+    // re-render that follows deleting the armed activity on the Activities tab.
+    // Nothing on screen still shows it as armed, so the next tap on a day group
+    // would silently append a block referencing an id that no longer exists.
+    if (this._selectedActivity && !next.activities.some((a) => a.id === this._selectedActivity)) {
+      this._selectedActivity = null;
+    }
     fireEvent(this, "config-changed", { config: next });
   }
 

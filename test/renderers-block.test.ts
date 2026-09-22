@@ -14,7 +14,14 @@ const raw = {
 
 const bg = makeContext({ raw, hass: BG_24H });
 const en = makeContext({ raw, hass: EN_12H });
-const flat = (value: string) => value.replace(/ /g, " ");
+/**
+ * Since ICU 72, `Intl` separates the time from AM/PM with U+202F (narrow
+ * no-break space) rather than U+0020 — and ICU 76 reverted it. Node 22.x has
+ * shipped both, and all three workflows pin a floating `node-version: 22`, so
+ * the assertions below must accept either. The class holds U+0020 and U+202F —
+ * indistinguishable on screen, so check the bytes before editing this line.
+ */
+const flat = (value: string) => value.replace(/[  ]/g, " ");
 
 describe("blockTimeLabel", () => {
   it("renders a range", () => {
@@ -91,7 +98,6 @@ describe("renderBlock", () => {
     expect(textOf(host, ".block-subtitle")).toBe("Стая 12");
     expect(host.querySelector(".block-text > .block-title")).not.toBeNull();
     expect(host.querySelector(".block-text > .block-subtitle")).not.toBeNull();
-    expect(host.querySelector(".block-label")).toBeNull();
   });
 
   it("omits the subtitle element when the activity has none", () => {
@@ -102,10 +108,14 @@ describe("renderBlock", () => {
     expect(host.querySelector(".block-subtitle")).toBeNull();
   });
 
-  it("omits the whole time column for a block with no times", () => {
-    const host = renderToHost(renderBlock(bg, { activity: "free" }));
-    expect(host.querySelector(".block-time")).toBeNull();
-    expect(textOf(host, ".block-title")).toBe("Свободен следобед");
+  it("renders the id as the title when the activity's title is blank", () => {
+    const blank = makeContext({
+      raw: { activities: [{ id: "english", title: "", color: "#3b82f6" }], schedule: {} },
+      hass: BG_24H,
+    });
+    const host = renderToHost(renderBlock(blank, { activity: "english" }));
+    expect(textOf(host, ".block-title")).toBe("english");
+    expect(host.querySelector(".block")!.classList.contains("orphan")).toBe(false);
   });
 
   it("omits the time column when asked to hide it", () => {

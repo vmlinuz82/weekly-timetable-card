@@ -1,6 +1,6 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-import { findActivity } from "../activity.js";
+import { activityTitle, findActivity } from "../activity.js";
 import { blockForm } from "../block.js";
 import { activityBorder, activityFill } from "../color.js";
 import { formatTime } from "../time.js";
@@ -89,7 +89,7 @@ export function renderBlock(
           `
         : nothing}
       <div class="block-text">
-        <div class="block-title">${activity ? activity.title : block.activity}</div>
+        <div class="block-title">${activity ? activityTitle(activity) : block.activity}</div>
         ${activity?.subtitle
           ? html`<div class="block-subtitle">${activity.subtitle}</div>`
           : nothing}

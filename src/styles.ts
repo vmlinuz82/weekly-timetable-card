@@ -14,8 +14,13 @@ export const blockStyles = css`
     border-radius: 8px;
     padding: 8px 10px;
     text-align: left;
-    /* The solid fallback is declared first so a browser without color-mix
-       still shows a readable block rather than a transparent one. */
+    /* Not a color-mix fallback. --wtc-block-fill carries a color-mix() value,
+       and if a browser cannot resolve it the declaration below is invalid at
+       computed-value time: background becomes the initial value (transparent),
+       it does not revert to this one — the cascade already chose the later
+       declaration. What this line does cover is a browser with no custom
+       properties at all, where the var() below is unparseable and that whole
+       declaration is dropped at parse time instead, leaving this one to apply. */
     background: var(--secondary-background-color);
     background: var(--wtc-block-fill, var(--secondary-background-color));
     border: 1px solid var(--divider-color);
@@ -145,6 +150,23 @@ export const cardStyles = css`
   [data-density="compact"] .block {
     padding: 5px 7px;
     gap: 6px;
+  }
+  /* Below the full threshold the two columns stop paying for themselves: a
+     ~129px day column leaves the title about 35px, and it shreds into two or
+     three characters per line. Stack the block internally instead — the time on
+     one line, in reading order, above the text at full block width. Verified in
+     the harness at 700px with seven days: all seven stay visible and titles wrap
+     at word boundaries. The stacked tier is deliberately untouched; there each
+     day has the card's full width, where two columns are the right shape. */
+  [data-density="compact"] .block {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+  [data-density="compact"] .block-time {
+    display: flex;
+    gap: 4px;
+    text-align: left;
   }
   [data-density="compact"] .block-time,
   [data-density="compact"] .block-subtitle {

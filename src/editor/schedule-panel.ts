@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
+import { activityTitle } from "../activity.js";
 import { blockForm } from "../block.js";
 import { blockTimeLabel, type TimeLabelContext } from "../renderers/block.js";
 import { resolveLang } from "../i18n/index.js";
@@ -48,7 +49,7 @@ export function renderSchedulePanel(
                   options.selectedActivity === activity.id ? null : activity.id,
                 )}
             >
-              ${activity.title}
+              ${activityTitle(activity)}
             </button>
           `,
         )}
@@ -180,7 +181,7 @@ function renderBlockRow(
         ${config.activities.map(
           (activity) => html`
             <option value=${activity.id} .selected=${activity.id === block.activity}>
-              ${activity.title}
+              ${activityTitle(activity)}
             </option>
           `,
         )}

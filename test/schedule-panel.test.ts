@@ -250,4 +250,30 @@ describe("palette and tap-to-place", () => {
     host.querySelector<HTMLElement>('[data-day="tue"]')!.click();
     expect(commit).not.toHaveBeenCalled();
   });
+
+  it("shows the id in the palette chip and block options when a title is blank", () => {
+    // The config shape the editor holds the moment the author clears the title
+    // field. Without the fallback the chip is an unlabelled button and every
+    // option is empty, so no row says which activity it uses.
+    const config = normaliseConfig(raw);
+    const blanked: CardConfig = {
+      ...config,
+      activities: [{ ...config.activities[0]!, title: "" }, config.activities[1]!],
+    };
+    const host = renderToHost(
+      renderSchedulePanel(
+        { config: blanked, strings: en, hass: undefined, commit: vi.fn() },
+        { selectedActivity: null, onSelectActivity: vi.fn() },
+      ),
+    );
+
+    expect(
+      host.querySelector('[data-palette-activity="english"]')!.textContent!.trim(),
+    ).toBe("english");
+    const options = [
+      ...host.querySelectorAll<HTMLOptionElement>('[data-field="activity"] option'),
+    ];
+    expect(options.find((option) => option.value === "english")!.textContent!.trim())
+      .toBe("english");
+  });
 });

@@ -248,9 +248,14 @@ viewport, since a Lovelace card in a masonry dashboard can be 300px wide on a
 
 | Width per column | Density | Effect |
 |---|---|---|
-| ≥ 110px | `full` | Full day names, normal padding |
-| ≥ 72px | `compact` | Short day names, tightened padding and type |
+| ≥ 150px | `full` | Full day names, normal padding, two-column blocks |
+| ≥ 72px | `compact` | Short day names, tightened padding and type, blocks stacked internally |
 | < 72px | `stacked` | Stacked layout |
+
+The `full` floor was 110px while a block was a single centred column. The
+two-column block gives the title only about half the block's width, so at 110px
+per column titles shredded into two or three characters per line; 150px is where
+the two columns start paying for themselves again.
 
 The threshold depends on a runtime day count, so it is computed in JavaScript and
 applied as a `data-density` attribute on the root; CSS keys off that attribute.

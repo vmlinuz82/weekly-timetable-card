@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   CARD_TYPE,
   DEFAULT_HEADER_COLOR,
@@ -8,6 +8,10 @@ import {
 } from "../src/config.js";
 
 const minimal = {};
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("normaliseTimeString", () => {
   it("passes through a plain time", () => {
@@ -202,6 +206,7 @@ describe("normaliseConfig", () => {
   });
 
   it("does not accept `label` as an alias for `title`", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
     const config = normaliseConfig({
       type: CARD_TYPE,
       schedule: {},
@@ -209,6 +214,33 @@ describe("normaliseConfig", () => {
     });
     // With no title, the id stands in — the author sees the raw id and knows.
     expect(config.activities[0]!.title).toBe("english");
+  });
+
+  it("warns that `label` is now `title`, naming the activity", () => {
+    // Without this the rename is the silent half of the migration: `people`
+    // throws a clear error, `label` renders a raw id and says nothing.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", label: "English", color: "#3b82f6" }],
+    });
+
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0]![0]).toContain("english");
+    expect(warn.mock.calls[0]![0]).toContain("`label`");
+    expect(warn.mock.calls[0]![0]).toContain("`title`");
+  });
+
+  it("does not warn about `label` when a title is present", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", title: "English", label: "English", color: "#3b82f6" }],
+    });
+
+    expect(warn).not.toHaveBeenCalled();
   });
 });
 

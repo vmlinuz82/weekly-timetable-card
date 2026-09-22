@@ -144,6 +144,35 @@ describe("renderActivitiesPanel", () => {
     expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
   });
 
+  it("commits an empty subtitle for a whitespace-only one", () => {
+    const { commit, host } = mount();
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "   ";
+    input.dispatchEvent(new Event("change"));
+
+    // "   " is truthy, so without the trim at the input site the renderer emits
+    // an empty .block-subtitle — a phantom line on every block using this
+    // activity, in the card and in HA's live preview inside the edit dialog.
+    expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
+  });
+
+  it("shows the id in the preview chip when the in-editor title is blank", () => {
+    // Not normaliseConfig's fallback: this is the config shape the editor holds
+    // the moment the author clears the title field, which never re-normalises.
+    const config = normaliseConfig(raw);
+    const blanked: CardConfig = {
+      ...config,
+      activities: [{ ...config.activities[0]!, title: "" }, config.activities[1]!],
+    };
+    const host = renderToHost(
+      renderActivitiesPanel({ config: blanked, strings: en, hass: undefined, commit: vi.fn() }),
+    );
+
+    expect(host.querySelectorAll(".block-title")[0]!.textContent!.trim()).toBe("english");
+    // The input keeps the real stored value, or there is nothing to type into.
+    expect(host.querySelectorAll<HTMLInputElement>('[data-field="title"]')[0]!.value).toBe("");
+  });
+
   it("edits the second row's subtitle without touching the first", () => {
     const { config, commit, host } = mount();
     const input = host.querySelectorAll<HTMLInputElement>('[data-field="subtitle"]')[1]!;

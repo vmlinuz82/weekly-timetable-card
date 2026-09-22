@@ -86,7 +86,7 @@ describe("WeeklyTimetableCard", () => {
       .toBe("Седмична програма");
   });
 
-  it("never renders person tabs", async () => {
+  it("renders no tab strip", async () => {
     const el = document.createElement("weekly-timetable-card") as WeeklyTimetableCard;
     document.body.append(el);
     el.setConfig(getStubConfig());
@@ -121,7 +121,7 @@ describe("WeeklyTimetableCard", () => {
     (card as unknown as { _measuredWidth: number })._measuredWidth = 400;
     card.requestUpdate();
     await card.updateComplete;
-    // 400px / 5 days = 80px per column: compact (>=72, <110).
+    // 400px / 5 days = 80px per column: compact (>=72, <150).
     expect(card.density).toBe("compact");
 
     card.setConfig({

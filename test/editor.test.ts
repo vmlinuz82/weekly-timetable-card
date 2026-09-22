@@ -107,4 +107,41 @@ describe("WeeklyTimetableCardEditor", () => {
     await editor.updateComplete;
     expect(shadow.querySelector(".palette-chip")!.getAttribute("aria-pressed")).toBe("true");
   });
+
+  it("drops a tap-to-place selection when that activity is deleted", async () => {
+    // Nothing on screen shows the deleted activity as armed, so a later tap on
+    // a day group would append a block referencing an id that no longer exists
+    // — an orphan written straight into the saved dashboard.
+    const { editor, events, shadow } = await mount({
+      days: ["mon", "tue"],
+      activities: [
+        { id: "english", title: "Английски", color: "#3b82f6" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+      ],
+      schedule: { mon: [], tue: [] },
+    });
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLButtonElement>('[data-palette-activity="judo"]')!.click();
+    await editor.updateComplete;
+    expect(
+      shadow.querySelector('[data-palette-activity="judo"]')!.getAttribute("aria-pressed"),
+    ).toBe("true");
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="activities"]')!.click();
+    await editor.updateComplete;
+    // `judo` is unused, so removal asks for no confirmation.
+    shadow.querySelectorAll<HTMLButtonElement>('[data-action="remove-activity"]')[1]!.click();
+    await editor.updateComplete;
+    expect(events).toHaveLength(1);
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLElement>('[data-day="mon"]')!.click();
+    await editor.updateComplete;
+
+    expect(events).toHaveLength(1);
+    expect(events[0]!.schedule.mon).toEqual([]);
+  });
 });
