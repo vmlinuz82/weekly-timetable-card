@@ -1,7 +1,7 @@
 # Weekly Timetable Card — single person and block structure
 
 **Date:** 2026-09-22
-**Status:** awaiting review
+**Status:** approved 2026-09-22
 **Supersedes:** parts of [`2026-09-21-weekly-timetable-card-design.md`](2026-09-21-weekly-timetable-card-design.md)
 
 ## Summary
@@ -245,16 +245,18 @@ dashboard shows an error from the moment HACS updates the card until its
 configuration is rewritten.** The README gets a migration section showing the
 before and after shape.
 
-### Flagged for review: the `label` alias
+### Resolved: no `label` alias
 
-The decision to rename `label` to `title` was taken together with accepting
-`label` as a deprecated alias. That alias interacts badly with the clean break
-on `people`: since every existing configuration must be rewritten by hand
-anyway, and anyone rewriting it will type `title:`, the alias would be
-permanent code at the trust boundary with no consumer.
+The rename is clean. `label` is not accepted as a deprecated alias.
 
-**Recommendation: drop the alias and make the rename clean.** Recorded here
-rather than decided, because it reverses half of an explicit instruction.
+The alias was initially specified alongside the rename, then dropped on review:
+it interacts badly with the clean break on `people`. Since every existing
+configuration must be rewritten by hand anyway, and anyone rewriting it will
+type `title:`, the alias would have been permanent code at the trust boundary
+with no consumer.
+
+A config still using `label` therefore fails loudly — `title` is required — and
+does not silently render blank titles.
 
 ## Visual editor
 
