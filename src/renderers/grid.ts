@@ -75,7 +75,7 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
                   (day) => html`
                     <div class=${ctx.today === day ? "grid-cell today" : "grid-cell"}>
                       ${(placements.get(day)!.bySlot.get(slot.slot) ?? []).map((block) =>
-                        renderBlock(ctx, block),
+                        renderBlock(ctx, block, { hideTime: true }),
                       )}
                     </div>
                   `,

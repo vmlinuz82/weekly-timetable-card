@@ -145,4 +145,40 @@ describe("renderGrid", () => {
     );
     expect(textsOf(host, ".slot-label")).toEqual(["08:00–08:45", "08:45–09:30"]);
   });
+
+  it("does not repeat the slot's time inside a block placed on that slot", () => {
+    const ctx = makeContext({
+      raw: {
+        layout: "grid",
+        days: ["mon"],
+        activities: [{ id: "english", title: "Английски", color: "#3b82f6" }],
+        slots: [{ slot: 1, start: "15:20", end: "16:20" }],
+        schedule: { mon: [{ activity: "english", start: "15:20", end: "16:20" }] },
+      },
+      hass: BG_24H,
+    });
+    const host = renderToHost(renderGrid(ctx));
+
+    const cell = host.querySelector(".grid-cell")!;
+    expect(cell.querySelector(".block-title")!.textContent!.trim()).toBe("Английски");
+    expect(cell.querySelector(".block-time")).toBeNull();
+  });
+
+  it("keeps the time on a block in the open-ended strip, which has no row", () => {
+    const ctx = makeContext({
+      raw: {
+        layout: "grid",
+        days: ["mon"],
+        activities: [{ id: "daycare", title: "Занималня", color: "#64748b" }],
+        slots: [{ slot: 1, start: "15:20", end: "16:20" }],
+        schedule: { mon: [{ activity: "daycare", end: "16:00" }] },
+      },
+      hass: BG_24H,
+    });
+    const host = renderToHost(renderGrid(ctx));
+
+    const strip = host.querySelector(".strip-cell")!;
+    expect(strip.querySelector(".block-time-top")!.textContent!.trim()).toBe("до");
+    expect(strip.querySelector(".block-time-bottom")!.textContent!.trim()).toBe("16:00");
+  });
 });
