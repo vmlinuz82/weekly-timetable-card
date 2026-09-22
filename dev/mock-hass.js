@@ -19,13 +19,13 @@ class HaCardStub extends HTMLElement {
 if (!customElements.get("ha-card")) customElements.define("ha-card", HaCardStub);
 
 const ACTIVITIES = [
-  { id: "english", label: "Английски", color: "#3b82f6" },
-  { id: "daycare", label: "Занималня", color: "#64748b" },
-  { id: "break", label: "Почивка и хапване", color: "#94a3b8" },
-  { id: "judo", label: "Джудо", color: "#f97316" },
-  { id: "chess", label: "Шах", color: "#a855f7" },
-  { id: "free", label: "Свободен следобед", color: "#22c55e" },
-  { id: "home", label: "Връщане вкъщи", color: "#22c55e" },
+  { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+  { id: "daycare", title: "Занималня", color: "#64748b" },
+  { id: "break", title: "Почивка и хапване", color: "#94a3b8" },
+  { id: "judo", title: "Джудо", subtitle: "Спортна зала", color: "#f97316" },
+  { id: "chess", title: "Шах", color: "#a855f7" },
+  { id: "free", title: "Свободен следобед", color: "#22c55e" },
+  { id: "home", title: "Връщане вкъщи", color: "#22c55e" },
 ];
 
 const SCHOOL_DAY = (afternoon) => [
@@ -43,48 +43,27 @@ const CLUB_DAY = [
 
 const baseConfig = () => ({
   type: "custom:weekly-timetable-card",
-  title: "Седмична програма",
+  title: "Sami",
   layout: "blocks",
   days: ["mon", "tue", "wed", "thu", "fri"],
   language: "auto",
   highlight_today: true,
   header_color: "#1e3a5f",
   activities: ACTIVITIES,
-  people: [
-    {
-      name: "Sami",
-      emoji: "🥋",
-      color: "#f472b6",
-      slots: [
-        { slot: 1, start: "08:00", end: "08:45" },
-        { slot: 2, start: "08:45", end: "09:30" },
-        { slot: 3, start: "09:50", end: "10:35" },
-      ],
-      schedule: {
-        mon: SCHOOL_DAY("judo"),
-        tue: [{ activity: "daycare", end: "16:00" }, { activity: "free", start: "16:00" }],
-        wed: SCHOOL_DAY("judo"),
-        thu: CLUB_DAY,
-        fri: CLUB_DAY,
-        sat: [{ activity: "judo", start: "10:00", end: "11:30" }],
-        sun: [],
-      },
-    },
-    {
-      name: "Alex",
-      emoji: "🎻",
-      color: "#38bdf8",
-      schedule: {
-        mon: [{ activity: "daycare", end: "16:00" }],
-        tue: SCHOOL_DAY("chess"),
-        wed: [],
-        thu: [{ activity: "free" }],
-        fri: CLUB_DAY,
-        sat: [],
-        sun: [],
-      },
-    },
+  slots: [
+    { slot: 1, start: "08:00", end: "08:45" },
+    { slot: 2, start: "08:45", end: "09:30" },
+    { slot: 3, start: "09:50", end: "10:35" },
   ],
+  schedule: {
+    mon: SCHOOL_DAY("judo"),
+    tue: [{ activity: "daycare", end: "16:00" }, { activity: "free", start: "16:00" }],
+    wed: SCHOOL_DAY("judo"),
+    thu: CLUB_DAY,
+    fri: CLUB_DAY,
+    sat: [{ activity: "judo", start: "10:00", end: "11:30" }],
+    sun: [],
+  },
 });
 
 const card = document.querySelector("weekly-timetable-card");
