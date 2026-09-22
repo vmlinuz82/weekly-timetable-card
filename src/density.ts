@@ -8,7 +8,7 @@ import type { Density } from "./types.js";
  * stacks the block internally instead, giving the title the full block width.
  */
 export const DENSITY_FULL_MIN = 150;
-export const DENSITY_COMPACT_MIN = 72;
+export const DENSITY_COMPACT_MIN = 110;
 
 /**
  * Measured from the card's own width, never the viewport: a Lovelace card in a

@@ -249,12 +249,13 @@ viewport, since a Lovelace card in a masonry dashboard can be 300px wide on a
 | Width per column | Density | Effect |
 |---|---|---|
 | ≥ 150px | `full` | Full day names, normal padding, two-column blocks |
-| ≥ 72px | `compact` | Short day names, tightened padding and type, blocks stacked internally |
-| < 72px | `stacked` | Stacked layout |
+| ≥ 110px | `compact` | Short day names, tightened padding and type, blocks stacked internally |
+| < 110px | `stacked` | Stacked layout |
 
-The `full` floor was 110px while a block was a single centred column. The
-two-column block gives the title only about half the block's width, so at 110px
-per column titles shredded into two or three characters per line; 150px is where
+Both floors were set while a block was a single centred column, where the title
+had the block's whole width. The two-column block gives the title only about half
+of it, so both had to rise. At the old `full` floor of 110px per column titles
+shredded into two or three characters per line; 150px is where
 the two columns start paying for themselves again.
 
 The threshold depends on a runtime day count, so it is computed in JavaScript and
@@ -502,7 +503,7 @@ roots inside a dialog it scrolls itself. See the Removed section.
 | Risk | Mitigation |
 |---|---|
 | HA internal form components change across releases | Avoided outright: the editor uses native form elements themed with HA CSS variables, so there is no dependency on HA's internal components. "Show code editor" remains as a fallback |
-| Seven columns are dense on a tablet | Density tiers with authored short day names; stacked layout below 72px per column |
+| Seven columns are dense on a tablet | Density tiers with authored short day names; stacked layout below 110px per column |
 | ~~Drag-and-drop on touch is fragile~~ | Realised, and worse than predicted: it failed on desktop too, inside HA's dialog. Mitigation held — the buttons and the day dropdown were always the primary route, so removing drag in v0.0.4 lost nothing |
 | Lovelace resource caching hides a deployment | Version banner on load; versioned resource URL documented in the README |
 | HACS filename / repo name mismatch | All three names fixed to `weekly-timetable-card`, asserted in CI |

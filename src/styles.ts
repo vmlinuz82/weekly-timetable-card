@@ -162,7 +162,8 @@ export const cardStyles = css`
   }
   [data-density="compact"] .block-time {
     display: flex;
-    gap: 4px;
+    flex-wrap: wrap;
+    gap: 0 4px;
     text-align: left;
   }
   [data-density="compact"] .block-time,
