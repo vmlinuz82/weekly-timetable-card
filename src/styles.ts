@@ -379,15 +379,20 @@ export const editorStyles = css`
     font-weight: 600;
   }
 
+  /* Home Assistant's card-config dialog gives the editor about 390px. A block
+     row holds seven controls, and the two time inputs alone take ~216px there,
+     so an unconstrained min-width of 0 collapsed the activity select - the one
+     field that says what the row IS - to 18px. Wrap instead of crushing. */
   .row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
   }
 
   .row .grow {
-    flex: 1;
-    min-width: 0;
+    flex: 1 1 7rem;
+    min-width: 7rem;
   }
 
   .icon-button {
