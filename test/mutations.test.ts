@@ -6,7 +6,6 @@ import {
   addPerson,
   addSlot,
   countActivityUses,
-  insertBlock,
   moveBlock,
   moveBlockBy,
   removeActivity,
@@ -42,7 +41,7 @@ const base = (): CardConfig =>
       },
       // Мария carries one `english` block so countActivityUses is actually
       // exercised across people, not just across days. Her `mon` must stay
-      // empty — Task 17's insertBlock test inserts into it.
+      // empty, so tests that need an empty day have one.
       { name: "Мария", schedule: { mon: [], tue: [{ activity: "english" }] } },
     ],
   });
@@ -209,31 +208,6 @@ describe("moving blocks", () => {
     const config = base();
     expect(moveBlockBy(config, 0, "mon", 0, -1)).toBe(config);
     expect(moveBlockBy(config, 0, "mon", 1, 1)).toBe(config);
-  });
-});
-
-describe("insertBlock", () => {
-  it("inserts at the given index", () => {
-    const next = immutable((config) =>
-      insertBlock(config, 0, "mon", 1, { activity: "judo" }),
-    );
-    expect(next.people[0]!.schedule.mon!.map((block) => block.activity)).toEqual([
-      "english", "judo", "judo",
-    ]);
-  });
-
-  it("inserts at the front and clamps past the end", () => {
-    expect(
-      insertBlock(base(), 0, "mon", 0, { activity: "judo" }).people[0]!.schedule.mon![0]!
-        .activity,
-    ).toBe("judo");
-    expect(insertBlock(base(), 0, "mon", 99, { activity: "judo" }).people[0]!.schedule.mon!)
-      .toHaveLength(3);
-  });
-
-  it("works on a day with no blocks yet", () => {
-    const next = insertBlock(base(), 1, "mon", 0, { activity: "judo" });
-    expect(next.people[1]!.schedule.mon!).toEqual([{ activity: "judo" }]);
   });
 });
 

@@ -39,7 +39,7 @@ function mount(source: unknown = raw, personIndex = 0) {
   const host = renderToHost(
     renderPersonPanel(
       { config, strings: en, hass: undefined, commit },
-      { personIndex, selectedActivity: null, onSelectActivity, hoverDay: null },
+      { personIndex, selectedActivity: null, onSelectActivity },
     ),
   );
   return { config, commit, onSelectActivity, host };
@@ -295,7 +295,7 @@ describe("palette and tap-to-place", () => {
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit: vi.fn() },
-        { personIndex: 0, selectedActivity: "judo", onSelectActivity, hoverDay: null },
+        { personIndex: 0, selectedActivity: "judo", onSelectActivity },
       ),
     );
     host.querySelectorAll<HTMLButtonElement>(".palette-chip")[1]!.click();
@@ -309,7 +309,7 @@ describe("palette and tap-to-place", () => {
     const host = renderToHost(
       renderPersonPanel(
         { config, strings: en, hass: undefined, commit },
-        { personIndex: 0, selectedActivity: "judo", onSelectActivity, hoverDay: null },
+        { personIndex: 0, selectedActivity: "judo", onSelectActivity },
       ),
     );
     host.querySelector<HTMLElement>('[data-day="tue"]')!.click();

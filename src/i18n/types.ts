@@ -45,7 +45,7 @@ export interface EditorStrings {
   moveToDay: string;
   clearTime: string;
   remove: string;
-  dragHint: string;
+  placeHint: string;
 
   label: string;
   newActivityLabel: string;

@@ -21,7 +21,7 @@ bundle:
 | `getStubConfig()` | Returns `type: custom:weekly-timetable-card` with one person |
 | `getLayoutOptions()` | `{ grid_columns: "full", grid_rows: "auto" }` |
 | `config-changed` event | Fires with `bubbles: true` and `composed: true` (asserted, and the assertion was falsified to prove it bites) |
-| Both layouts, dark mode, 5/7 days, 330px stacked collapse, EN/BG chrome, 12/24-hour times, the editor, drag-and-drop | All exercised in a real browser |
+| Both layouts, dark mode, 5/7 days, 330px stacked collapse, EN/BG chrome, 12/24-hour times, the editor | All exercised in a real browser |
 
 ## Install
 
@@ -69,7 +69,5 @@ mechanisms is built the way it is, including several that look wrong and are not
   dropdown, so a block sitting in the open-ended strip shows "Not on the grid"
   and its times are displayed but not editable there. Switch to `blocks` layout
   to edit them.
-- Dragging within a day has no insertion indicator yet; the target day
-  highlights, and the ↑/↓ buttons reach every position exactly.
 - Saving from the visual editor rewrites the config in normalised form, which
   makes a hand-curated YAML file more verbose.
