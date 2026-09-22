@@ -226,7 +226,7 @@ function renderDayGroup(
 
   return html`
     <div
-      class="day-group ${options.hoverDay === day ? "drop-target" : ""}"
+      class=${options.hoverDay === day ? "day-group drop-target" : "day-group"}
       data-day=${day}
       @click=${() => {
         if (!options.selectedActivity) return;

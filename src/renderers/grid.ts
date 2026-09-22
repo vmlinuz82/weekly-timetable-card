@@ -19,7 +19,7 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
   const sizing = styleMap({ "--wtc-day-count": String(ctx.days.length) });
 
   const dayHeadCells = ctx.days.map(
-    (day) => html`<div class="grid-head ${ctx.today === day ? "today" : ""}">${dayHeading(ctx, day)}</div>`,
+    (day) => html`<div class=${ctx.today === day ? "grid-head today" : "grid-head"}>${dayHeading(ctx, day)}</div>`,
   );
 
   // `.grid-wrap` owns the shared column tracks (day-count sized from its own
@@ -73,7 +73,7 @@ export function renderGrid(ctx: RenderContext): TemplateResult {
                 `,
                 ...ctx.days.map(
                   (day) => html`
-                    <div class="grid-cell ${ctx.today === day ? "today" : ""}">
+                    <div class=${ctx.today === day ? "grid-cell today" : "grid-cell"}>
                       ${(placements.get(day)!.bySlot.get(slot.slot) ?? []).map((block) =>
                         renderBlock(ctx, block),
                       )}
