@@ -1,0 +1,176 @@
+name: Auto-version on PR merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [master]
+
+permissions:
+  contents: write
+  actions: write
+
+# Serialise: two PRs merging close together must not race to compute the same
+# next version off a stale master.
+concurrency:
+  group: auto-version
+  cancel-in-progress: false
+
+jobs:
+  bump-version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # Check out master's tip, not the pull_request merge ref, because this job
+      # commits the version bump back to master.
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Determine bump type from PR labels
+        id: bump
+        shell: bash
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+
+          bump="patch"
+
+          if echo "$LABELS" | grep -qi 'no-release'; then
+            echo "Label 'no-release' found — skipping version bump."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if echo "$LABELS" | grep -qi 'major'; then
+            bump="major"
+          elif echo "$LABELS" | grep -qi 'minor'; then
+            bump="minor"
+          fi
+
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "Bump type: $bump (labels: $LABELS)"
+
+      - name: Compute next version
+        id: version
+        if: steps.bump.outputs.skip != 'true'
+        shell: bash
+        env:
+          BUMP: ${{ steps.bump.outputs.bump }}
+        run: |
+          set -euo pipefail
+
+          latest_tag=$(
+            git tag --list 'v*' --sort=-v:refname \
+              | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+              | head -1
+          )
+          latest_tag="${latest_tag:-v0.0.0}"
+          version="${latest_tag#v}"
+          IFS='.' read -r major minor patch <<< "$version"
+
+          case "$BUMP" in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            patch) patch=$((patch + 1)) ;;
+          esac
+
+          next_version="${major}.${minor}.${patch}"
+          next_tag="v${next_version}"
+
+          echo "Latest tag  : $latest_tag"
+          echo "Bump type   : $BUMP"
+          echo "Next tag    : $next_tag"
+
+          echo "next_version=$next_version" >> "$GITHUB_OUTPUT"
+          echo "next_tag=$next_tag" >> "$GITHUB_OUTPUT"
+          echo "latest_tag=$latest_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        if: steps.bump.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # src/version.ts is compiled into the committed bundle, so the version has
+      # to be written and the bundle rebuilt BEFORE the tag is created —
+      # otherwise the released file's console banner reports the previous
+      # version, which is the exact failure the banner exists to catch.
+      - name: Bump version and rebuild bundle
+        if: steps.bump.outputs.skip != 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.next_version }}
+        run: |
+          set -euo pipefail
+
+          npm ci
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          printf 'export const CARD_VERSION = "%s";\n' "$VERSION" > src/version.ts
+
+          npm run typecheck
+          npm test
+          npm run build
+
+          # Prove the banner and the bundle carry the new version before we
+          # commit anything.
+          grep -q "CARD_VERSION = \"${VERSION}\"" src/version.ts
+          grep -q "${VERSION}" dist/weekly-timetable-card.js
+          echo "Version written and bundle rebuilt at ${VERSION}"
+
+      - name: Commit, tag and push
+        id: push
+        if: steps.bump.outputs.skip != 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.next_tag }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/version.ts package.json package-lock.json dist/weekly-timetable-card.js
+          git commit -m "Release ${TAG}"
+          git tag "$TAG"
+
+          git push origin master
+          git push origin "$TAG"
+
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        if: steps.bump.outputs.skip != 'true'
+        shell: bash
+        run: |
+          {
+            echo "### Version bump"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Previous | \`${{ steps.version.outputs.latest_tag }}\` |"
+            echo "| Bump | **${{ steps.bump.outputs.bump }}** |"
+            echo "| New tag | \`${{ steps.version.outputs.next_tag }}\` |"
+            echo "| Release commit | \`${{ steps.push.outputs.sha }}\` |"
+            echo ""
+            echo "The release pipeline will start automatically."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # A tag pushed with GITHUB_TOKEN does NOT trigger other workflows
+      # (GitHub's loop prevention), so release.yml's `push: tags` trigger will
+      # not fire for the tag above. Dispatch it explicitly.
+      - name: Trigger release workflow
+        if: steps.bump.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run release.yml \
+            --ref "${{ steps.version.outputs.next_tag }}" \
+            -f tag="${{ steps.version.outputs.next_tag }}"

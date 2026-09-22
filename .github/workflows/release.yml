@@ -3,14 +3,38 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  # auto-version.yml dispatches this explicitly: a tag pushed with GITHUB_TOKEN
+  # does not trigger the `push: tags` path above.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (defaults to the ref this runs on)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 15
+
     steps:
+      - name: Determine ref
+        id: ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "ref=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -22,7 +46,25 @@ jobs:
       - run: npm test
       - run: npm run build
 
+      - name: Bundle must be reproducible and carry the tag's version
+        shell: bash
+        env:
+          REF: ${{ steps.ref.outputs.ref }}
+        run: |
+          set -euo pipefail
+
+          # The committed bundle must match what the sources build.
+          git diff --exit-code -- dist
+
+          # HACS serves this file and Lovelace caches it by URL, so the console
+          # banner is the only quick way to tell which build is live. It has to
+          # agree with the tag being released.
+          version="${REF#v}"
+          grep -q "CARD_VERSION = \"${version}\"" src/version.ts
+          echo "Banner version matches tag: ${version}"
+
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.ref.outputs.ref }}
           files: dist/weekly-timetable-card.js
           generate_release_notes: true

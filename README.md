@@ -159,6 +159,32 @@ loads; it is separate from the minified `dist/weekly-timetable-card.js` that
 `npm run build` produces for release, so the harness stays empty until you run
 `watch` at least once.
 
+## Releases
+
+Releases are cut automatically. Open a pull request against `master`; when it is
+merged, `auto-version.yml` bumps the version, rebuilds the bundle, tags the
+result and triggers `release.yml`, which publishes a GitHub release with
+`dist/weekly-timetable-card.js` attached — the file HACS installs.
+
+The bump size comes from the pull request's labels:
+
+| Label | Effect |
+|---|---|
+| *(none)* | patch — `v1.2.3` → `v1.2.4` |
+| `minor` | `v1.2.3` → `v1.3.0` |
+| `major` | `v1.2.3` → `v2.0.0` |
+| `no-release` | no bump, no tag, no release |
+
+The version lives in three places that must agree: `src/version.ts` (compiled
+into the bundle and printed to the console on load), `package.json`, and the git
+tag. `auto-version.yml` writes all three in one commit and tags that commit, and
+`release.yml` refuses to publish if the tag and the bundle's banner disagree —
+Lovelace caches resources by URL, so the banner is the only quick way to tell
+which build is actually running.
+
+Pushing directly to `master` deliberately does **not** release. Nothing is
+published without a merged pull request.
+
 ## Credits
 
 Inspired by [AyKay35/lovelace-timetable-card](https://github.com/AyKay35/lovelace-timetable-card).
