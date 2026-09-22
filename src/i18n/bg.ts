@@ -13,6 +13,8 @@ export const bg: Strings = {
   until: (time) => `до ${time}`,
   after: (time) => `след ${time}`,
   range: (start, end) => `${start}–${end}`,
+  untilWord: "до",
+  afterWord: "след",
   today: "Днес",
   editor: {
     tabSettings: "Настройки",

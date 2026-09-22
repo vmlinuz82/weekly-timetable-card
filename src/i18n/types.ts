@@ -57,6 +57,9 @@ export interface Strings {
   until: (time: string) => string;
   after: (time: string) => string;
   range: (start: string, end: string) => string;
+  /** The bare word for the stacked time column, where the time is on its own line. */
+  untilWord: string;
+  afterWord: string;
   today: string;
   editor: EditorStrings;
 }

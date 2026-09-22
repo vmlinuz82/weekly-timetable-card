@@ -35,6 +35,31 @@ export function blockTimeLabel(ctx: TimeLabelContext, block: Block): string {
   }
 }
 
+/**
+ * The two-line form for the card's left-hand time column. `blockTimeLabel`
+ * above keeps the one-line wording for the editor, which has no room to stack.
+ * Both switch on the same `blockForm()` result: the form is derived in exactly
+ * one place, and only the presentation differs. Letting the two drift is a real
+ * failure mode — the editor's copy once dropped the until/after wording
+ * entirely, making an end-only and a start-only block indistinguishable.
+ */
+export function blockTimeLines(
+  ctx: TimeLabelContext,
+  block: Block,
+): { top: string; bottom: string } | null {
+  const fmt = (value: string) => formatTime(value, ctx.hass, ctx.lang);
+  switch (blockForm(block)) {
+    case "range":
+      return { top: fmt(block.start!), bottom: fmt(block.end!) };
+    case "until":
+      return { top: ctx.strings.untilWord, bottom: fmt(block.end!) };
+    case "after":
+      return { top: ctx.strings.afterWord, bottom: fmt(block.start!) };
+    case "bare":
+      return null;
+  }
+}
+
 export function renderBlock(ctx: RenderContext, block: Block): TemplateResult {
   const activity = findActivity(ctx.config.activities, block.activity);
   const time = blockTimeLabel(ctx, block);

@@ -13,6 +13,8 @@ export const en: Strings = {
   until: (time) => `until ${time}`,
   after: (time) => `after ${time}`,
   range: (start, end) => `${start}–${end}`,
+  untilWord: "until",
+  afterWord: "after",
   today: "Today",
   editor: {
     tabSettings: "Settings",

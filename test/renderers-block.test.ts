@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { blockTimeLabel, renderBlock } from "../src/renderers/block.js";
+import { blockTimeLabel, blockTimeLines, renderBlock } from "../src/renderers/block.js";
 import { BG_24H, EN_12H, makeContext, renderToHost, textOf } from "./helpers.js";
 
 const raw = {
@@ -75,5 +75,46 @@ describe("renderBlock", () => {
     const block = host.querySelector(".block")!;
     expect(block.classList.contains("orphan")).toBe(false);
     expect(block.hasAttribute("title")).toBe(false);
+  });
+});
+
+describe("blockTimeLines", () => {
+  it("stacks start over end for a range", () => {
+    expect(blockTimeLines(bg, { activity: "english", start: "15:20", end: "16:20" })).toEqual({
+      top: "15:20",
+      bottom: "16:20",
+    });
+  });
+
+  it("puts the wording word above the time for an end-only block", () => {
+    expect(blockTimeLines(bg, { activity: "daycare", end: "16:00" })).toEqual({
+      top: "до",
+      bottom: "16:00",
+    });
+    const lines = blockTimeLines(en, { activity: "daycare", end: "16:00" })!;
+    expect(lines.top).toBe("until");
+    expect(flat(lines.bottom)).toBe("4:00 PM");
+  });
+
+  it("puts the wording word above the time for a start-only block", () => {
+    expect(blockTimeLines(bg, { activity: "home", start: "18:30" })).toEqual({
+      top: "след",
+      bottom: "18:30",
+    });
+    const lines = blockTimeLines(en, { activity: "home", start: "18:30" })!;
+    expect(lines.top).toBe("after");
+    expect(flat(lines.bottom)).toBe("6:30 PM");
+  });
+
+  it("returns null for a block with no times at all", () => {
+    expect(blockTimeLines(bg, { activity: "free" })).toBeNull();
+  });
+
+  it("keeps an end-only and a start-only block distinguishable", () => {
+    // The wording word is the only thing separating them once the time is on
+    // its own line — this is the assertion that fails if it is ever dropped.
+    expect(blockTimeLines(bg, { activity: "english", end: "16:00" })).not.toEqual(
+      blockTimeLines(bg, { activity: "english", start: "16:00" }),
+    );
   });
 });
