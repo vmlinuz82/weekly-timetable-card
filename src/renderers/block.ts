@@ -47,7 +47,7 @@ export function renderBlock(ctx: RenderContext, block: Block): TemplateResult {
 
   return html`
     <div
-      class="block ${activity ? "" : "orphan"}"
+      class=${activity ? "block" : "block orphan"}
       style=${styleMap(styles)}
       title=${activity ? nothing : ctx.strings.editor.orphanActivity}
     >

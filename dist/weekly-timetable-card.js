@@ -574,7 +574,7 @@ var Ge=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var g=(r,t,e
     </div>
   `}var Dr=5;function Tr(r){let t=r&&r.nodeType!==Node.ELEMENT_NODE?r.parentElement:r,e=t?.closest("[data-drag-block]");if(e){let i=e.dataset.dragDay,s=Number(e.dataset.dragBlock);return L(i)&&Number.isInteger(s)&&s>=0?{kind:"block",day:i,index:s}:null}let n=t?.closest("[data-palette-activity]")?.dataset.paletteActivity;return n?{kind:"activity",activityId:n}:null}function Rr(r,t){for(let e=0;e<r.length;e+=1){let o=r[e];if(t<(o.top+o.bottom)/2)return e}return r.length}function Lr(r,t,e){return r.kind!=="block"||r.day!==t?e:e>r.index?e-1:e}var _t=class{constructor(t,e){this.getRoot=t;this.callbacks=e;this._source=null;this._origin={x:0,y:0};this._active=!1;this._hoverDay=null;this.onPointerDown=t=>{if(!t.isPrimary||t.button!==0)return;let e=Tr(t.target);e&&(this._source=e,this._origin={x:t.clientX,y:t.clientY},this._active=!1,window.addEventListener("pointermove",this._onPointerMove),window.addEventListener("pointerup",this._onPointerUp),window.addEventListener("pointercancel",this._onPointerCancel))};this._onPointerMove=t=>{if(!this._source)return;if(!this._active){let o=t.clientX-this._origin.x,n=t.clientY-this._origin.y;if(Math.hypot(o,n)<Dr)return;this._active=!0}t.preventDefault();let e=this._dayUnder(t.clientX,t.clientY);e!==this._hoverDay&&(this._hoverDay=e,this.callbacks.requestUpdate())};this._onPointerUp=t=>{let e=this._source,o=this._active;if(this._teardown(),!e||!o)return;let n=this._groupUnder(t.clientX,t.clientY),i=n?.dataset.day;if(!n||!L(i))return;let s=[...n.querySelectorAll("[data-block-index]")].map(l=>{let c=l.getBoundingClientRect();return{top:c.top,bottom:c.bottom}}),a=Lr(e,i,Rr(s,t.clientY));if(e.kind==="block"){this.callbacks.moveBlock({day:e.day,index:e.index},{day:i,index:a});return}this.callbacks.insertActivity(e.activityId,{day:i,index:a})};this._onPointerCancel=()=>{this._teardown()}}get active(){return this._active}get hoverDay(){return this._hoverDay}cancel(){this._teardown()}_teardown(){window.removeEventListener("pointermove",this._onPointerMove),window.removeEventListener("pointerup",this._onPointerUp),window.removeEventListener("pointercancel",this._onPointerCancel);let t=this._active||this._hoverDay!==null;this._source=null,this._active=!1,this._hoverDay=null,t&&this.callbacks.requestUpdate()}_groupUnder(t,e){return(this.getRoot()?.elementFromPoint?.(t,e)??(typeof document.elementFromPoint=="function"?document.elementFromPoint(t,e):null))?.closest("[data-day]")??null}_dayUnder(t,e){let o=this._groupUnder(t,e)?.dataset.day;return L(o)?o:null}};function je(r,t,e){r.dispatchEvent(new CustomEvent(t,{detail:e,bubbles:!0,composed:!0}))}function I(r){let t=!!r.start,e=!!r.end;return t&&e?"range":e?"until":t?"after":"bare"}function Yt(r,t){let e=o=>Q(o,r.hass,r.lang);switch(I(t)){case"range":return r.strings.range(e(t.start),e(t.end));case"until":return r.strings.until(e(t.end));case"after":return r.strings.after(e(t.start));case"bare":return""}}function rt(r,t){let e=Ce(r.config.activities,t.activity),o=Yt(r,t),n=e?{"--wtc-block-fill":pt(e.color),"--wtc-block-border":ut(e.color)}:{};return p`
     <div
-      class="block ${e?"":"orphan"}"
+      class=${e?"block":"block orphan"}
       style=${v(n)}
       title=${e?h:r.strings.editor.orphanActivity}
     >
@@ -713,7 +713,7 @@ var Ge=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var g=(r,t,e
     </div>
   `}function Mr(r,t,e,o){let{config:n,strings:i,commit:s}=r,{personIndex:a}=t,l=e.schedule[o]??[],c=n.activities[0]?.id;return p`
     <div
-      class="day-group ${t.hoverDay===o?"drop-target":""}"
+      class=${t.hoverDay===o?"day-group drop-target":"day-group"}
       data-day=${o}
       @click=${()=>{t.selectedActivity&&(s(Ft(n,a,o,{activity:t.selectedActivity})),t.onSelectActivity(null))}}
     >
@@ -960,13 +960,13 @@ var Ge=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var g=(r,t,e
       ${r.days.map(t=>jr(r,t))}
     </div>
   `}function jr(r,t){let e=r.person.schedule[t]??[];return p`
-    <section class="day ${r.today===t?"today":""}">
+    <section class=${r.today===t?"day today":"day"}>
       <header class="day-head">${Gt(r,t)}</header>
       <div class="day-body">
         ${e.length>0?e.map(o=>rt(r,o)):p`<div class="empty">${r.strings.editor.noBlocks}</div>`}
       </div>
     </section>
-  `}function ze(r){let{config:t,hass:e,density:o,now:n}=r,i=Math.min(Math.max(r.personIndex,0),t.people.length-1),s=t.people[i],a=w(t,e);return{config:t,person:s,days:Z(t,s),strings:mt(a),lang:a,hass:e,density:o,today:t.highlight_today?ve(n):null}}function Ve(r,t){let e=new Map,o=[];for(let n of t){let i=I(n)==="range"?r.find(a=>a.start===n.start&&a.end===n.end):void 0;if(!i){o.push(n);continue}let s=e.get(i.slot);s?s.push(n):e.set(i.slot,[n])}return{bySlot:e,loose:o}}function qe(r){let t=[...r.person.slots??[]].sort((s,a)=>s.slot-a.slot),e=new Map;for(let s of r.days)e.set(s,Ve(t,r.person.schedule[s]??[]));let o=r.days.some(s=>e.get(s).loose.length>0),n=v({"--wtc-day-count":String(r.days.length)}),i=r.days.map(s=>p`<div class="grid-head ${r.today===s?"today":""}">${Gt(r,s)}</div>`);return p`
+  `}function ze(r){let{config:t,hass:e,density:o,now:n}=r,i=Math.min(Math.max(r.personIndex,0),t.people.length-1),s=t.people[i],a=w(t,e);return{config:t,person:s,days:Z(t,s),strings:mt(a),lang:a,hass:e,density:o,today:t.highlight_today?ve(n):null}}function Ve(r,t){let e=new Map,o=[];for(let n of t){let i=I(n)==="range"?r.find(a=>a.start===n.start&&a.end===n.end):void 0;if(!i){o.push(n);continue}let s=e.get(i.slot);s?s.push(n):e.set(i.slot,[n])}return{bySlot:e,loose:o}}function qe(r){let t=[...r.person.slots??[]].sort((s,a)=>s.slot-a.slot),e=new Map;for(let s of r.days)e.set(s,Ve(t,r.person.schedule[s]??[]));let o=r.days.some(s=>e.get(s).loose.length>0),n=v({"--wtc-day-count":String(r.days.length)}),i=r.days.map(s=>p`<div class=${r.today===s?"grid-head today":"grid-head"}>${Gt(r,s)}</div>`);return p`
     <div class="grid-wrap" style=${n}>
       ${t.length===0?p`
             <div class="grid-heads">
@@ -993,7 +993,7 @@ var Ge=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var g=(r,t,e
                     ${r.strings.range(Q(s.start,r.hass,r.lang),Q(s.end,r.hass,r.lang))}
                   </div>
                 `,...r.days.map(a=>p`
-                    <div class="grid-cell ${r.today===a?"today":""}">
+                    <div class=${r.today===a?"grid-cell today":"grid-cell"}>
                       ${(e.get(a).bySlot.get(s.slot)??[]).map(l=>rt(r,l))}
                     </div>
                   `)])}
