@@ -52,7 +52,7 @@ const baseConfig = () => ({
   activities: ACTIVITIES,
   people: [
     {
-      name: "Иван",
+      name: "Sami",
       emoji: "🥋",
       color: "#f472b6",
       slots: [
@@ -71,7 +71,7 @@ const baseConfig = () => ({
       },
     },
     {
-      name: "Мария",
+      name: "Alex",
       emoji: "🎻",
       color: "#38bdf8",
       schedule: {
