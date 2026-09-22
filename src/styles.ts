@@ -57,37 +57,6 @@ export const cardStyles = css`
     color: var(--primary-text-color);
   }
 
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid var(--divider-color);
-    border-radius: 999px;
-    background: var(--card-background-color);
-    color: var(--primary-text-color);
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .tab[aria-selected="true"] {
-    border-color: var(--wtc-accent, var(--primary-color));
-    background: color-mix(
-      in srgb,
-      var(--wtc-accent, var(--primary-color)) 14%,
-      var(--card-background-color, #ffffff)
-    );
-    font-weight: 600;
-  }
-
   .week {
     display: grid;
     grid-template-columns: repeat(var(--wtc-day-count, 5), minmax(0, 1fr));

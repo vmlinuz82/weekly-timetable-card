@@ -101,7 +101,6 @@ export class WeeklyTimetableCard extends LitElement {
     const cardStyle = styleMap({
       "--wtc-header-color": config.header_color,
       "--wtc-header-text": contrastTextColor(config.header_color),
-      "--wtc-accent": "var(--primary-color)",
     });
 
     return html`
