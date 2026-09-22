@@ -106,6 +106,34 @@ describe("renderGrid", () => {
     expect(host.querySelector(".strip")).not.toBeNull();
   });
 
+  it("marks today's column header, not only its cells", () => {
+    const host = renderToHost(renderGrid(makeContext({ raw, hass: BG_24H, now: MONDAY })));
+    const marked = [...host.querySelectorAll(".grid-head.today")];
+    expect(marked).toHaveLength(1);
+    expect(marked[0]!.textContent!.trim()).toBe("понеделник");
+  });
+
+  it("still names the day columns when a person has no slots", () => {
+    // The .grid element owns the day headers, and it is replaced by the
+    // no-slots prompt — so the strip above would otherwise sit under
+    // unlabelled columns.
+    const host = renderToHost(
+      renderGrid(
+        makeContext({
+          raw: {
+            ...raw,
+            people: [{ name: "Иван", schedule: { mon: [{ activity: "judo" }], tue: [] } }],
+          },
+          hass: BG_24H,
+          now: MONDAY,
+        }),
+      ),
+    );
+    expect(host.querySelector(".grid")).toBeNull();
+    expect(host.querySelector(".no-slots")).not.toBeNull();
+    expect(textsOf(host, ".grid-heads .grid-head")).toEqual(["понеделник", "вторник"]);
+  });
+
   it("orders slot rows by slot number, not config order", () => {
     const host = renderToHost(
       renderGrid(

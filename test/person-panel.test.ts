@@ -197,6 +197,17 @@ describe("schedule rows", () => {
       .toEqual({ activity: "english" });
   });
 
+  it("shows a block's real times when they match no slot in grid layout", () => {
+    // The slot dropdown replaces the time fields, so without this the block
+    // would read as having no times at all even though they are preserved.
+    const { host } = mount({ ...raw, layout: "grid" });
+    const row = rows(host, "tue")[0]!;
+    expect(row.querySelector<HTMLSelectElement>('[data-field="slot"]')!.value).toBe("");
+    // The panel renders with the English table, and the wording matters: a
+    // bare "16:00" would not say whether it is a start or an end.
+    expect(row.querySelector(".hint")!.textContent!.trim()).toBe("until 16:00");
+  });
+
   it("reorders with the move buttons and disables them at the ends", () => {
     const { commit, host } = mount();
     const first = rows(host, "mon")[0]!;
