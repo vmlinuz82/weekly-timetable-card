@@ -1,4 +1,4 @@
-import { html, type TemplateResult } from "lit";
+import { html, nothing, type TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { activityBorder, activityFill, toHexInputValue } from "../color.js";
 import type { Activity } from "../types.js";
@@ -45,6 +45,15 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
               .value=${activity.title}
               @change=${(event: Event) =>
                 commit(updateActivity(config, index, { title: inputValue(event) }))}
+            />
+            <input
+              class="grow"
+              type="text"
+              data-field="subtitle"
+              placeholder=${strings.editor.activitySubtitle}
+              .value=${activity.subtitle ?? ""}
+              @change=${(event: Event) =>
+                commit(updateActivity(config, index, { subtitle: inputValue(event) }))}
             />
             <button
               class="icon-button"
@@ -96,7 +105,12 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
                 "--wtc-block-border": activityBorder(activity.color),
               })}
             >
-              <div class="block-label">${activity.title}</div>
+              <div class="block-text">
+                <div class="block-title">${activity.title}</div>
+                ${activity.subtitle
+                  ? html`<div class="block-subtitle">${activity.subtitle}</div>`
+                  : nothing}
+              </div>
             </div>
           `,
         )}

@@ -99,4 +99,48 @@ describe("renderActivitiesPanel", () => {
     const { host } = mount();
     expect(host.querySelectorAll(".block")).toHaveLength(2);
   });
+
+  it("edits an activity's subtitle", () => {
+    const { commit, host } = mount();
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "Стая 12";
+    input.dispatchEvent(new Event("change"));
+
+    const next = commit.mock.calls[0]![0];
+    expect(next.activities[0]).toEqual({
+      id: "english",
+      title: "Английски",
+      subtitle: "Стая 12",
+      color: "#3b82f6",
+    });
+  });
+
+  it("shows an existing subtitle in the field", () => {
+    const { host } = mount({
+      activities: [
+        { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+      ],
+      schedule: {},
+    });
+    expect(host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!.value)
+      .toBe("Стая 12");
+  });
+
+  it("emptying the field commits an empty subtitle, which normalisation then drops", () => {
+    const { commit, host } = mount({
+      activities: [
+        { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+      ],
+      schedule: {},
+    });
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "";
+    input.dispatchEvent(new Event("change"));
+
+    // updateActivity is a plain spread, so the in-editor config carries "".
+    // The renderer treats "" as absent, and normaliseConfig strips the key on
+    // the next load. Asserted so nobody "fixes" this into a delete and breaks
+    // the round-trip.
+    expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
+  });
 });
