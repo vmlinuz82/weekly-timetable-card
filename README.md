@@ -204,7 +204,8 @@ The bump size comes from the pull request's labels:
 
 The version lives in three places that must agree: `src/version.ts` (compiled
 into the bundle and printed to the console on load), `package.json`, and the git
-tag. `auto-version.yml` writes all three in one commit and tags that commit, and
+tag. With no tag yet, the next version is seeded from `package.json`; once a tag
+exists the tag is authoritative. `auto-version.yml` writes all three in one commit and tags that commit, and
 `release.yml` refuses to publish if the tag and the bundle's banner disagree —
 Lovelace caches resources by URL, so the banner is the only quick way to tell
 which build is actually running.

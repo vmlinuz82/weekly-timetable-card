@@ -586,3 +586,32 @@ confirmed each before ruling:
   this run that a harness-driving mistake of mine looked like a product defect.
 
 ## PROJECT COMPLETE — 18/18 tasks, final review clean, fix wave verified.
+
+## Post-completion: version seeding (resolves the `v0.0.1` vs `0.1.0` wart)
+
+- Symptom: the card's first release tagged `v0.0.1` while `package.json` and the console banner had
+  said `0.1.0` since the scaffold. Release commit `270e5d2` rewrote the version *downward*.
+- Cause: `auto-version.yml`'s no-tag fallback was the literal `v0.0.0`, which ignores the version the
+  sources already declare. On the first release there is by definition no tag, so the fallback is the
+  only input — and it discarded the only record of the current version.
+- Ruling: seed the fallback from `package.json` when no `vX.Y.Z` tag exists, keeping the tag
+  authoritative whenever one does. Precedence matters in this order and not the other: if
+  `package.json` won unconditionally, a hand-edited version there could re-tag an already-published
+  number or jump the sequence and orphan the releases in between. It is a seed, not a source of truth.
+  Parsed with `sed`, not `node`, because the step runs before `Setup Node` — the runner happens to
+  ship node, but depending on that puts the step's correctness in the runner image rather than in the
+  workflow. A second-level `${pkg_version:-0.0.0}` keeps a missing or malformed key on the old
+  behaviour instead of building a tag like `vnonsense`.
+  Cost if wrong: only ever observable in a repo with no tags, i.e. a fresh clone of this workflow.
+- Verified by extracting the step body from the YAML and running it against six tag/package states:
+  the historical case (no tags + `0.1.0`) now yields `v0.1.1` rather than `v0.0.1`; a missing key and
+  a malformed value both fall back to `v0.0.1`; and with `v0.0.4` present a `9.9.9` in `package.json`
+  is correctly ignored.
+- The existing numbering is healed forward, not rewritten: merging this change with the `minor` label
+  bumps `v0.0.4` to `v0.1.0`, which is both above every published tag and exactly the number the
+  sources originally claimed. Published tags are left alone — `v0.0.1`–`v0.0.4` are real releases
+  people may have installed, and re-pointing them would break HACS's view of history.
+- Same bug, different repo: `ValeoTravel/NiamaVreme.bg`'s `auto-version.yml` carries the original
+  form of this fallback without even the `|| true`, so `grep`'s exit 1 under `set -euo pipefail`
+  kills the step before the fallback line. Latent only — that repo has had matching tags throughout,
+  so the broken path has never executed. Fixed on a local branch there, not pushed.
