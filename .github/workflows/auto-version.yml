@@ -66,10 +66,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          # `|| true` is load-bearing: with no tags yet, grep exits 1, pipefail
+          # propagates it and set -e kills the assignment — so the v0.0.0
+          # fallback below would never be reached on the very first release,
+          # which is the one case it exists for.
           latest_tag=$(
             git tag --list 'v*' --sort=-v:refname \
               | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
-              | head -1
+              | head -1 || true
           )
           latest_tag="${latest_tag:-v0.0.0}"
           version="${latest_tag#v}"
