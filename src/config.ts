@@ -165,7 +165,8 @@ const STUB_ACTIVITIES: Record<Lang, Activity[]> = {
   ],
 };
 
-const STUB_NAME: Record<Lang, string> = { en: "Alex", bg: "Иван" };
+// A name needs no translation, so both languages show the same example person.
+const STUB_NAME: Record<Lang, string> = { en: "Sami", bg: "Sami" };
 
 /**
  * `first_weekday` is deliberately not applied here: a Sunday-first rotation of a

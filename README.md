@@ -4,9 +4,6 @@ A weekly timetable card for [Home Assistant](https://www.home-assistant.io/), in
 English and Bulgarian. Day columns of free-form activity blocks, or a classic
 numbered-slot grid. One card, several people, configured visually.
 
-Седмична програма за Home Assistant, на английски и български. Виж
-[Български](#български) по-долу.
-
 ---
 
 ## Features
@@ -107,20 +104,20 @@ Quote your times. Unquoted `16:00` in a YAML dashboard is parsed as the number
 
 ```yaml
 type: custom:weekly-timetable-card
-title: Седмична програма
+title: Weekly timetable
 layout: blocks
 days: [mon, tue, wed, thu, fri]
 
 activities:
-  - { id: english, label: Английски, color: "#3b82f6" }
-  - { id: daycare, label: Занималня, color: "#64748b" }
-  - { id: break, label: Почивка и хапване, color: "#94a3b8" }
-  - { id: judo, label: Джудо, color: "#f97316" }
-  - { id: chess, label: Шах, color: "#a855f7" }
-  - { id: home, label: Връщане вкъщи, color: "#22c55e" }
+  - { id: english, label: English, color: "#3b82f6" }
+  - { id: daycare, label: After-school club, color: "#64748b" }
+  - { id: break, label: Break and a snack, color: "#94a3b8" }
+  - { id: judo, label: Judo, color: "#f97316" }
+  - { id: chess, label: Chess, color: "#a855f7" }
+  - { id: home, label: Back home, color: "#22c55e" }
 
 people:
-  - name: Иван
+  - name: Sami
     emoji: "🥋"
     color: "#f472b6"
     schedule:
@@ -141,6 +138,10 @@ people:
         - { activity: daycare, end: "16:00" }
         - { activity: chess, start: "16:30", end: "17:30" }
 ```
+
+Activity labels are yours to write in whatever language you like — they are
+never translated. Only the card's own chrome (day names, `until` / `after`, the
+editor) follows each Home Assistant user's language.
 
 ## Development
 
@@ -192,53 +193,3 @@ This is a separate implementation with a different data model, two layouts and
 internationalisation.
 
 Licensed MIT.
-
----
-
-## Български
-
-Карта за седмична програма за Home Assistant, на български и английски.
-
-### Възможности
-
-- **Два изгледа** — `blocks` (колони по дни с блокове занимания) и `grid`
-  (номерирани часови интервали).
-- **Отворени часове** — блок може да е интервал (`15:20–16:20`), отворен в
-  края (`до 16:00`), отворен в началото (`след 18:30`), или без час.
-- **Произволни дни** — показвайте всяко подмножество от понеделник до неделя, в
-  избран от вас ред.
-- **Няколко човека** — по един таб за всеки, със свой цвят, дни и програма.
-- **Автоматичен език** — интерфейсът следва езика на всеки потребител на Home
-  Assistant, както и предпочитанието му за 12- или 24-часов формат.
-- **Визуален редактор** — бутони за всичко, плюс влачене и докосване.
-- **Адаптивен** — пълни имена на дните, после съкратени, после една колона.
-- **Съобразен с темата** — цветовете на заниманията се смесват с фона на
-  картата, така че една конфигурация работи и на светла, и на тъмна тема.
-
-### Инсталиране
-
-**Чрез HACS:** HACS → менюто с три точки → **Custom repositories** → добавете
-`https://github.com/vmlinuz82/weekly-timetable-card`, категория **Dashboard** →
-намерете **Weekly Timetable Card** → **Download** → презаредете браузъра с
-`Ctrl+Shift+R`.
-
-**Ръчно:** копирайте `dist/weekly-timetable-card.js` в
-`/config/www/weekly-timetable-card.js`, след което го добавете като ресурс
-`/local/weekly-timetable-card.js?v=1` от тип **JavaScript module**.
-
-### Настройки
-
-Всички настройки са описани в таблиците по-горе. Добавете картата, потърсете
-**Weekly Timetable** и я настройте визуално — не е нужен YAML.
-
-Един детайл, който си струва да знаете: в изглед `grid` редакторът заменя двете
-полета за час на блока с падащо меню за интервал, така че блок, който попада в
-лентата отгоре, показва само „Извън мрежата“ и часовете му не могат да се
-редактират там. Часовете се запазват и продължават да се показват на картата —
-превключете картата на изглед `blocks`, за да ги редактирате.
-
-Запазването от визуалния редактор пренаписва конфигурацията в нормализиран вид,
-което прави ръчно писания YAML по-многословен.
-
-Слагайте часовете в кавички. Неоградено `16:00` в YAML се разчита като числото
-960; картата го преобразува обратно, но с кавички е по-ясно.
