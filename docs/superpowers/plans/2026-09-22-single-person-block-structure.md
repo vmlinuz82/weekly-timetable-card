@@ -21,6 +21,7 @@
 - The four time forms stay derived from field presence by `blockForm()`. Never introduce a `mode` discriminator.
 - `schedule` entries for days outside the effective `days` list are preserved, so narrowing `days` stays reversible.
 - Never use backticks inside a `css` tagged template — they terminate the string and break the build.
+- **User-facing docs describe the card as it is now.** No migration guides, no before/after, no reference to how anything used to work. Internal design docs under `docs/superpowers/` keep their history.
 - Commits: a short single-sentence title. No body. No `Co-Authored-By`.
 - `dist/` is rebuilt and committed **only in Task 9**. CI checks `git diff --exit-code -- dist` at the PR tip, not per commit.
 - Work on branch `redesign-single-person`, which already carries the spec commit.
@@ -240,12 +241,13 @@ In `src/config.ts`, delete `normalisePerson` and fold its body into `normaliseCo
 export function normaliseConfig(raw: unknown): CardConfig {
   const source = (raw ?? {}) as Record<string, unknown>;
 
-  // A card holds one timetable. An old multi-person config is rejected rather
-  // than migrated: taking the first person silently would discard the others.
+  // A card holds one timetable, so `schedule` and `slots` are top-level keys.
+  // `people` is rejected rather than ignored: silently dropping a key that
+  // carries the whole schedule would render an empty card with no explanation.
   if (source.people !== undefined) {
     throw new Error(
-      "weekly-timetable-card: `people` is no longer supported — one card shows one timetable. " +
-        "Move that person's `slots` and `schedule` to the top level.",
+      "weekly-timetable-card: unknown key `people` — a card shows one timetable. " +
+        "Put `slots` and `schedule` at the top level.",
     );
   }
   if (source.activities !== undefined && !Array.isArray(source.activities)) {
@@ -1168,7 +1170,7 @@ git commit -m "Update the dev harness for one timetable per card"
 
 ---
 
-### Task 9: Documentation, migration notes and the bundle
+### Task 9: Documentation and the bundle
 
 **Files:**
 - Modify: `README.md`, `docs/step-9-ha-verification.md`, `docs/superpowers/specs/2026-09-21-weekly-timetable-card-design.md`
@@ -1178,47 +1180,19 @@ git commit -m "Update the dev harness for one timetable per card"
 - Consumes: the finished implementation.
 - Produces: nothing.
 
-- [ ] **Step 1: Rewrite the README's options and example**
+- [ ] **Step 1: Rewrite the README for the card as it now is**
 
-Delete the "Per person" table. Fold `slots` and `schedule` into the main options table. Update the `activities` row to `id`, `title`, `subtitle`, `color`. Rewrite the YAML example to the flat shape with `title: Sami`, two activities carrying subtitles, and no `people:`. Update the features list: replace "Several people — one tab each" with a line about the title/subtitle block structure.
+Write it as documentation for a card that has always worked this way. **No migration guide, no before/after comparison, and no mention of how anything used to behave** — a reader arriving at this README should not learn that multiple people or an activity `label` ever existed.
 
-- [ ] **Step 2: Add a migration section**
+Delete the "Per person" table. Fold `slots` and `schedule` into the main options table. Update the `activities` row to `id`, `title`, `subtitle`, `color`. Rewrite the YAML example to the flat shape with `title: Sami`, two activities carrying subtitles, and no `people:`. In the features list, replace "Several people — one tab each" with a line describing the block structure: a stacked time on the left, a title and optional subtitle on the right.
 
-Under Installation, after Updating:
+The Updating section stays as it is — it is about HACS and browser caching, not about this change.
 
-```markdown
-### Migrating from v0.1.x
-
-One card now shows one timetable, and an activity's `label` is called `title`.
-A `people:` config is rejected rather than guessed at, so the card reports a
-configuration error until it is updated. For two people, add two cards.
-
-Move the person's `slots` and `schedule` up to the top level and take their
-name as the card `title`:
-
-```yaml
-# before
-people:
-  - name: Sami
-    schedule:
-      mon: [{ activity: english, start: "15:20", end: "16:20" }]
-activities:
-  - { id: english, label: English, color: "#3b82f6" }
-
-# after
-title: Sami
-schedule:
-  mon: [{ activity: english, start: "15:20", end: "16:20" }]
-activities:
-  - { id: english, title: English, subtitle: Room 12, color: "#3b82f6" }
-```
-```
-
-- [ ] **Step 3: Update the HA verification checklist**
+- [ ] **Step 2: Update the HA verification checklist**
 
 In `docs/step-9-ha-verification.md`, change "all five tabs work" to "all three tabs work", and add the two-column block and the subtitle to the list of things already exercised in a browser.
 
-- [ ] **Step 4: Mark the superseded decision in the original spec**
+- [ ] **Step 3: Mark the superseded decision in the original spec**
 
 In `docs/superpowers/specs/2026-09-21-weekly-timetable-card-design.md`, strike through decision 5 and point at the new spec, matching how decision 12 records the drag removal:
 
@@ -1226,7 +1200,7 @@ In `docs/superpowers/specs/2026-09-21-weekly-timetable-card-design.md`, strike t
 | 5 | ~~Multiple people as tabs~~ — removed 2026-09-22 | One card shows one timetable; two people means two cards. See [the single-person spec](2026-09-22-single-person-block-structure-design.md). |
 ```
 
-- [ ] **Step 5: Rebuild the bundle**
+- [ ] **Step 4: Rebuild the bundle**
 
 ```bash
 npm run typecheck && npm test && npm run build
@@ -1235,7 +1209,7 @@ git diff --stat -- dist
 
 Expected: `dist/weekly-timetable-card.js` changes. CI runs `git diff --exit-code -- dist` at the PR tip, so this must be committed.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add -A

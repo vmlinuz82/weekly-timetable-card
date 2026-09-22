@@ -242,8 +242,12 @@ absent, and the card reports a configuration error.
 This was chosen deliberately over a silent migration. The consequence is stated
 plainly because it is the one user-visible cost of this release: **an existing
 dashboard shows an error from the moment HACS updates the card until its
-configuration is rewritten.** The README gets a migration section showing the
-before and after shape.
+configuration is rewritten.**
+
+The README does **not** document this. User-facing documentation describes the
+card as it is, with no migration guide and no account of how it used to behave —
+a reader should not learn from the README that multiple people or an activity
+`label` ever existed. This document is where that history lives.
 
 ### Resolved: no `label` alias
 
@@ -304,7 +308,7 @@ merge time, not a code decision.
 
 | Risk | Mitigation |
 |---|---|
-| Existing dashboard breaks on update | Accepted and chosen deliberately. README migration section; the console banner tells the user which version they are on. |
+| Existing dashboard breaks on update | Accepted and chosen deliberately. The rejection names the keys the card does expect, so the error is self-explanatory without a migration guide. |
 | Two-column blocks change grid row heights and compact-tier spacing | Verified in a browser in the dev harness, not by assertion — jsdom does not resolve adopted stylesheets, so `test/styles.test.ts` can only assert that a rule exists, not what it computes to. |
 | The stacked time column is narrow at phone widths | The time column is content-sized, and times are fixed-width strings; the words `until`/`след` are the widest content and set the floor. Checked at 330px stacked. |
 | Renaming `label` breaks the activity palette silently | `title` is required by `normaliseConfig`, so a config still using `label` fails loudly rather than rendering blank titles. |
