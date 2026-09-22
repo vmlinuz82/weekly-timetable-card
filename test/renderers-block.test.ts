@@ -66,8 +66,10 @@ describe("renderBlock", () => {
     const host = renderToHost(renderBlock(bg, { activity: "english" }));
     const style = host.querySelector(".block")!.getAttribute("style") ?? "";
     expect(style).toContain("--wtc-block-fill");
-    expect(style).toContain("#3b82f6 14%");
+    expect(style).toContain("--wtc-block-border");
+    // Fill and border must differ, or the block loses its outline entirely.
     expect(style).toContain("#3b82f6 35%");
+    expect(style).toContain("#3b82f6 60%");
   });
 
   it("renders an orphaned reference as a grey block showing the raw id", () => {
