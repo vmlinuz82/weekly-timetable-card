@@ -1,6 +1,6 @@
 {
   "name": "weekly-timetable-card",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "type": "module",
   "description": "Weekly timetable card for Home Assistant, in English and Bulgarian",
