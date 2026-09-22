@@ -50,7 +50,7 @@ reference design.
 | 2 | Block time form derived from which of `start`/`end` are present | No `mode` discriminator that can contradict the times. The four cases are exhaustive by construction. |
 | 3 | Data lives in card config, edited visually | Matches the reference card, backed up with HA config, no entities to maintain. |
 | 4 | `days` is an ordered list, not a 5/7 toggle | Mon–Sat, weekends-only and reordering all fall out for free. |
-| 5 | Multiple people as tabs | Requested: one wall-tablet card for the whole family. |
+| 5 | ~~Multiple people as tabs~~ — removed 2026-09-22 | One card shows one timetable; two people means two cards. See [the single-person spec](2026-09-22-single-person-block-structure-design.md). |
 | 6 | UI chrome translated, content not; language auto-detected from `hass.language` | The chrome follows the viewer — the same dashboard renders in Bulgarian for one user and English for another, with no config change. |
 | 7 | TypeScript + Lit, modular source, esbuild to one bundle | Lit's declarative rendering removes the editor focus-loss that forces the reference card to save on `blur`; HA's own frontend is Lit, so its form components integrate. |
 | 8 | Narrow widths stack days vertically | Nothing is hidden behind a gesture, and it is the same blocks in one column — a simple third path. |
@@ -248,9 +248,14 @@ viewport, since a Lovelace card in a masonry dashboard can be 300px wide on a
 
 | Width per column | Density | Effect |
 |---|---|---|
-| ≥ 110px | `full` | Full day names, normal padding |
-| ≥ 72px | `compact` | Short day names, tightened padding and type |
+| ≥ 150px | `full` | Full day names, normal padding, two-column blocks |
+| ≥ 72px | `compact` | Short day names, tightened padding and type, blocks stacked internally |
 | < 72px | `stacked` | Stacked layout |
+
+The `full` floor was 110px while a block was a single centred column. The
+two-column block gives the title only about half the block's width, so at 110px
+per column titles shredded into two or three characters per line; 150px is where
+the two columns start paying for themselves again.
 
 The threshold depends on a runtime day count, so it is computed in JavaScript and
 applied as a `data-density` attribute on the root; CSS keys off that attribute.

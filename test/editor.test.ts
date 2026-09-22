@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { getStubConfig } from "../src/config.js";
 import "../src/editor/editor.js";
 import type { WeeklyTimetableCardEditor } from "../src/editor/editor.js";
 import type { CardConfig } from "../src/types.js";
@@ -6,11 +7,8 @@ import { BG_24H, EN_12H } from "./helpers.js";
 
 const raw = {
   days: ["mon", "tue"],
-  activities: [{ id: "english", label: "Английски", color: "#3b82f6" }],
-  people: [
-    { name: "Иван", schedule: { mon: [{ activity: "english" }], tue: [] } },
-    { name: "Мария", schedule: { mon: [], tue: [] } },
-  ],
+  activities: [{ id: "english", title: "Английски", color: "#3b82f6" }],
+  schedule: { mon: [{ activity: "english" }], tue: [] },
 };
 
 async function mount(config: unknown = raw, hass = EN_12H) {
@@ -34,10 +32,17 @@ describe("WeeklyTimetableCardEditor", () => {
     expect(customElements.get("weekly-timetable-card-editor")).toBeDefined();
   });
 
-  it("renders Settings, a tab per person, add and Activities", async () => {
-    const { shadow } = await mount();
-    const labels = [...shadow.querySelectorAll(".tab")].map((tab) => tab.textContent!.trim());
-    expect(labels).toEqual(["Settings", "Иван", "Мария", "＋", "Activities"]);
+  it("exposes exactly three fixed tabs", async () => {
+    const el = document.createElement("weekly-timetable-card-editor") as WeeklyTimetableCardEditor;
+    document.body.append(el);
+    el.setConfig(getStubConfig());
+    await el.updateComplete;
+
+    const tabs = [...el.shadowRoot!.querySelectorAll<HTMLElement>(".tab")];
+    expect(tabs.map((tab) => tab.dataset.tab)).toEqual(["settings", "schedule", "activities"]);
+    expect(el.shadowRoot!.querySelector('[data-tab="add"]')).toBeNull();
+    expect(el.shadowRoot!.querySelector('[data-tab="person"]')).toBeNull();
+    el.remove();
   });
 
   it("opens on the Settings panel", async () => {
@@ -45,18 +50,18 @@ describe("WeeklyTimetableCardEditor", () => {
     expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
   });
 
-  it("switches to a person panel", async () => {
+  it("switches to the schedule panel", async () => {
     const { editor, shadow } = await mount();
     shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
     await editor.updateComplete;
-    expect(shadow.querySelector<HTMLInputElement>('[data-field="name"]')!.value).toBe("Иван");
+    expect(shadow.querySelector('[data-day="mon"]')).not.toBeNull();
   });
 
   it("switches to the Activities panel", async () => {
     const { editor, shadow } = await mount();
     shadow.querySelector<HTMLButtonElement>('[data-tab="activities"]')!.click();
     await editor.updateComplete;
-    expect(shadow.querySelector('[data-field="new-label"]')).not.toBeNull();
+    expect(shadow.querySelector('[data-field="new-title"]')).not.toBeNull();
   });
 
   it("fires config-changed with a new object when a panel commits", async () => {
@@ -88,60 +93,9 @@ describe("WeeklyTimetableCardEditor", () => {
     document.body.removeEventListener("config-changed", listener);
   });
 
-  it("returns to Settings when the open person is removed from within the editor", async () => {
-    const { editor, shadow } = await mount();
-    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
-    await editor.updateComplete;
-
-    shadow.querySelector<HTMLButtonElement>('[data-action="remove-person"]')!.click();
-    await editor.updateComplete;
-
-    // Settings panel is showing, not a blank panel and not the other person's.
-    expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
-    expect(shadow.querySelector('[data-field="name"]')).toBeNull();
-  });
-
-  it("adds a person and selects the new tab", async () => {
-    const { editor, events, shadow } = await mount();
-    shadow.querySelector<HTMLButtonElement>('[data-tab="add"]')!.click();
-    await editor.updateComplete;
-
-    expect(events[0]!.people).toHaveLength(3);
-    expect(shadow.querySelector<HTMLInputElement>('[data-field="name"]')!.value).toBe("");
-  });
-
-  it("falls back to Settings when the open person tab disappears", async () => {
-    const { editor, shadow } = await mount();
-    shadow.querySelectorAll<HTMLButtonElement>(".tab")[2]!.click();
-    await editor.updateComplete;
-
-    editor.setConfig({ ...raw, people: [raw.people[0]] });
-    await editor.updateComplete;
-    expect(shadow.querySelector('[data-field="layout"]')).not.toBeNull();
-  });
-
   it("renders its own chrome in the viewer's language", async () => {
     const { shadow } = await mount(raw, BG_24H);
     expect(shadow.querySelector(".tab")!.textContent!.trim()).toBe("Настройки");
-  });
-
-  it("clears a stranded tap-to-place selection when the open person is removed", async () => {
-    const { editor, shadow } = await mount();
-    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
-    await editor.updateComplete;
-
-    shadow.querySelector<HTMLButtonElement>(".palette-chip")!.click();
-    await editor.updateComplete;
-    expect(shadow.querySelector(".palette-chip")!.getAttribute("aria-pressed")).toBe("true");
-
-    shadow.querySelector<HTMLButtonElement>('[data-action="remove-person"]')!.click();
-    await editor.updateComplete;
-
-    // Re-open the remaining person's tab: a stranded selection would still be
-    // armed here and append a block on the next day-group click.
-    shadow.querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
-    await editor.updateComplete;
-    expect(shadow.querySelector('.palette-chip[aria-pressed="true"]')).toBeNull();
   });
 
   it("keeps a tap-to-place selection across a re-render", async () => {
@@ -152,5 +106,79 @@ describe("WeeklyTimetableCardEditor", () => {
     shadow.querySelector<HTMLButtonElement>(".palette-chip")!.click();
     await editor.updateComplete;
     expect(shadow.querySelector(".palette-chip")!.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("drops a tap-to-place selection when that activity is deleted", async () => {
+    // Nothing on screen shows the deleted activity as armed, so a later tap on
+    // a day group would append a block referencing an id that no longer exists
+    // — an orphan written straight into the saved dashboard.
+    const { editor, events, shadow } = await mount({
+      days: ["mon", "tue"],
+      activities: [
+        { id: "english", title: "Английски", color: "#3b82f6" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+      ],
+      schedule: { mon: [], tue: [] },
+    });
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLButtonElement>('[data-palette-activity="judo"]')!.click();
+    await editor.updateComplete;
+    expect(
+      shadow.querySelector('[data-palette-activity="judo"]')!.getAttribute("aria-pressed"),
+    ).toBe("true");
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="activities"]')!.click();
+    await editor.updateComplete;
+    // `judo` is unused, so removal asks for no confirmation.
+    shadow.querySelectorAll<HTMLButtonElement>('[data-action="remove-activity"]')[1]!.click();
+    await editor.updateComplete;
+    expect(events).toHaveLength(1);
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLElement>('[data-day="mon"]')!.click();
+    await editor.updateComplete;
+
+    expect(events).toHaveLength(1);
+    expect(events[0]!.schedule.mon).toEqual([]);
+  });
+
+  it("drops a tap-to-place selection when setConfig re-enters without that activity", async () => {
+    // The other door into the same orphan write. Home Assistant's "Edit in
+    // YAML" toggle calls setConfig again on a still-mounted element rather than
+    // routing through _commit, so a deletion made in the YAML view arrives with
+    // the selection still armed and nothing on screen showing it.
+    const { editor, events, shadow } = await mount({
+      days: ["mon", "tue"],
+      activities: [
+        { id: "english", title: "Английски", color: "#3b82f6" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+      ],
+      schedule: { mon: [], tue: [] },
+    });
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLButtonElement>('[data-palette-activity="judo"]')!.click();
+    await editor.updateComplete;
+    expect(
+      shadow.querySelector('[data-palette-activity="judo"]')!.getAttribute("aria-pressed"),
+    ).toBe("true");
+
+    // No _commit anywhere in this path: the element stays mounted throughout.
+    editor.setConfig({
+      days: ["mon", "tue"],
+      activities: [{ id: "english", title: "Английски", color: "#3b82f6" }],
+      schedule: { mon: [], tue: [] },
+    });
+    await editor.updateComplete;
+    expect(shadow.querySelector('[data-palette-activity="judo"]')).toBeNull();
+
+    shadow.querySelector<HTMLElement>('[data-day="mon"]')!.click();
+    await editor.updateComplete;
+
+    expect(events).toEqual([]);
   });
 });

@@ -1,12 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  CARD_TYPE,
   DEFAULT_HEADER_COLOR,
   getStubConfig,
   normaliseConfig,
   normaliseTimeString,
 } from "../src/config.js";
 
-const minimal = { people: [{ name: "Иван", schedule: {} }] };
+const minimal = {};
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("normaliseTimeString", () => {
   it("passes through a plain time", () => {
@@ -37,10 +42,9 @@ describe("normaliseTimeString", () => {
 });
 
 describe("normaliseConfig", () => {
-  it("throws when people is missing or empty", () => {
-    expect(() => normaliseConfig({})).toThrow(/people/);
-    expect(() => normaliseConfig({ people: [] })).toThrow(/people/);
-    expect(() => normaliseConfig(undefined)).toThrow(/people/);
+  it("treats a fully empty or undefined config as valid, rendering an empty week", () => {
+    expect(() => normaliseConfig(undefined)).not.toThrow();
+    expect(normaliseConfig({}).schedule.mon).toEqual([]);
   });
 
   it("throws when activities is present but not a list", () => {
@@ -73,126 +77,192 @@ describe("normaliseConfig", () => {
     expect(config.days).toEqual(["sun", "mon"]);
   });
 
-  it("gives every effective day an array so renderers never see undefined", () => {
-    const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "english" }] } }],
-    });
-    const person = config.people[0]!;
-    expect(person.schedule.mon).toHaveLength(1);
-    expect(person.schedule.fri).toEqual([]);
-  });
-
-  it("treats a person's days as a replacement, including days the card omits", () => {
-    const config = normaliseConfig({
-      days: ["mon", "tue"],
-      people: [{ name: "A", days: ["sat"], schedule: { sat: [{ activity: "judo" }] } }],
-    });
-    const person = config.people[0]!;
-    expect(person.days).toEqual(["sat"]);
-    expect(person.schedule.sat).toHaveLength(1);
-    expect(person.schedule.mon).toBeUndefined();
-  });
-
-  it("leaves person.days undefined when absent, so it inherits", () => {
-    expect(normaliseConfig(minimal).people[0]!.days).toBeUndefined();
+  it("gives every day an array so renderers never see undefined", () => {
+    const config = normaliseConfig({ schedule: { mon: [{ activity: "english" }] } });
+    expect(config.schedule.mon).toHaveLength(1);
+    expect(config.schedule.fri).toEqual([]);
   });
 
   it("preserves blocks for stored days outside the current list, so narrowing is reversible", () => {
     const config = normaliseConfig({
       days: ["mon", "tue"],
-      people: [
-        {
-          name: "A",
-          schedule: {
-            mon: [{ activity: "english" }],
-            fri: [{ activity: "judo" }],
-          },
-        },
-      ],
+      schedule: {
+        mon: [{ activity: "english" }],
+        fri: [{ activity: "judo" }],
+      },
     });
-    const person = config.people[0]!;
-    expect(person.schedule.tue).toEqual([]);
-    expect(person.schedule.fri).toEqual([{ activity: "judo" }]);
+    expect(config.schedule.tue).toEqual([]);
+    expect(config.schedule.fri).toEqual([{ activity: "judo" }]);
   });
 
   it("drops blocks with no usable activity id", () => {
     const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "" }, {}, { activity: "judo" }] } }],
+      schedule: { mon: [{ activity: "" }, {}, { activity: "judo" }] },
     });
-    expect(config.people[0]!.schedule.mon).toEqual([{ activity: "judo" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "judo" }]);
   });
 
   it("keeps an activity id that matches no activity, for the orphan renderer", () => {
     const config = normaliseConfig({
-      activities: [{ id: "judo", label: "Джудо", color: "#f97316" }],
-      people: [{ name: "A", schedule: { mon: [{ activity: "gone" }] } }],
+      activities: [{ id: "judo", title: "Джудо", color: "#f97316" }],
+      schedule: { mon: [{ activity: "gone" }] },
     });
-    expect(config.people[0]!.schedule.mon).toEqual([{ activity: "gone" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "gone" }]);
   });
 
   it("omits absent times rather than storing empty strings", () => {
     const config = normaliseConfig({
-      people: [{ name: "A", schedule: { mon: [{ activity: "x", start: "", end: "16:00" }] } }],
+      schedule: { mon: [{ activity: "x", start: "", end: "16:00" }] },
     });
-    expect(config.people[0]!.schedule.mon![0]).toEqual({ activity: "x", end: "16:00" });
+    expect(config.schedule.mon![0]).toEqual({ activity: "x", end: "16:00" });
   });
 
   it("normalises activities and drops unusable ones", () => {
     const config = normaliseConfig({
       ...minimal,
       activities: [
-        { id: "judo", label: "Джудо", color: "#f97316" },
-        { id: "", label: "No id", color: "#000" },
-        { label: "No id at all" },
-        { id: "chess", label: "", color: "" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+        { id: "", title: "No id", color: "#000" },
+        { title: "No id at all" },
+        { id: "chess", title: "", color: "" },
       ],
     });
     expect(config.activities.map((a) => a.id)).toEqual(["judo", "chess"]);
-    expect(config.activities[1]).toEqual({ id: "chess", label: "chess", color: "#888888" });
+    expect(config.activities[1]).toEqual({ id: "chess", title: "chess", color: "#888888" });
   });
 
   it("normalises slots and drops ones without both times", () => {
     const config = normaliseConfig({
-      people: [
-        {
-          name: "A",
-          slots: [
-            { slot: 1, start: "08:00", end: "08:45" },
-            { slot: 2, start: "08:45" },
-            { start: "09:00", end: "09:45" },
-          ],
-          schedule: {},
-        },
+      slots: [
+        { slot: 1, start: "08:00", end: "08:45" },
+        { slot: 2, start: "08:45" },
+        { start: "09:00", end: "09:45" },
       ],
+      schedule: {},
     });
-    expect(config.people[0]!.slots).toEqual([
+    expect(config.slots).toEqual([
       { slot: 1, start: "08:00", end: "08:45" },
       { slot: 3, start: "09:00", end: "09:45" },
     ]);
   });
 
   it("does not mutate the input", () => {
-    const raw = { people: [{ name: "A", schedule: {} }] };
+    const raw = { schedule: {} };
     const snapshot = JSON.stringify(raw);
     normaliseConfig(raw);
     expect(JSON.stringify(raw)).toBe(snapshot);
   });
+
+  it("rejects a legacy people config rather than guessing", () => {
+    expect(() =>
+      normaliseConfig({
+        type: CARD_TYPE,
+        people: [{ name: "Sami", schedule: { mon: [] } }],
+      }),
+    ).toThrow(/people/);
+  });
+
+  it("reads slots and schedule from the top level", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      days: ["mon"],
+      slots: [{ slot: 1, start: "08:00", end: "08:45" }],
+      schedule: { mon: [{ activity: "english", start: "15:20", end: "16:20" }] },
+    });
+    expect(config.slots).toEqual([{ slot: 1, start: "08:00", end: "08:45" }]);
+    expect(config.schedule.mon).toEqual([{ activity: "english", start: "15:20", end: "16:20" }]);
+  });
+
+  it("preserves schedule entries for days outside the day list", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      days: ["mon"],
+      schedule: { sat: [{ activity: "judo" }] },
+    });
+    expect(config.schedule.sat).toEqual([{ activity: "judo" }]);
+  });
+
+  it("reads an activity title and trims an optional subtitle", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", title: "  English  ", subtitle: "  Room 12  ", color: "#3b82f6" }],
+    });
+    expect(config.activities[0]).toEqual({
+      id: "english",
+      title: "English",
+      subtitle: "Room 12",
+      color: "#3b82f6",
+    });
+  });
+
+  it("omits an empty subtitle entirely rather than passing an empty string on", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "judo", title: "Judo", subtitle: "   ", color: "#f97316" }],
+    });
+    expect(config.activities[0]).not.toHaveProperty("subtitle");
+  });
+
+  it("does not accept `label` as an alias for `title`", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", label: "English", color: "#3b82f6" }],
+    });
+    // With no title, the id stands in — the author sees the raw id and knows.
+    expect(config.activities[0]!.title).toBe("english");
+  });
+
+  it("warns that `label` is now `title`, naming the activity", () => {
+    // Without this the rename is the silent half of the migration: `people`
+    // throws a clear error, `label` renders a raw id and says nothing.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", label: "English", color: "#3b82f6" }],
+    });
+
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0]![0]).toContain("english");
+    expect(warn.mock.calls[0]![0]).toContain("`label`");
+    expect(warn.mock.calls[0]![0]).toContain("`title`");
+  });
+
+  it("does not warn about `label` when a title is present", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", title: "English", label: "English", color: "#3b82f6" }],
+    });
+
+    expect(warn).not.toHaveBeenCalled();
+  });
 });
 
 describe("getStubConfig", () => {
+  it("titles the stub with the example subject's name", () => {
+    const config = getStubConfig();
+    expect(config.title).toBe("Sami");
+  });
+
   it("builds a Monday-to-Friday week regardless of first_weekday", () => {
     const config = getStubConfig({ locale: { first_weekday: "sunday" } });
     expect(config.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);
   });
 
-  it("uses Bulgarian example labels for a Bulgarian user", () => {
+  it("uses Bulgarian example titles for a Bulgarian user", () => {
     const config = getStubConfig({ language: "bg" });
-    expect(config.activities.some((a) => a.label === "Английски")).toBe(true);
+    expect(config.activities.some((a) => a.title === "Английски")).toBe(true);
   });
 
-  it("uses English example labels otherwise", () => {
+  it("uses English example titles otherwise", () => {
     const config = getStubConfig({ language: "de" });
-    expect(config.activities.some((a) => a.label === "English")).toBe(true);
+    expect(config.activities.some((a) => a.title === "English")).toBe(true);
   });
 
   it("returns a config that survives normalisation unchanged", () => {
@@ -203,11 +273,9 @@ describe("getStubConfig", () => {
   it("references only activities it defines", () => {
     const config = getStubConfig();
     const ids = new Set(config.activities.map((a) => a.id));
-    for (const person of config.people) {
-      for (const blocks of Object.values(person.schedule)) {
-        for (const block of blocks ?? []) {
-          expect(ids.has(block.activity)).toBe(true);
-        }
+    for (const blocks of Object.values(config.schedule)) {
+      for (const block of blocks ?? []) {
+        expect(ids.has(block.activity)).toBe(true);
       }
     }
   });

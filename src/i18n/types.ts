@@ -7,10 +7,8 @@ export interface DayNames {
 
 export interface EditorStrings {
   tabSettings: string;
+  tabSchedule: string;
   tabActivities: string;
-  addPerson: string;
-  removePerson: string;
-  personNamePlaceholder: string;
 
   title: string;
   layout: string;
@@ -24,11 +22,6 @@ export interface EditorStrings {
   highlightToday: string;
   headerColor: string;
 
-  name: string;
-  emoji: string;
-  color: string;
-  daysOverride: string;
-  daysOverrideHint: string;
   slots: string;
   addSlot: string;
   slotColumn: string;
@@ -47,10 +40,11 @@ export interface EditorStrings {
   remove: string;
   placeHint: string;
 
-  label: string;
-  newActivityLabel: string;
+  activityTitle: string;
+  activitySubtitle: string;
+  newActivityTitle: string;
   addActivity: string;
-  activityInUse: (label: string, count: number) => string;
+  activityInUse: (title: string, count: number) => string;
   confirmRemoveActivity: string;
 
   noSlots: string;
@@ -63,6 +57,9 @@ export interface Strings {
   until: (time: string) => string;
   after: (time: string) => string;
   range: (start: string, end: string) => string;
+  /** The bare word for the stacked time column, where the time is on its own line. */
+  untilWord: string;
+  afterWord: string;
   today: string;
   editor: EditorStrings;
 }

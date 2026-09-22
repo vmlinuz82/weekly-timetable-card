@@ -2,7 +2,7 @@
 
 A weekly timetable card for [Home Assistant](https://www.home-assistant.io/), in
 English and Bulgarian. Day columns of free-form activity blocks, or a classic
-numbered-slot grid. One card, several people, configured visually.
+numbered-slot grid. One card, one timetable, configured visually.
 
 ---
 
@@ -13,14 +13,18 @@ numbered-slot grid. One card, several people, configured visually.
 - **Open-ended times** — a block can be a range (`15:20–16:20`), open at the end
   (`until 16:00`), open at the start (`after 18:30`), or have no time at all.
 - **Any days** — show any subset of Monday to Sunday, in the order you choose.
-- **Several people** — one tab each, with their own colour, days and schedule.
+- **Two-column blocks** — a stacked time on the left, a title and optional
+  subtitle on the right.
 - **English and Bulgarian** — the interface follows each Home Assistant user's
   own language, so the same dashboard reads in Bulgarian for one person and
   English for another. Times follow their 12/24-hour preference too.
 - **Visual editor** — a button or field for every operation, plus
   tap-to-place: tap an activity, then tap a day to add it there.
-- **Responsive** — full day names, then short ones, then a stacked single column,
-  measured from the card's own width rather than the screen's.
+- **Responsive** — measured from the card's own width rather than the screen's.
+  Wide: full day names and each block's time beside its title. Narrower: short
+  day names, tighter spacing, and the time moves onto its own line above the
+  title so the title keeps the full block width. Narrowest: the week becomes a
+  stacked single column, one day after another.
 - **Theme-aware** — activity colours are mixed into the card background, so one
   configuration works in both light and dark themes.
 
@@ -84,31 +88,23 @@ required.
 | `language` | `auto` \| `en` \| `bg` | `auto` | `auto` follows each user's Home Assistant language. |
 | `highlight_today` | boolean | `true` | Tint today's column. |
 | `header_color` | CSS colour | `#1e3a5f` | Day header background; text contrast is chosen automatically. |
-| `activities` | list | `[]` | The shared palette. Each has `id`, `label`, `color`. |
-| `people` | list | required | One entry per tab. |
-
-### Per person
-
-| Option | Type | Description |
-|---|---|---|
-| `name` | string | Tab label. |
-| `emoji` | string | Optional, shown on the tab. |
-| `color` | CSS colour | Optional tab accent. |
-| `days` | list of `mon`…`sun` | Optional. **Replaces** the card-level list, so it may include days the card omits. |
-| `slots` | list | Grid layout only: `slot`, `start`, `end`. |
-| `schedule` | map of day → blocks | The timetable itself. |
+| `activities` | list | `[]` | The shared palette. Each has `id`, `title`, `subtitle`, `color`. |
+| `slots` | list | — | Grid layout only: `slot`, `start`, `end`. |
+| `schedule` | map of day → blocks | `{}` | The timetable itself. |
 
 ### Blocks
 
-A block is `{ activity, start?, end? }`. Which times are present decides how it
-renders:
+A block is `{ activity, start?, end? }`. Each block renders as two columns: the
+time on the left as two stacked lines, and the activity's title (with its
+optional subtitle) on the right. Which times are present decides what the time
+column shows:
 
-| `start` | `end` | Renders as |
+| `start` | `end` | Time column |
 |---|---|---|
-| set | set | `15:20–16:20` |
-| — | set | `until 16:00` / `до 16:00` |
-| set | — | `after 18:30` / `след 18:30` |
-| — | — | the label alone |
+| set | set | `15:20` above `16:20` |
+| — | set | `until` / `до` above `16:00` |
+| set | — | `after` / `след` above `18:30` |
+| — | — | no time column; title and subtitle only |
 
 In `grid` layout, a block whose `start` and `end` match a slot exactly is placed
 on that slot. Everything else appears in a strip above the grid, so nothing is
@@ -116,9 +112,9 @@ ever hidden.
 
 One consequence worth knowing: in `grid` layout the editor replaces a block's two
 time fields with a single slot dropdown, so a block that sits in the strip shows
-only "Not on the grid" and its actual times cannot be edited there. The times are
-preserved and still render on the card — switch the card to `blocks` layout to
-edit them.
+"Not on the grid" and its times are displayed but not editable there. The times
+are preserved and still render on the card — switch the card to `blocks` layout
+to edit them.
 
 Saving from the visual editor rewrites the config in normalised form, which
 makes hand-curated YAML more verbose.
@@ -130,44 +126,40 @@ Quote your times. Unquoted `16:00` in a YAML dashboard is parsed as the number
 
 ```yaml
 type: custom:weekly-timetable-card
-title: Weekly timetable
+title: Sami
 layout: blocks
 days: [mon, tue, wed, thu, fri]
 
 activities:
-  - { id: english, label: English, color: "#3b82f6" }
-  - { id: daycare, label: After-school club, color: "#64748b" }
-  - { id: break, label: Break and a snack, color: "#94a3b8" }
-  - { id: judo, label: Judo, color: "#f97316" }
-  - { id: chess, label: Chess, color: "#a855f7" }
-  - { id: home, label: Back home, color: "#22c55e" }
+  - { id: english, title: English, subtitle: Room 12, color: "#3b82f6" }
+  - { id: daycare, title: After-school club, color: "#64748b" }
+  - { id: break, title: Break and a snack, color: "#94a3b8" }
+  - { id: judo, title: Judo, subtitle: Sports hall, color: "#f97316" }
+  - { id: chess, title: Chess, color: "#a855f7" }
+  - { id: home, title: Back home, color: "#22c55e" }
 
-people:
-  - name: Sami
-    emoji: "🥋"
-    color: "#f472b6"
-    schedule:
-      mon:
-        - { activity: english, start: "15:20", end: "16:20" }
-        - { activity: break, start: "16:20", end: "17:30" }
-        - { activity: judo, start: "17:30", end: "18:30" }
-        - { activity: home, start: "18:30" }
-      tue:
-        - { activity: daycare, end: "16:00" }
-      wed:
-        - { activity: english, start: "15:20", end: "16:20" }
-        - { activity: judo, start: "17:30", end: "18:30" }
-      thu:
-        - { activity: daycare, end: "16:00" }
-        - { activity: chess, start: "16:30", end: "17:30" }
-      fri:
-        - { activity: daycare, end: "16:00" }
-        - { activity: chess, start: "16:30", end: "17:30" }
+schedule:
+  mon:
+    - { activity: english, start: "15:20", end: "16:20" }
+    - { activity: break, start: "16:20", end: "17:30" }
+    - { activity: judo, start: "17:30", end: "18:30" }
+    - { activity: home, start: "18:30" }
+  tue:
+    - { activity: daycare, end: "16:00" }
+  wed:
+    - { activity: english, start: "15:20", end: "16:20" }
+    - { activity: judo, start: "17:30", end: "18:30" }
+  thu:
+    - { activity: daycare, end: "16:00" }
+    - { activity: chess, start: "16:30", end: "17:30" }
+  fri:
+    - { activity: daycare, end: "16:00" }
+    - { activity: chess, start: "16:30", end: "17:30" }
 ```
 
-Activity labels are yours to write in whatever language you like — they are
-never translated. Only the card's own chrome (day names, `until` / `after`, the
-editor) follows each Home Assistant user's language.
+Activity titles and subtitles are yours to write in whatever language you like
+— they are never translated. Only the card's own chrome (day names, `until` /
+`after`, the editor) follows each Home Assistant user's language.
 
 ## Development
 

@@ -21,7 +21,6 @@ export function textsOf(host: HTMLElement, selector: string): string[] {
 
 export interface ContextOptions {
   raw: unknown;
-  personIndex?: number;
   hass?: Hass;
   density?: Density;
   now?: Date;
@@ -31,7 +30,6 @@ export interface ContextOptions {
 export function makeContext(options: ContextOptions): RenderContext {
   return buildContext({
     config: normaliseConfig(options.raw),
-    personIndex: options.personIndex ?? 0,
     hass: options.hass,
     density: options.density ?? "full",
     now: options.now,

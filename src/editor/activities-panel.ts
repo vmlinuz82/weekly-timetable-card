@@ -1,5 +1,6 @@
-import { html, type TemplateResult } from "lit";
+import { html, nothing, type TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
+import { activityTitle } from "../activity.js";
 import { activityBorder, activityFill, toHexInputValue } from "../color.js";
 import type { Activity } from "../types.js";
 import {
@@ -18,7 +19,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
   const onRemove = (index: number, activity: Activity) => {
     const uses = countActivityUses(config, activity.id);
     if (uses > 0) {
-      const message = `${strings.editor.activityInUse(activity.label, uses)} ${
+      const message = `${strings.editor.activityInUse(activityTitle(activity), uses)} ${
         strings.editor.confirmRemoveActivity
       }`;
       if (!window.confirm(message)) return;
@@ -26,6 +27,13 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
     commit(removeActivity(config, index));
   };
 
+  // The title and subtitle inputs trim here, at the input site, rather than in
+  // updateActivity, which stays a plain spread: only normaliseConfig trims, and
+  // the editor's in-memory config never passes through it. A whitespace-only
+  // subtitle is truthy, so it would render an empty .block-subtitle — a phantom
+  // line on every block using that activity, including HA's live preview inside
+  // the edit dialog. "   " trims to "", which the renderer already treats as
+  // absent and normaliseConfig drops on the next load.
   return html`
     <div class="panel">
       ${config.activities.map(
@@ -41,10 +49,19 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
             <input
               class="grow"
               type="text"
-              data-field="label"
-              .value=${activity.label}
+              data-field="title"
+              .value=${activity.title}
               @change=${(event: Event) =>
-                commit(updateActivity(config, index, { label: inputValue(event) }))}
+                commit(updateActivity(config, index, { title: inputValue(event).trim() }))}
+            />
+            <input
+              class="grow"
+              type="text"
+              data-field="subtitle"
+              placeholder=${strings.editor.activitySubtitle}
+              .value=${activity.subtitle ?? ""}
+              @change=${(event: Event) =>
+                commit(updateActivity(config, index, { subtitle: inputValue(event).trim() }))}
             />
             <button
               class="icon-button"
@@ -63,8 +80,8 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
         <input
           class="grow"
           type="text"
-          data-field="new-label"
-          placeholder=${strings.editor.newActivityLabel}
+          data-field="new-title"
+          placeholder=${strings.editor.newActivityTitle}
         />
         <button
           class="icon-button"
@@ -74,12 +91,12 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
           @click=${(event: Event) => {
             const button = event.currentTarget as HTMLElement;
             const field = button.parentElement!.querySelector<HTMLInputElement>(
-              '[data-field="new-label"]',
+              '[data-field="new-title"]',
             )!;
-            const label = field.value.trim();
-            if (label.length === 0) return;
+            const title = field.value.trim();
+            if (title.length === 0) return;
             field.value = "";
-            commit(addActivity(config, label, NEW_ACTIVITY_COLOR));
+            commit(addActivity(config, title, NEW_ACTIVITY_COLOR));
           }}
         >
           +
@@ -96,7 +113,12 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
                 "--wtc-block-border": activityBorder(activity.color),
               })}
             >
-              <div class="block-label">${activity.label}</div>
+              <div class="block-text">
+                <div class="block-title">${activityTitle(activity)}</div>
+                ${activity.subtitle
+                  ? html`<div class="block-subtitle">${activity.subtitle}</div>`
+                  : nothing}
+              </div>
             </div>
           `,
         )}

@@ -1,5 +1,5 @@
 import { DAY_KEYS } from "./types.js";
-import type { CardConfig, DayKey, FirstWeekdaySetting, Hass, Person } from "./types.js";
+import type { DayKey, FirstWeekdaySetting, Hass } from "./types.js";
 
 export function isDayKey(value: unknown): value is DayKey {
   return typeof value === "string" && (DAY_KEYS as readonly string[]).includes(value);
@@ -12,13 +12,6 @@ export function normaliseDays(value: unknown, fallback: readonly DayKey[]): DayK
     if (isDayKey(entry) && !out.includes(entry)) out.push(entry);
   }
   return out.length > 0 ? out : [...fallback];
-}
-
-export function effectiveDays(
-  config: Pick<CardConfig, "days">,
-  person: Pick<Person, "days">,
-): DayKey[] {
-  return person.days && person.days.length > 0 ? person.days : config.days;
 }
 
 export function todayKey(now: Date = new Date()): DayKey {

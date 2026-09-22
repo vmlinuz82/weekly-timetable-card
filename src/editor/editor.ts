@@ -6,12 +6,11 @@ import { editorStyles } from "../styles.js";
 import type { CardConfig, Hass } from "../types.js";
 import { renderActivitiesPanel } from "./activities-panel.js";
 import { fireEvent } from "./fire-event.js";
-import { addPerson } from "./mutations.js";
 import type { PanelContext } from "./panel-context.js";
-import { renderPersonPanel } from "./person-panel.js";
+import { renderSchedulePanel } from "./schedule-panel.js";
 import { renderSettingsPanel } from "./settings-panel.js";
 
-type Tab = "settings" | "activities" | { person: number };
+type Tab = "settings" | "schedule" | "activities";
 
 @customElement("weekly-timetable-card-editor")
 export class WeeklyTimetableCardEditor extends LitElement {
@@ -25,30 +24,31 @@ export class WeeklyTimetableCardEditor extends LitElement {
 
   setConfig(config: unknown): void {
     this._config = normaliseConfig(config);
-    if (typeof this._tab === "object" && !this._config.people[this._tab.person]) {
-      this._tab = "settings";
+    this._healSelection(this._config);
+  }
+
+  /**
+   * A tap-to-place selection survives a re-render by design, including the
+   * re-render that follows deleting the armed activity. Nothing on screen still
+   * shows it as armed, so the next tap on a day group would silently append a
+   * block referencing an id that no longer exists — an orphan written into the
+   * user's saved dashboard.
+   *
+   * Both entry points need this, because a config can arrive by either door.
+   * `_commit` covers deleting the activity on the Activities tab. `setConfig`
+   * covers Home Assistant re-entering on a still-mounted element: toggling
+   * "Edit in YAML" and back does not unmount the editor, so a deletion made in
+   * the YAML view arrives here with `_selectedActivity` still set.
+   */
+  private _healSelection(config: CardConfig): void {
+    if (this._selectedActivity && !config.activities.some((a) => a.id === this._selectedActivity)) {
+      this._selectedActivity = null;
     }
   }
 
   private _commit(next: CardConfig): void {
-    const previous = this._config;
     this._config = next;
-    // Self-heal the open tab rather than relying on the host to call setConfig
-    // again. Removing the open person shifts every later index down, so a stale
-    // {person: n} would silently start editing a DIFFERENT person — and
-    // setConfig's own guard cannot catch that, because index n still exists.
-    if (
-      typeof this._tab === "object" &&
-      (!next.people[this._tab.person] ||
-        (previous !== undefined && next.people.length < previous.people.length))
-    ) {
-      this._tab = "settings";
-      // A tap-to-place selection is scoped to whichever person tab was open
-      // when it was armed. Self-healing the tab without also clearing this
-      // would leave it stranded: opening a different person's tab and
-      // clicking a day group would silently append the armed activity there.
-      this._selectedActivity = null;
-    }
+    this._healSelection(next);
     fireEvent(this, "config-changed", { config: next });
   }
 
@@ -79,39 +79,17 @@ export class WeeklyTimetableCardEditor extends LitElement {
           ${strings.editor.tabSettings}
         </button>
 
-        ${config.people.map(
-          (person, index) => html`
-            <button
-              class="tab"
-              type="button"
-              role="tab"
-              data-tab="person"
-              data-person-index=${index}
-              aria-selected=${typeof this._tab === "object" && this._tab.person === index
-                ? "true"
-                : "false"}
-              @click=${() => {
-                this._tab = { person: index };
-              }}
-            >
-              ${person.emoji ? `${person.emoji} ` : ""}${person.name ||
-              strings.editor.personNamePlaceholder}
-            </button>
-          `,
-        )}
-
         <button
           class="tab"
           type="button"
-          data-tab="add"
-          title=${strings.editor.addPerson}
+          role="tab"
+          data-tab="schedule"
+          aria-selected=${this._tab === "schedule" ? "true" : "false"}
           @click=${() => {
-            const next = addPerson(config, "");
-            this._tab = { person: next.people.length - 1 };
-            this._commit(next);
+            this._tab = "schedule";
           }}
         >
-          ＋
+          ${strings.editor.tabSchedule}
         </button>
 
         <button
@@ -135,8 +113,7 @@ export class WeeklyTimetableCardEditor extends LitElement {
   private _renderPanel(ctx: PanelContext): TemplateResult {
     if (this._tab === "settings") return renderSettingsPanel(ctx);
     if (this._tab === "activities") return renderActivitiesPanel(ctx);
-    return renderPersonPanel(ctx, {
-      personIndex: this._tab.person,
+    return renderSchedulePanel(ctx, {
       selectedActivity: this._selectedActivity,
       onSelectActivity: (id) => {
         this._selectedActivity = id;

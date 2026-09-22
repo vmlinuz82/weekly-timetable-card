@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   daysFromFirstWeekday,
-  effectiveDays,
   isDayKey,
   normaliseDays,
   toggleDayList,
@@ -42,20 +41,6 @@ describe("normaliseDays", () => {
   it("returns a copy, not the fallback array itself", () => {
     const out = normaliseDays(undefined, WEEKDAYS);
     expect(out).not.toBe(WEEKDAYS);
-  });
-});
-
-describe("effectiveDays", () => {
-  it("uses the card days when the person has none", () => {
-    expect(effectiveDays({ days: WEEKDAYS }, {})).toEqual(WEEKDAYS);
-  });
-
-  it("replaces rather than intersects, so a person may add a day the card omits", () => {
-    expect(effectiveDays({ days: WEEKDAYS }, { days: ["sat"] })).toEqual(["sat"]);
-  });
-
-  it("ignores an empty person list", () => {
-    expect(effectiveDays({ days: WEEKDAYS }, { days: [] })).toEqual(WEEKDAYS);
   });
 });
 

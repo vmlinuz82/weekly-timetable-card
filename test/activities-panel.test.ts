@@ -7,10 +7,10 @@ import { renderToHost } from "./helpers.js";
 
 const raw = {
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
-  people: [{ name: "Иван", schedule: { mon: [{ activity: "english" }] } }],
+  schedule: { mon: [{ activity: "english" }] },
 };
 
 function mount(source: unknown = raw) {
@@ -22,26 +22,44 @@ function mount(source: unknown = raw) {
   return { config, commit, host };
 }
 
+/**
+ * The config shape the editor holds the moment the author clears the title
+ * field: normalised once at load, then mutated in memory and never passed
+ * through normaliseConfig again, so its own id fallback does not apply.
+ */
+function mountBlankTitle() {
+  const config = normaliseConfig(raw);
+  const blanked: CardConfig = {
+    ...config,
+    activities: [{ ...config.activities[0]!, title: "" }, config.activities[1]!],
+  };
+  const commit = vi.fn<(next: CardConfig) => void>();
+  const host = renderToHost(
+    renderActivitiesPanel({ config: blanked, strings: en, hass: undefined, commit }),
+  );
+  return { commit, host };
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
 describe("renderActivitiesPanel", () => {
-  it("lists every activity with its label and colour", () => {
+  it("lists every activity with its title and colour", () => {
     const { host } = mount();
-    const labels = [...host.querySelectorAll<HTMLInputElement>('[data-field="label"]')];
-    expect(labels.map((input) => input.value)).toEqual(["Английски", "Джудо"]);
+    const titles = [...host.querySelectorAll<HTMLInputElement>('[data-field="title"]')];
+    expect(titles.map((input) => input.value)).toEqual(["Английски", "Джудо"]);
     expect(host.querySelector<HTMLInputElement>('[data-field="color"]')!.value).toBe("#3b82f6");
   });
 
   it("renames without changing the id", () => {
     const { commit, host } = mount();
-    const input = host.querySelectorAll<HTMLInputElement>('[data-field="label"]')[0]!;
+    const input = host.querySelectorAll<HTMLInputElement>('[data-field="title"]')[0]!;
     input.value = "English";
     input.dispatchEvent(new Event("change"));
 
     const next = commit.mock.calls[0]![0];
-    expect(next.activities[0]).toEqual({ id: "english", label: "English", color: "#3b82f6" });
+    expect(next.activities[0]).toEqual({ id: "english", title: "English", color: "#3b82f6" });
   });
 
   it("commits a colour change", () => {
@@ -54,17 +72,17 @@ describe("renderActivitiesPanel", () => {
 
   it("adds an activity from the new-activity field", () => {
     const { commit, host } = mount();
-    const input = host.querySelector<HTMLInputElement>('[data-field="new-label"]')!;
+    const input = host.querySelector<HTMLInputElement>('[data-field="new-title"]')!;
     input.value = "Шах";
     host.querySelector<HTMLButtonElement>('[data-action="add-activity"]')!.click();
 
     const next = commit.mock.calls[0]![0];
-    expect(next.activities[2]).toMatchObject({ id: "шах", label: "Шах" });
+    expect(next.activities[2]).toMatchObject({ id: "шах", title: "Шах" });
   });
 
-  it("ignores an add with a blank label", () => {
+  it("ignores an add with a blank title", () => {
     const { commit, host } = mount();
-    host.querySelector<HTMLInputElement>('[data-field="new-label"]')!.value = "   ";
+    host.querySelector<HTMLInputElement>('[data-field="new-title"]')!.value = "   ";
     host.querySelector<HTMLButtonElement>('[data-action="add-activity"]')!.click();
     expect(commit).not.toHaveBeenCalled();
   });
@@ -98,5 +116,89 @@ describe("renderActivitiesPanel", () => {
   it("shows a live preview chip per activity", () => {
     const { host } = mount();
     expect(host.querySelectorAll(".block")).toHaveLength(2);
+  });
+
+  it("edits an activity's subtitle", () => {
+    const { commit, host } = mount();
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "Стая 12";
+    input.dispatchEvent(new Event("change"));
+
+    const next = commit.mock.calls[0]![0];
+    expect(next.activities[0]).toEqual({
+      id: "english",
+      title: "Английски",
+      subtitle: "Стая 12",
+      color: "#3b82f6",
+    });
+  });
+
+  it("shows an existing subtitle in the field", () => {
+    const { host } = mount({
+      activities: [
+        { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+      ],
+      schedule: {},
+    });
+    expect(host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!.value)
+      .toBe("Стая 12");
+  });
+
+  it("emptying the field commits an empty subtitle, which normalisation then drops", () => {
+    const { commit, host } = mount({
+      activities: [
+        { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+      ],
+      schedule: {},
+    });
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "";
+    input.dispatchEvent(new Event("change"));
+
+    // updateActivity is a plain spread, so the in-editor config carries "".
+    // The renderer treats "" as absent, and normaliseConfig strips the key on
+    // the next load. Asserted so nobody "fixes" this into a delete and breaks
+    // the round-trip.
+    expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
+  });
+
+  it("commits an empty subtitle for a whitespace-only one", () => {
+    const { commit, host } = mount();
+    const input = host.querySelector<HTMLInputElement>('[data-field="subtitle"]')!;
+    input.value = "   ";
+    input.dispatchEvent(new Event("change"));
+
+    // "   " is truthy, so without the trim at the input site the renderer emits
+    // an empty .block-subtitle — a phantom line on every block using this
+    // activity, in the card and in HA's live preview inside the edit dialog.
+    expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
+  });
+
+  it("shows the id in the preview chip when the in-editor title is blank", () => {
+    const { host } = mountBlankTitle();
+    expect(host.querySelectorAll(".block-title")[0]!.textContent!.trim()).toBe("english");
+    // The input keeps the real stored value, or there is nothing to type into.
+    expect(host.querySelectorAll<HTMLInputElement>('[data-field="title"]')[0]!.value).toBe("");
+  });
+
+  it("names the activity in the removal warning when its title is blank", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const { host } = mountBlankTitle();
+    host.querySelectorAll<HTMLButtonElement>('[data-action="remove-activity"]')[0]!.click();
+
+    // Otherwise the dialog reads as if the activity had no name at all.
+    expect(confirmSpy).toHaveBeenCalledOnce();
+    expect(confirmSpy.mock.calls[0]![0]).toContain("english");
+  });
+
+  it("edits the second row's subtitle without touching the first", () => {
+    const { config, commit, host } = mount();
+    const input = host.querySelectorAll<HTMLInputElement>('[data-field="subtitle"]')[1]!;
+    input.value = "Зала 2";
+    input.dispatchEvent(new Event("change"));
+
+    const next = commit.mock.calls[0]![0];
+    expect(next.activities[1]!.subtitle).toBe("Зала 2");
+    expect(next.activities[0]).toEqual(config.activities[0]);
   });
 });

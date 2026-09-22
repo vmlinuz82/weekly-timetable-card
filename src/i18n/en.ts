@@ -13,13 +13,13 @@ export const en: Strings = {
   until: (time) => `until ${time}`,
   after: (time) => `after ${time}`,
   range: (start, end) => `${start}–${end}`,
+  untilWord: "until",
+  afterWord: "after",
   today: "Today",
   editor: {
     tabSettings: "Settings",
+    tabSchedule: "Schedule",
     tabActivities: "Activities",
-    addPerson: "Add person",
-    removePerson: "Remove person",
-    personNamePlaceholder: "New person",
 
     title: "Title",
     layout: "Layout",
@@ -33,11 +33,6 @@ export const en: Strings = {
     highlightToday: "Highlight today",
     headerColor: "Header colour",
 
-    name: "Name",
-    emoji: "Emoji",
-    color: "Colour",
-    daysOverride: "Days for this person",
-    daysOverrideHint: "Leave empty to use the card's days",
     slots: "Time slots",
     addSlot: "Add slot",
     slotColumn: "Slot",
@@ -56,11 +51,12 @@ export const en: Strings = {
     remove: "Remove",
     placeHint: "Tap an activity, then tap a day to add it there",
 
-    label: "Label",
-    newActivityLabel: "New activity name",
+    activityTitle: "Title",
+    activitySubtitle: "Subtitle",
+    newActivityTitle: "New activity name",
     addActivity: "Add activity",
-    activityInUse: (label, count) =>
-      `“${label}” is used by ${count} block${count === 1 ? "" : "s"}.`,
+    activityInUse: (title, count) =>
+      `“${title}” is used by ${count} block${count === 1 ? "" : "s"}.`,
     confirmRemoveActivity: "Remove it anyway?",
 
     noSlots: "Add time slots to use the grid layout.",

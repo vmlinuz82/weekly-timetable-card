@@ -8,11 +8,19 @@ import { css } from "lit";
  */
 export const blockStyles = css`
   .block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     border-radius: 8px;
     padding: 8px 10px;
-    text-align: center;
-    /* The solid fallback is declared first so a browser without color-mix
-       still shows a readable block rather than a transparent one. */
+    text-align: left;
+    /* Not a color-mix fallback. --wtc-block-fill carries a color-mix() value,
+       and if a browser cannot resolve it the declaration below is invalid at
+       computed-value time: background becomes the initial value (transparent),
+       it does not revert to this one — the cascade already chose the later
+       declaration. What this line does cover is a browser with no custom
+       properties at all, where the var() below is unparseable and that whole
+       declaration is dropped at parse time instead, leaving this one to apply. */
     background: var(--secondary-background-color);
     background: var(--wtc-block-fill, var(--secondary-background-color));
     border: 1px solid var(--divider-color);
@@ -24,17 +32,36 @@ export const blockStyles = css`
     background: var(--secondary-background-color);
   }
 
+  /* Content-sized so the text column takes the remainder, and right-aligned so
+     the two stacked times line up with each other rather than with the title.
+     The words until/after are the widest content and set the column's floor. */
   .block-time {
+    flex: 0 0 auto;
+    text-align: right;
     font-size: 11px;
     line-height: 1.3;
     color: var(--secondary-text-color);
+    font-variant-numeric: tabular-nums;
   }
 
-  .block-label {
+  .block-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .block-title {
     font-size: 13px;
     line-height: 1.3;
     font-weight: 600;
     color: var(--primary-text-color);
+    overflow-wrap: break-word;
+  }
+
+  .block-subtitle {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--secondary-text-color);
+    overflow-wrap: break-word;
   }
 `;
 
@@ -55,37 +82,6 @@ export const cardStyles = css`
     font-size: 18px;
     font-weight: 600;
     color: var(--primary-text-color);
-  }
-
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid var(--divider-color);
-    border-radius: 999px;
-    background: var(--card-background-color);
-    color: var(--primary-text-color);
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .tab[aria-selected="true"] {
-    border-color: var(--wtc-accent, var(--primary-color));
-    background: color-mix(
-      in srgb,
-      var(--wtc-accent, var(--primary-color)) 14%,
-      var(--card-background-color, #ffffff)
-    );
-    font-weight: 600;
   }
 
   .week {
@@ -151,13 +147,29 @@ export const cardStyles = css`
     gap: 6px;
     padding: 6px;
   }
+  /* Below the full threshold the two columns stop paying for themselves: a
+     ~129px day column leaves the title about 35px, and it shreds into two or
+     three characters per line. Stack the block internally instead — the time on
+     one line, in reading order, above the text at full block width. Verified in
+     the harness at 700px with seven days: all seven stay visible and titles wrap
+     at word boundaries. The stacked tier is deliberately untouched; there each
+     day has the card's full width, where two columns are the right shape. */
   [data-density="compact"] .block {
-    padding: 6px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 5px 7px;
+    gap: 2px;
   }
   [data-density="compact"] .block-time {
+    display: flex;
+    gap: 4px;
+    text-align: left;
+  }
+  [data-density="compact"] .block-time,
+  [data-density="compact"] .block-subtitle {
     font-size: 10px;
   }
-  [data-density="compact"] .block-label {
+  [data-density="compact"] .block-title {
     font-size: 12px;
   }
   [data-density="compact"] .grid-head {

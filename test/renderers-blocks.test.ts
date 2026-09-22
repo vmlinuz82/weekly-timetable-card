@@ -5,22 +5,17 @@ import { BG_24H, makeContext, renderToHost, textsOf } from "./helpers.js";
 const raw = {
   days: ["mon", "tue", "wed", "thu", "fri"],
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "daycare", label: "Занималня", color: "#64748b" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "daycare", title: "Занималня", color: "#64748b" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
-  people: [
-    {
-      name: "Иван",
-      schedule: {
-        mon: [
-          { activity: "english", start: "15:20", end: "16:20" },
-          { activity: "judo", start: "17:30", end: "18:30" },
-        ],
-        tue: [{ activity: "daycare", end: "16:00" }],
-      },
-    },
-  ],
+  schedule: {
+    mon: [
+      { activity: "english", start: "15:20", end: "16:20" },
+      { activity: "judo", start: "17:30", end: "18:30" },
+    ],
+    tue: [{ activity: "daycare", end: "16:00" }],
+  },
 };
 
 // 2026-09-21 is a Monday.
@@ -67,25 +62,20 @@ describe("renderBlocks", () => {
     const ctx = makeContext({
       raw: {
         ...raw,
-        people: [
-          {
-            ...raw.people[0]!,
-            schedule: {
-              ...raw.people[0]!.schedule,
-              mon: [
-                { activity: "english", start: "17:30", end: "18:30" },
-                { activity: "judo", start: "15:20", end: "16:20" },
-              ],
-            },
-          },
-        ],
+        schedule: {
+          ...raw.schedule,
+          mon: [
+            { activity: "english", start: "17:30", end: "18:30" },
+            { activity: "judo", start: "15:20", end: "16:20" },
+          ],
+        },
       },
       hass: BG_24H,
       now: MONDAY,
     });
     const host = renderToHost(renderBlocks(ctx));
     const monday = host.querySelectorAll(".day")[0]!;
-    expect([...monday.querySelectorAll(".block-label")].map((n) => n.textContent))
+    expect([...monday.querySelectorAll(".block-title")].map((n) => n.textContent))
       .toEqual(["Английски", "Джудо"]);
   });
 
@@ -122,19 +112,5 @@ describe("renderBlocks", () => {
     const host = renderToHost(renderBlocks(ctx));
     const wednesday = host.querySelectorAll(".day")[2]!;
     expect(wednesday.querySelector(".empty")!.textContent!.trim()).toBe("Няма занимания");
-  });
-
-  it("follows a person's own day list", () => {
-    const ctx = makeContext({
-      raw: {
-        ...raw,
-        days: ["mon", "tue"],
-        people: [{ name: "Иван", days: ["sat"], schedule: { sat: [{ activity: "judo" }] } }],
-      },
-      hass: BG_24H,
-      now: MONDAY,
-    });
-    const host = renderToHost(renderBlocks(ctx));
-    expect(textsOf(host, ".day-head")).toEqual(["събота"]);
   });
 });

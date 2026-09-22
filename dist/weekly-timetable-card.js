@@ -1,22 +1,22 @@
-var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e,o)=>{for(var n=o>1?void 0:o?Ye(t,e):t,i=r.length-1,s;i>=0;i--)(s=r[i])&&(n=(o?s(t,e,n):s(n))||n);return o&&n&&qe(t,e,n),n};/**
+var Ie=Object.defineProperty;var Ke=Object.getOwnPropertyDescriptor;var g=(r,t,e,i)=>{for(var o=i>1?void 0:i?Ke(t,e):t,n=r.length-1,s;n>=0;n--)(s=r[n])&&(o=(i?s(t,e,o):s(o))||o);return i&&o&&Ie(t,e,o),o};/**
  * @license
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var tt=globalThis,et=tt.ShadowRoot&&(tt.ShadyCSS===void 0||tt.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,$t=Symbol(),Yt=new WeakMap,I=class{constructor(t,e,o){if(this._$cssResult$=!0,o!==$t)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o,e=this.t;if(et&&t===void 0){let o=e!==void 0&&e.length===1;o&&(t=Yt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),o&&Yt.set(e,t))}return t}toString(){return this.cssText}},Wt=r=>new I(typeof r=="string"?r:r+"",void 0,$t),F=(r,...t)=>{let e=r.length===1?r[0]:t.reduce((o,n,i)=>o+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(n)+r[i+1],r[0]);return new I(e,r,$t)},Gt=(r,t)=>{if(et)r.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(let e of t){let o=document.createElement("style"),n=tt.litNonce;n!==void 0&&o.setAttribute("nonce",n),o.textContent=e.cssText,r.appendChild(o)}},xt=et?r=>r:r=>r instanceof CSSStyleSheet?(t=>{let e="";for(let o of t.cssRules)e+=o.cssText;return Wt(e)})(r):r;/**
+ */var X=globalThis,Z=X.ShadowRoot&&(X.ShadyCSS===void 0||X.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,gt=Symbol(),jt=new WeakMap,j=class{constructor(t,e,i){if(this._$cssResult$=!0,i!==gt)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o,e=this.t;if(Z&&t===void 0){let i=e!==void 0&&e.length===1;i&&(t=jt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),i&&jt.set(e,t))}return t}toString(){return this.cssText}},It=r=>new j(typeof r=="string"?r:r+"",void 0,gt),I=(r,...t)=>{let e=r.length===1?r[0]:t.reduce((i,o,n)=>i+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(o)+r[n+1],r[0]);return new j(e,r,gt)},Kt=(r,t)=>{if(Z)r.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(let e of t){let i=document.createElement("style"),o=X.litNonce;o!==void 0&&i.setAttribute("nonce",o),i.textContent=e.cssText,r.appendChild(i)}},yt=Z?r=>r:r=>r instanceof CSSStyleSheet?(t=>{let e="";for(let i of t.cssRules)e+=i.cssText;return It(e)})(r):r;/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var{is:We,defineProperty:Ge,getOwnPropertyDescriptor:Je,getOwnPropertyNames:Xe,getOwnPropertySymbols:Ze,getPrototypeOf:Qe}=Object,rt=globalThis,Jt=rt.trustedTypes,tr=Jt?Jt.emptyScript:"",er=rt.reactiveElementPolyfillSupport,z=(r,t)=>r,V={toAttribute(r,t){switch(t){case Boolean:r=r?tr:null;break;case Object:case Array:r=r==null?r:JSON.stringify(r)}return r},fromAttribute(r,t){let e=r;switch(t){case Boolean:e=r!==null;break;case Number:e=r===null?null:Number(r);break;case Object:case Array:try{e=JSON.parse(r)}catch{e=null}}return e}},ot=(r,t)=>!We(r,t),Xt={attribute:!0,type:String,converter:V,reflect:!1,useDefault:!1,hasChanged:ot};Symbol.metadata??=Symbol("metadata"),rt.litPropertyMetadata??=new WeakMap;var $=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=Xt){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){let o=Symbol(),n=this.getPropertyDescriptor(t,o,e);n!==void 0&&Ge(this.prototype,t,n)}}static getPropertyDescriptor(t,e,o){let{get:n,set:i}=Je(this.prototype,t)??{get(){return this[e]},set(s){this[e]=s}};return{get:n,set(s){let a=n?.call(this);i?.call(this,s),this.requestUpdate(t,a,o)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??Xt}static _$Ei(){if(this.hasOwnProperty(z("elementProperties")))return;let t=Qe(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(z("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(z("properties"))){let e=this.properties,o=[...Xe(e),...Ze(e)];for(let n of o)this.createProperty(n,e[n])}let t=this[Symbol.metadata];if(t!==null){let e=litPropertyMetadata.get(t);if(e!==void 0)for(let[o,n]of e)this.elementProperties.set(o,n)}this._$Eh=new Map;for(let[e,o]of this.elementProperties){let n=this._$Eu(e,o);n!==void 0&&this._$Eh.set(n,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){let e=[];if(Array.isArray(t)){let o=new Set(t.flat(1/0).reverse());for(let n of o)e.unshift(xt(n))}else t!==void 0&&e.push(xt(t));return e}static _$Eu(t,e){let o=e.attribute;return o===!1?void 0:typeof o=="string"?o:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(t=>t(this))}addController(t){(this._$EO??=new Set).add(t),this.renderRoot!==void 0&&this.isConnected&&t.hostConnected?.()}removeController(t){this._$EO?.delete(t)}_$E_(){let t=new Map,e=this.constructor.elementProperties;for(let o of e.keys())this.hasOwnProperty(o)&&(t.set(o,this[o]),delete this[o]);t.size>0&&(this._$Ep=t)}createRenderRoot(){let t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Gt(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(t=>t.hostConnected?.())}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach(t=>t.hostDisconnected?.())}attributeChangedCallback(t,e,o){this._$AK(t,o)}_$ET(t,e){let o=this.constructor.elementProperties.get(t),n=this.constructor._$Eu(t,o);if(n!==void 0&&o.reflect===!0){let i=(o.converter?.toAttribute!==void 0?o.converter:V).toAttribute(e,o.type);this._$Em=t,i==null?this.removeAttribute(n):this.setAttribute(n,i),this._$Em=null}}_$AK(t,e){let o=this.constructor,n=o._$Eh.get(t);if(n!==void 0&&this._$Em!==n){let i=o.getPropertyOptions(n),s=typeof i.converter=="function"?{fromAttribute:i.converter}:i.converter?.fromAttribute!==void 0?i.converter:V;this._$Em=n;let a=s.fromAttribute(e,i.type);this[n]=a??this._$Ej?.get(n)??a,this._$Em=null}}requestUpdate(t,e,o,n=!1,i){if(t!==void 0){let s=this.constructor;if(n===!1&&(i=this[t]),o??=s.getPropertyOptions(t),!((o.hasChanged??ot)(i,e)||o.useDefault&&o.reflect&&i===this._$Ej?.get(t)&&!this.hasAttribute(s._$Eu(t,o))))return;this.C(t,e,o)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:o,reflect:n,wrapped:i},s){o&&!(this._$Ej??=new Map).has(t)&&(this._$Ej.set(t,s??e??this[t]),i!==!0||s!==void 0)||(this._$AL.has(t)||(this.hasUpdated||o||(e=void 0),this._$AL.set(t,e)),n===!0&&this._$Em!==t&&(this._$Eq??=new Set).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}let t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(let[n,i]of this._$Ep)this[n]=i;this._$Ep=void 0}let o=this.constructor.elementProperties;if(o.size>0)for(let[n,i]of o){let{wrapped:s}=i,a=this[n];s!==!0||this._$AL.has(n)||a===void 0||this.C(n,void 0,i,a)}}let t=!1,e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),this._$EO?.forEach(o=>o.hostUpdate?.()),this.update(e)):this._$EM()}catch(o){throw t=!1,this._$EM(),o}t&&this._$AE(e)}willUpdate(t){}_$AE(t){this._$EO?.forEach(e=>e.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&=this._$Eq.forEach(e=>this._$ET(e,this[e])),this._$EM()}updated(t){}firstUpdated(t){}};$.elementStyles=[],$.shadowRootOptions={mode:"open"},$[z("elementProperties")]=new Map,$[z("finalized")]=new Map,er?.({ReactiveElement:$}),(rt.reactiveElementVersions??=[]).push("2.1.2");/**
+ */var{is:Fe,defineProperty:ze,getOwnPropertyDescriptor:Ve,getOwnPropertyNames:We,getOwnPropertySymbols:qe,getPrototypeOf:Ye}=Object,Q=globalThis,Ft=Q.trustedTypes,Ge=Ft?Ft.emptyScript:"",Je=Q.reactiveElementPolyfillSupport,K=(r,t)=>r,F={toAttribute(r,t){switch(t){case Boolean:r=r?Ge:null;break;case Object:case Array:r=r==null?r:JSON.stringify(r)}return r},fromAttribute(r,t){let e=r;switch(t){case Boolean:e=r!==null;break;case Number:e=r===null?null:Number(r);break;case Object:case Array:try{e=JSON.parse(r)}catch{e=null}}return e}},tt=(r,t)=>!Fe(r,t),zt={attribute:!0,type:String,converter:F,reflect:!1,useDefault:!1,hasChanged:tt};Symbol.metadata??=Symbol("metadata"),Q.litPropertyMetadata??=new WeakMap;var $=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=zt){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){let i=Symbol(),o=this.getPropertyDescriptor(t,i,e);o!==void 0&&ze(this.prototype,t,o)}}static getPropertyDescriptor(t,e,i){let{get:o,set:n}=Ve(this.prototype,t)??{get(){return this[e]},set(s){this[e]=s}};return{get:o,set(s){let a=o?.call(this);n?.call(this,s),this.requestUpdate(t,a,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??zt}static _$Ei(){if(this.hasOwnProperty(K("elementProperties")))return;let t=Ye(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(K("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(K("properties"))){let e=this.properties,i=[...We(e),...qe(e)];for(let o of i)this.createProperty(o,e[o])}let t=this[Symbol.metadata];if(t!==null){let e=litPropertyMetadata.get(t);if(e!==void 0)for(let[i,o]of e)this.elementProperties.set(i,o)}this._$Eh=new Map;for(let[e,i]of this.elementProperties){let o=this._$Eu(e,i);o!==void 0&&this._$Eh.set(o,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){let e=[];if(Array.isArray(t)){let i=new Set(t.flat(1/0).reverse());for(let o of i)e.unshift(yt(o))}else t!==void 0&&e.push(yt(t));return e}static _$Eu(t,e){let i=e.attribute;return i===!1?void 0:typeof i=="string"?i:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(t=>t(this))}addController(t){(this._$EO??=new Set).add(t),this.renderRoot!==void 0&&this.isConnected&&t.hostConnected?.()}removeController(t){this._$EO?.delete(t)}_$E_(){let t=new Map,e=this.constructor.elementProperties;for(let i of e.keys())this.hasOwnProperty(i)&&(t.set(i,this[i]),delete this[i]);t.size>0&&(this._$Ep=t)}createRenderRoot(){let t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Kt(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(t=>t.hostConnected?.())}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach(t=>t.hostDisconnected?.())}attributeChangedCallback(t,e,i){this._$AK(t,i)}_$ET(t,e){let i=this.constructor.elementProperties.get(t),o=this.constructor._$Eu(t,i);if(o!==void 0&&i.reflect===!0){let n=(i.converter?.toAttribute!==void 0?i.converter:F).toAttribute(e,i.type);this._$Em=t,n==null?this.removeAttribute(o):this.setAttribute(o,n),this._$Em=null}}_$AK(t,e){let i=this.constructor,o=i._$Eh.get(t);if(o!==void 0&&this._$Em!==o){let n=i.getPropertyOptions(o),s=typeof n.converter=="function"?{fromAttribute:n.converter}:n.converter?.fromAttribute!==void 0?n.converter:F;this._$Em=o;let a=s.fromAttribute(e,n.type);this[o]=a??this._$Ej?.get(o)??a,this._$Em=null}}requestUpdate(t,e,i,o=!1,n){if(t!==void 0){let s=this.constructor;if(o===!1&&(n=this[t]),i??=s.getPropertyOptions(t),!((i.hasChanged??tt)(n,e)||i.useDefault&&i.reflect&&n===this._$Ej?.get(t)&&!this.hasAttribute(s._$Eu(t,i))))return;this.C(t,e,i)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:i,reflect:o,wrapped:n},s){i&&!(this._$Ej??=new Map).has(t)&&(this._$Ej.set(t,s??e??this[t]),n!==!0||s!==void 0)||(this._$AL.has(t)||(this.hasUpdated||i||(e=void 0),this._$AL.set(t,e)),o===!0&&this._$Em!==t&&(this._$Eq??=new Set).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}let t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(let[o,n]of this._$Ep)this[o]=n;this._$Ep=void 0}let i=this.constructor.elementProperties;if(i.size>0)for(let[o,n]of i){let{wrapped:s}=n,a=this[o];s!==!0||this._$AL.has(o)||a===void 0||this.C(o,void 0,n,a)}}let t=!1,e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),this._$EO?.forEach(i=>i.hostUpdate?.()),this.update(e)):this._$EM()}catch(i){throw t=!1,this._$EM(),i}t&&this._$AE(e)}willUpdate(t){}_$AE(t){this._$EO?.forEach(e=>e.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&=this._$Eq.forEach(e=>this._$ET(e,this[e])),this._$EM()}updated(t){}firstUpdated(t){}};$.elementStyles=[],$.shadowRootOptions={mode:"open"},$[K("elementProperties")]=new Map,$[K("finalized")]=new Map,Je?.({ReactiveElement:$}),(Q.reactiveElementVersions??=[]).push("2.1.2");/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var Et=globalThis,Zt=r=>r,nt=Et.trustedTypes,Qt=nt?nt.createPolicy("lit-html",{createHTML:r=>r}):void 0,ie="$lit$",k=`lit$${Math.random().toFixed(9).slice(2)}$`,se="?"+k,rr=`<${se}>`,T=document,Y=()=>T.createComment(""),W=r=>r===null||typeof r!="object"&&typeof r!="function",Pt=Array.isArray,or=r=>Pt(r)||typeof r?.[Symbol.iterator]=="function",_t=`[ 	
-\f\r]`,q=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,te=/-->/g,ee=/>/g,E=RegExp(`>|${_t}(?:([^\\s"'>=/]+)(${_t}*=${_t}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`,"g"),re=/'/g,oe=/"/g,ae=/^(?:script|style|textarea|title)$/i,Tt=r=>(t,...e)=>({_$litType$:r,strings:t,values:e}),p=Tt(1),jr=Tt(2),Ur=Tt(3),x=Symbol.for("lit-noChange"),f=Symbol.for("lit-nothing"),ne=new WeakMap,P=T.createTreeWalker(T,129);function le(r,t){if(!Pt(r)||!r.hasOwnProperty("raw"))throw Error("invalid template strings array");return Qt!==void 0?Qt.createHTML(t):t}var nr=(r,t)=>{let e=r.length-1,o=[],n,i=t===2?"<svg>":t===3?"<math>":"",s=q;for(let a=0;a<e;a++){let l=r[a],c,u,d=-1,h=0;for(;h<l.length&&(s.lastIndex=h,u=s.exec(l),u!==null);)h=s.lastIndex,s===q?u[1]==="!--"?s=te:u[1]!==void 0?s=ee:u[2]!==void 0?(ae.test(u[2])&&(n=RegExp("</"+u[2],"g")),s=E):u[3]!==void 0&&(s=E):s===E?u[0]===">"?(s=n??q,d=-1):u[1]===void 0?d=-2:(d=s.lastIndex-u[2].length,c=u[1],s=u[3]===void 0?E:u[3]==='"'?oe:re):s===oe||s===re?s=E:s===te||s===ee?s=q:(s=E,n=void 0);let y=s===E&&r[a+1].startsWith("/>")?" ":"";i+=s===q?l+rr:d>=0?(o.push(c),l.slice(0,d)+ie+l.slice(d)+k+y):l+k+(d===-2?a:y)}return[le(r,i+(r[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),o]},G=class r{constructor({strings:t,_$litType$:e},o){let n;this.parts=[];let i=0,s=0,a=t.length-1,l=this.parts,[c,u]=nr(t,e);if(this.el=r.createElement(c,o),P.currentNode=this.el.content,e===2||e===3){let d=this.el.content.firstChild;d.replaceWith(...d.childNodes)}for(;(n=P.nextNode())!==null&&l.length<a;){if(n.nodeType===1){if(n.hasAttributes())for(let d of n.getAttributeNames())if(d.endsWith(ie)){let h=u[s++],y=n.getAttribute(d).split(k),O=/([.?@])?(.*)/.exec(h);l.push({type:1,index:i,name:O[2],strings:y,ctor:O[1]==="."?Ct:O[1]==="?"?kt:O[1]==="@"?wt:N}),n.removeAttribute(d)}else d.startsWith(k)&&(l.push({type:6,index:i}),n.removeAttribute(d));if(ae.test(n.tagName)){let d=n.textContent.split(k),h=d.length-1;if(h>0){n.textContent=nt?nt.emptyScript:"";for(let y=0;y<h;y++)n.append(d[y],Y()),P.nextNode(),l.push({type:2,index:++i});n.append(d[h],Y())}}}else if(n.nodeType===8)if(n.data===se)l.push({type:2,index:i});else{let d=-1;for(;(d=n.data.indexOf(k,d+1))!==-1;)l.push({type:7,index:i}),d+=k.length-1}i++}}static createElement(t,e){let o=T.createElement("template");return o.innerHTML=t,o}};function M(r,t,e=r,o){if(t===x)return t;let n=o!==void 0?e._$Co?.[o]:e._$Cl,i=W(t)?void 0:t._$litDirective$;return n?.constructor!==i&&(n?._$AO?.(!1),i===void 0?n=void 0:(n=new i(r),n._$AT(r,e,o)),o!==void 0?(e._$Co??=[])[o]=n:e._$Cl=n),n!==void 0&&(t=M(r,n._$AS(r,t.values),n,o)),t}var At=class{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){let{el:{content:e},parts:o}=this._$AD,n=(t?.creationScope??T).importNode(e,!0);P.currentNode=n;let i=P.nextNode(),s=0,a=0,l=o[0];for(;l!==void 0;){if(s===l.index){let c;l.type===2?c=new J(i,i.nextSibling,this,t):l.type===1?c=new l.ctor(i,l.name,l.strings,this,t):l.type===6&&(c=new St(i,this,t)),this._$AV.push(c),l=o[++a]}s!==l?.index&&(i=P.nextNode(),s++)}return P.currentNode=T,n}p(t){let e=0;for(let o of this._$AV)o!==void 0&&(o.strings!==void 0?(o._$AI(t,o,e),e+=o.strings.length-2):o._$AI(t[e])),e++}},J=class r{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,e,o,n){this.type=2,this._$AH=f,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=o,this.options=n,this._$Cv=n?.isConnected??!0}get parentNode(){let t=this._$AA.parentNode,e=this._$AM;return e!==void 0&&t?.nodeType===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=M(this,t,e),W(t)?t===f||t==null||t===""?(this._$AH!==f&&this._$AR(),this._$AH=f):t!==this._$AH&&t!==x&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):or(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==f&&W(this._$AH)?this._$AA.nextSibling.data=t:this.T(T.createTextNode(t)),this._$AH=t}$(t){let{values:e,_$litType$:o}=t,n=typeof o=="number"?this._$AC(t):(o.el===void 0&&(o.el=G.createElement(le(o.h,o.h[0]),this.options)),o);if(this._$AH?._$AD===n)this._$AH.p(e);else{let i=new At(n,this),s=i.u(this.options);i.p(e),this.T(s),this._$AH=i}}_$AC(t){let e=ne.get(t.strings);return e===void 0&&ne.set(t.strings,e=new G(t)),e}k(t){Pt(this._$AH)||(this._$AH=[],this._$AR());let e=this._$AH,o,n=0;for(let i of t)n===e.length?e.push(o=new r(this.O(Y()),this.O(Y()),this,this.options)):o=e[n],o._$AI(i),n++;n<e.length&&(this._$AR(o&&o._$AB.nextSibling,n),e.length=n)}_$AR(t=this._$AA.nextSibling,e){for(this._$AP?.(!1,!0,e);t!==this._$AB;){let o=Zt(t).nextSibling;Zt(t).remove(),t=o}}setConnected(t){this._$AM===void 0&&(this._$Cv=t,this._$AP?.(t))}},N=class{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,o,n,i){this.type=1,this._$AH=f,this._$AN=void 0,this.element=t,this.name=e,this._$AM=n,this.options=i,o.length>2||o[0]!==""||o[1]!==""?(this._$AH=Array(o.length-1).fill(new String),this.strings=o):this._$AH=f}_$AI(t,e=this,o,n){let i=this.strings,s=!1;if(i===void 0)t=M(this,t,e,0),s=!W(t)||t!==this._$AH&&t!==x,s&&(this._$AH=t);else{let a=t,l,c;for(t=i[0],l=0;l<i.length-1;l++)c=M(this,a[o+l],e,l),c===x&&(c=this._$AH[l]),s||=!W(c)||c!==this._$AH[l],c===f?t=f:t!==f&&(t+=(c??"")+i[l+1]),this._$AH[l]=c}s&&!n&&this.j(t)}j(t){t===f?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}},Ct=class extends N{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===f?void 0:t}},kt=class extends N{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==f)}},wt=class extends N{constructor(t,e,o,n,i){super(t,e,o,n,i),this.type=5}_$AI(t,e=this){if((t=M(this,t,e,0)??f)===x)return;let o=this._$AH,n=t===f&&o!==f||t.capture!==o.capture||t.once!==o.once||t.passive!==o.passive,i=t!==f&&(o===f||n);n&&this.element.removeEventListener(this.name,this,o),i&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){typeof this._$AH=="function"?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t)}},St=class{constructor(t,e,o){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=o}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t)}};var ir=Et.litHtmlPolyfillSupport;ir?.(G,J),(Et.litHtmlVersions??=[]).push("3.3.3");var ce=(r,t,e)=>{let o=e?.renderBefore??t,n=o._$litPart$;if(n===void 0){let i=e?.renderBefore??null;o._$litPart$=n=new J(t.insertBefore(Y(),i),i,void 0,e??{})}return n._$AI(r),n};/**
+ */var Ct=globalThis,Vt=r=>r,et=Ct.trustedTypes,Wt=et?et.createPolicy("lit-html",{createHTML:r=>r}):void 0,Zt="$lit$",A=`lit$${Math.random().toFixed(9).slice(2)}$`,Qt="?"+A,Xe=`<${Qt}>`,R=document,V=()=>R.createComment(""),W=r=>r===null||typeof r!="object"&&typeof r!="function",wt=Array.isArray,Ze=r=>wt(r)||typeof r?.[Symbol.iterator]=="function",vt=`[ 	
+\f\r]`,z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,qt=/-->/g,Yt=/>/g,E=RegExp(`>|${vt}(?:([^\\s"'>=/]+)(${vt}*=${vt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`,"g"),Gt=/'/g,Jt=/"/g,te=/^(?:script|style|textarea|title)$/i,St=r=>(t,...e)=>({_$litType$:r,strings:t,values:e}),d=St(1),Br=St(2),Hr=St(3),x=Symbol.for("lit-noChange"),u=Symbol.for("lit-nothing"),Xt=new WeakMap,T=R.createTreeWalker(R,129);function ee(r,t){if(!wt(r)||!r.hasOwnProperty("raw"))throw Error("invalid template strings array");return Wt!==void 0?Wt.createHTML(t):t}var Qe=(r,t)=>{let e=r.length-1,i=[],o,n=t===2?"<svg>":t===3?"<math>":"",s=z;for(let a=0;a<e;a++){let l=r[a],c,p,h=-1,m=0;for(;m<l.length&&(s.lastIndex=m,p=s.exec(l),p!==null);)m=s.lastIndex,s===z?p[1]==="!--"?s=qt:p[1]!==void 0?s=Yt:p[2]!==void 0?(te.test(p[2])&&(o=RegExp("</"+p[2],"g")),s=E):p[3]!==void 0&&(s=E):s===E?p[0]===">"?(s=o??z,h=-1):p[1]===void 0?h=-2:(h=s.lastIndex-p[2].length,c=p[1],s=p[3]===void 0?E:p[3]==='"'?Jt:Gt):s===Jt||s===Gt?s=E:s===qt||s===Yt?s=z:(s=E,o=void 0);let y=s===E&&r[a+1].startsWith("/>")?" ":"";n+=s===z?l+Xe:h>=0?(i.push(c),l.slice(0,h)+Zt+l.slice(h)+A+y):l+A+(h===-2?a:y)}return[ee(r,n+(r[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),i]},q=class r{constructor({strings:t,_$litType$:e},i){let o;this.parts=[];let n=0,s=0,a=t.length-1,l=this.parts,[c,p]=Qe(t,e);if(this.el=r.createElement(c,i),T.currentNode=this.el.content,e===2||e===3){let h=this.el.content.firstChild;h.replaceWith(...h.childNodes)}for(;(o=T.nextNode())!==null&&l.length<a;){if(o.nodeType===1){if(o.hasAttributes())for(let h of o.getAttributeNames())if(h.endsWith(Zt)){let m=p[s++],y=o.getAttribute(h).split(A),J=/([.?@])?(.*)/.exec(m);l.push({type:1,index:n,name:J[2],strings:y,ctor:J[1]==="."?$t:J[1]==="?"?xt:J[1]==="@"?_t:M}),o.removeAttribute(h)}else h.startsWith(A)&&(l.push({type:6,index:n}),o.removeAttribute(h));if(te.test(o.tagName)){let h=o.textContent.split(A),m=h.length-1;if(m>0){o.textContent=et?et.emptyScript:"";for(let y=0;y<m;y++)o.append(h[y],V()),T.nextNode(),l.push({type:2,index:++n});o.append(h[m],V())}}}else if(o.nodeType===8)if(o.data===Qt)l.push({type:2,index:n});else{let h=-1;for(;(h=o.data.indexOf(A,h+1))!==-1;)l.push({type:7,index:n}),h+=A.length-1}n++}}static createElement(t,e){let i=R.createElement("template");return i.innerHTML=t,i}};function H(r,t,e=r,i){if(t===x)return t;let o=i!==void 0?e._$Co?.[i]:e._$Cl,n=W(t)?void 0:t._$litDirective$;return o?.constructor!==n&&(o?._$AO?.(!1),n===void 0?o=void 0:(o=new n(r),o._$AT(r,e,i)),i!==void 0?(e._$Co??=[])[i]=o:e._$Cl=o),o!==void 0&&(t=H(r,o._$AS(r,t.values),o,i)),t}var bt=class{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){let{el:{content:e},parts:i}=this._$AD,o=(t?.creationScope??R).importNode(e,!0);T.currentNode=o;let n=T.nextNode(),s=0,a=0,l=i[0];for(;l!==void 0;){if(s===l.index){let c;l.type===2?c=new Y(n,n.nextSibling,this,t):l.type===1?c=new l.ctor(n,l.name,l.strings,this,t):l.type===6&&(c=new At(n,this,t)),this._$AV.push(c),l=i[++a]}s!==l?.index&&(n=T.nextNode(),s++)}return T.currentNode=R,o}p(t){let e=0;for(let i of this._$AV)i!==void 0&&(i.strings!==void 0?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}},Y=class r{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,e,i,o){this.type=2,this._$AH=u,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=o,this._$Cv=o?.isConnected??!0}get parentNode(){let t=this._$AA.parentNode,e=this._$AM;return e!==void 0&&t?.nodeType===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=H(this,t,e),W(t)?t===u||t==null||t===""?(this._$AH!==u&&this._$AR(),this._$AH=u):t!==this._$AH&&t!==x&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):Ze(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==u&&W(this._$AH)?this._$AA.nextSibling.data=t:this.T(R.createTextNode(t)),this._$AH=t}$(t){let{values:e,_$litType$:i}=t,o=typeof i=="number"?this._$AC(t):(i.el===void 0&&(i.el=q.createElement(ee(i.h,i.h[0]),this.options)),i);if(this._$AH?._$AD===o)this._$AH.p(e);else{let n=new bt(o,this),s=n.u(this.options);n.p(e),this.T(s),this._$AH=n}}_$AC(t){let e=Xt.get(t.strings);return e===void 0&&Xt.set(t.strings,e=new q(t)),e}k(t){wt(this._$AH)||(this._$AH=[],this._$AR());let e=this._$AH,i,o=0;for(let n of t)o===e.length?e.push(i=new r(this.O(V()),this.O(V()),this,this.options)):i=e[o],i._$AI(n),o++;o<e.length&&(this._$AR(i&&i._$AB.nextSibling,o),e.length=o)}_$AR(t=this._$AA.nextSibling,e){for(this._$AP?.(!1,!0,e);t!==this._$AB;){let i=Vt(t).nextSibling;Vt(t).remove(),t=i}}setConnected(t){this._$AM===void 0&&(this._$Cv=t,this._$AP?.(t))}},M=class{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,i,o,n){this.type=1,this._$AH=u,this._$AN=void 0,this.element=t,this.name=e,this._$AM=o,this.options=n,i.length>2||i[0]!==""||i[1]!==""?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=u}_$AI(t,e=this,i,o){let n=this.strings,s=!1;if(n===void 0)t=H(this,t,e,0),s=!W(t)||t!==this._$AH&&t!==x,s&&(this._$AH=t);else{let a=t,l,c;for(t=n[0],l=0;l<n.length-1;l++)c=H(this,a[i+l],e,l),c===x&&(c=this._$AH[l]),s||=!W(c)||c!==this._$AH[l],c===u?t=u:t!==u&&(t+=(c??"")+n[l+1]),this._$AH[l]=c}s&&!o&&this.j(t)}j(t){t===u?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}},$t=class extends M{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===u?void 0:t}},xt=class extends M{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==u)}},_t=class extends M{constructor(t,e,i,o,n){super(t,e,i,o,n),this.type=5}_$AI(t,e=this){if((t=H(this,t,e,0)??u)===x)return;let i=this._$AH,o=t===u&&i!==u||t.capture!==i.capture||t.once!==i.once||t.passive!==i.passive,n=t!==u&&(i===u||o);o&&this.element.removeEventListener(this.name,this,i),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){typeof this._$AH=="function"?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t)}},At=class{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){H(this,t)}};var tr=Ct.litHtmlPolyfillSupport;tr?.(q,Y),(Ct.litHtmlVersions??=[]).push("3.3.3");var re=(r,t,e)=>{let i=e?.renderBefore??t,o=i._$litPart$;if(o===void 0){let n=e?.renderBefore??null;i._$litPart$=o=new Y(t.insertBefore(V(),n),n,void 0,e??{})}return o._$AI(r),o};/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var Rt=globalThis,b=class extends ${constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){let t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){let e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=ce(e,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return x}};b._$litElement$=!0,b.finalized=!0,Rt.litElementHydrateSupport?.({LitElement:b});var sr=Rt.litElementPolyfillSupport;sr?.({LitElement:b});(Rt.litElementVersions??=[]).push("4.2.2");/**
+ */var kt=globalThis,v=class extends ${constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){let t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){let e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=re(e,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return x}};v._$litElement$=!0,v.finalized=!0,kt.litElementHydrateSupport?.({LitElement:v});var er=kt.litElementPolyfillSupport;er?.({LitElement:v});(kt.litElementVersions??=[]).push("4.2.2");/**
  * @license
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
@@ -24,15 +24,15 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var it=r=>(t,e)=>{e!==void 0?e.addInitializer(()=>{customElements.define(r,t)}):customElements.define(r,t)};/**
+ */var rt=r=>(t,e)=>{e!==void 0?e.addInitializer(()=>{customElements.define(r,t)}):customElements.define(r,t)};/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var ar={attribute:!0,type:String,converter:V,reflect:!1,hasChanged:ot},lr=(r=ar,t,e)=>{let{kind:o,metadata:n}=e,i=globalThis.litPropertyMetadata.get(n);if(i===void 0&&globalThis.litPropertyMetadata.set(n,i=new Map),o==="setter"&&((r=Object.create(r)).wrapped=!0),i.set(e.name,r),o==="accessor"){let{name:s}=e;return{set(a){let l=t.get.call(this);t.set.call(this,a),this.requestUpdate(s,l,r,!0,a)},init(a){return a!==void 0&&this.C(s,void 0,r,a),a}}}if(o==="setter"){let{name:s}=e;return function(a){let l=this[s];t.call(this,a),this.requestUpdate(s,l,r,!0,a)}}throw Error("Unsupported decorator location: "+o)};function R(r){return(t,e)=>typeof e=="object"?lr(r,t,e):((o,n,i)=>{let s=n.hasOwnProperty(i);return n.constructor.createProperty(i,o),s?Object.getOwnPropertyDescriptor(n,i):void 0})(r,t,e)}/**
+ */var rr={attribute:!0,type:String,converter:F,reflect:!1,hasChanged:tt},ir=(r=rr,t,e)=>{let{kind:i,metadata:o}=e,n=globalThis.litPropertyMetadata.get(o);if(n===void 0&&globalThis.litPropertyMetadata.set(o,n=new Map),i==="setter"&&((r=Object.create(r)).wrapped=!0),n.set(e.name,r),i==="accessor"){let{name:s}=e;return{set(a){let l=t.get.call(this);t.set.call(this,a),this.requestUpdate(s,l,r,!0,a)},init(a){return a!==void 0&&this.C(s,void 0,r,a),a}}}if(i==="setter"){let{name:s}=e;return function(a){let l=this[s];t.call(this,a),this.requestUpdate(s,l,r,!0,a)}}throw Error("Unsupported decorator location: "+i)};function D(r){return(t,e)=>typeof e=="object"?ir(r,t,e):((i,o,n)=>{let s=o.hasOwnProperty(n);return o.constructor.createProperty(n,i),s?Object.getOwnPropertyDescriptor(o,n):void 0})(r,t,e)}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */function D(r){return R({...r,state:!0,attribute:!1})}/**
+ */function O(r){return D({...r,state:!0,attribute:!1})}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
@@ -64,17 +64,25 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var de={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},pe=r=>(...t)=>({_$litDirective$:r,values:t}),at=class{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,o){this._$Ct=t,this._$AM=e,this._$Ci=o}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}};/**
+ */var ie={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},oe=r=>(...t)=>({_$litDirective$:r,values:t}),ot=class{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}};/**
  * @license
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var ue="important",cr=" !"+ue,v=pe(class extends at{constructor(r){if(super(r),r.type!==de.ATTRIBUTE||r.name!=="style"||r.strings?.length>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(r){return Object.keys(r).reduce((t,e)=>{let o=r[e];return o==null?t:t+`${e=e.includes("-")?e:e.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${o};`},"")}update(r,[t]){let{style:e}=r.element;if(this.ft===void 0)return this.ft=new Set(Object.keys(t)),this.render(t);for(let o of this.ft)t[o]==null&&(this.ft.delete(o),o.includes("-")?e.removeProperty(o):e[o]=null);for(let o in t){let n=t[o];if(n!=null){this.ft.add(o);let i=typeof n=="string"&&n.endsWith(cr);o.includes("-")||i?e.setProperty(o,i?n.slice(0,-11):n,i?ue:""):e[o]=n}}return x}});var dr=/^#?(?:([0-9a-f]{3})|([0-9a-f]{6}))$/i;var fe="var(--card-background-color, #ffffff)";function me(r){let t=dr.exec(r.trim());if(!t)return null;let e=t[1]?t[1].split("").map(o=>o+o).join(""):t[2];return{r:Number.parseInt(e.slice(0,2),16),g:Number.parseInt(e.slice(2,4),16),b:Number.parseInt(e.slice(4,6),16)}}function Dt(r){let t=r/255;return t<=.03928?t/12.92:((t+.055)/1.055)**2.4}function pr({r,g:t,b:e}){return .2126*Dt(r)+.7152*Dt(t)+.0722*Dt(e)}function he(r){let t=me(r);return t&&pr(t)>.179?"#0f172a":"#ffffff"}function lt(r){return`color-mix(in srgb, ${r} 14%, ${fe})`}function ct(r){return`color-mix(in srgb, ${r} 35%, ${fe})`}function j(r,t){let e=me(r);if(!e)return t;let o=n=>n.toString(16).padStart(2,"0");return`#${o(e.r)}${o(e.g)}${o(e.b)}`}var L=["mon","tue","wed","thu","fri","sat","sun"];function Lt(r){return typeof r=="string"&&L.includes(r)}function Bt(r,t){if(!Array.isArray(r))return[...t];let e=[];for(let o of r)Lt(o)&&!e.includes(o)&&e.push(o);return e.length>0?e:[...t]}function X(r,t){return t.days&&t.days.length>0?t.days:r.days}function ye(r=new Date){return L[(r.getDay()+6)%7]}var ur={monday:0,tuesday:1,wednesday:2,thursday:3,friday:4,saturday:5,sunday:6};function dt(r){let t=r?.locale?.first_weekday,e=0;return t&&t!=="language"?e=ur[t]:t==="language"&&(e=fr(r?.language)?6:0),L.map((o,n)=>L[(n+e)%7])}function fr(r){return r?r.toLowerCase().startsWith("en-us"):!1}function pt(r,t,e){if(r.includes(t))return r.length<=1?r:r.filter(s=>s!==t);let o=s=>e.indexOf(s),n=r.findIndex(s=>o(s)>o(t)),i=[...r];return i.splice(n===-1?i.length:n,0,t),i}var Ht={days:{mon:{full:"\u043F\u043E\u043D\u0435\u0434\u0435\u043B\u043D\u0438\u043A",short:"\u043F\u043D"},tue:{full:"\u0432\u0442\u043E\u0440\u043D\u0438\u043A",short:"\u0432\u0442"},wed:{full:"\u0441\u0440\u044F\u0434\u0430",short:"\u0441\u0440"},thu:{full:"\u0447\u0435\u0442\u0432\u044A\u0440\u0442\u044A\u043A",short:"\u0447\u0442"},fri:{full:"\u043F\u0435\u0442\u044A\u043A",short:"\u043F\u0442"},sat:{full:"\u0441\u044A\u0431\u043E\u0442\u0430",short:"\u0441\u0431"},sun:{full:"\u043D\u0435\u0434\u0435\u043B\u044F",short:"\u043D\u0434"}},until:r=>`\u0434\u043E ${r}`,after:r=>`\u0441\u043B\u0435\u0434 ${r}`,range:(r,t)=>`${r}\u2013${t}`,today:"\u0414\u043D\u0435\u0441",editor:{tabSettings:"\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",tabActivities:"\u0414\u0435\u0439\u043D\u043E\u0441\u0442\u0438",addPerson:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0447\u043E\u0432\u0435\u043A",removePerson:"\u041F\u0440\u0435\u043C\u0430\u0445\u043D\u0438 \u0447\u043E\u0432\u0435\u043A",personNamePlaceholder:"\u041D\u043E\u0432 \u0447\u043E\u0432\u0435\u043A",title:"\u0417\u0430\u0433\u043B\u0430\u0432\u0438\u0435",layout:"\u0418\u0437\u0433\u043B\u0435\u0434",layoutBlocks:"\u0411\u043B\u043E\u043A\u043E\u0432\u0435",layoutGrid:"\u041C\u0440\u0435\u0436\u0430",days:"\u0414\u043D\u0438",language:"\u0415\u0437\u0438\u043A",languageAuto:"\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E",languageEnglish:"\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438",languageBulgarian:"\u0411\u044A\u043B\u0433\u0430\u0440\u0441\u043A\u0438",highlightToday:"\u041E\u0442\u0431\u0435\u043B\u044F\u0437\u0432\u0430\u0439 \u0434\u043D\u0435\u0448\u043D\u0438\u044F \u0434\u0435\u043D",headerColor:"\u0426\u0432\u044F\u0442 \u043D\u0430 \u0437\u0430\u0433\u043B\u0430\u0432\u043A\u0430\u0442\u0430",name:"\u0418\u043C\u0435",emoji:"\u0415\u043C\u043E\u0434\u0436\u0438",color:"\u0426\u0432\u044F\u0442",daysOverride:"\u0414\u043D\u0438 \u0437\u0430 \u0442\u043E\u0437\u0438 \u0447\u043E\u0432\u0435\u043A",daysOverrideHint:"\u041E\u0441\u0442\u0430\u0432\u0435\u0442\u0435 \u043F\u0440\u0430\u0437\u043D\u043E, \u0437\u0430 \u0434\u0430 \u0441\u0435 \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430\u0442 \u0434\u043D\u0438\u0442\u0435 \u043D\u0430 \u043A\u0430\u0440\u0442\u0430\u0442\u0430",slots:"\u0427\u0430\u0441\u043E\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0438",addSlot:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B",slotColumn:"\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B",addBlock:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0431\u043B\u043E\u043A",addBlockNeedsActivity:"\u041F\u044A\u0440\u0432\u043E \u0434\u043E\u0431\u0430\u0432\u0435\u0442\u0435 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",activity:"\u0414\u0435\u0439\u043D\u043E\u0441\u0442",start:"\u041D\u0430\u0447\u0430\u043B\u043E",end:"\u041A\u0440\u0430\u0439",slot:"\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B",slotNone:"\u0418\u0437\u0432\u044A\u043D \u043C\u0440\u0435\u0436\u0430\u0442\u0430",moveUp:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u043D\u0430\u0433\u043E\u0440\u0435",moveDown:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u043D\u0430\u0434\u043E\u043B\u0443",moveToDay:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u0432 \u0434\u0440\u0443\u0433 \u0434\u0435\u043D",clearTime:"\u0418\u0437\u0447\u0438\u0441\u0442\u0438 \u0442\u043E\u0437\u0438 \u0447\u0430\u0441 (\u0431\u043B\u043E\u043A\u044A\u0442 \u0441\u0442\u0430\u0432\u0430 \u043E\u0442\u0432\u043E\u0440\u0435\u043D)",remove:"\u041F\u0440\u0435\u043C\u0430\u0445\u043D\u0438",placeHint:"\u0414\u043E\u043A\u043E\u0441\u043D\u0435\u0442\u0435 \u0434\u0435\u0439\u043D\u043E\u0441\u0442, \u0441\u043B\u0435\u0434 \u043A\u043E\u0435\u0442\u043E \u0434\u043E\u043A\u043E\u0441\u043D\u0435\u0442\u0435 \u0434\u0435\u043D, \u0437\u0430 \u0434\u0430 \u044F \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u0435 \u0442\u0430\u043C",label:"\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435",newActivityLabel:"\u0418\u043C\u0435 \u043D\u0430 \u043D\u043E\u0432\u0430 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",addActivity:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",activityInUse:(r,t)=>`\u201E${r}\u201C \u0441\u0435 \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430 \u0432 ${t} ${t===1?"\u0431\u043B\u043E\u043A":"\u0431\u043B\u043E\u043A\u0430"}.`,confirmRemoveActivity:"\u0414\u0430 \u0441\u0435 \u043F\u0440\u0435\u043C\u0430\u0445\u043D\u0435 \u043B\u0438 \u0432\u044A\u043F\u0440\u0435\u043A\u0438 \u0442\u043E\u0432\u0430?",noSlots:"\u0414\u043E\u0431\u0430\u0432\u0435\u0442\u0435 \u0447\u0430\u0441\u043E\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0438, \u0437\u0430 \u0434\u0430 \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 \u0438\u0437\u0433\u043B\u0435\u0434\u0430 \u201E\u041C\u0440\u0435\u0436\u0430\u201C.",noBlocks:"\u041D\u044F\u043C\u0430 \u0437\u0430\u043D\u0438\u043C\u0430\u043D\u0438\u044F",orphanActivity:"\u041D\u0435\u043F\u043E\u0437\u043D\u0430\u0442\u0430 \u0434\u0435\u0439\u043D\u043E\u0441\u0442"}};var Ot={days:{mon:{full:"Monday",short:"Mon"},tue:{full:"Tuesday",short:"Tue"},wed:{full:"Wednesday",short:"Wed"},thu:{full:"Thursday",short:"Thu"},fri:{full:"Friday",short:"Fri"},sat:{full:"Saturday",short:"Sat"},sun:{full:"Sunday",short:"Sun"}},until:r=>`until ${r}`,after:r=>`after ${r}`,range:(r,t)=>`${r}\u2013${t}`,today:"Today",editor:{tabSettings:"Settings",tabActivities:"Activities",addPerson:"Add person",removePerson:"Remove person",personNamePlaceholder:"New person",title:"Title",layout:"Layout",layoutBlocks:"Blocks",layoutGrid:"Grid",days:"Days",language:"Language",languageAuto:"Automatic",languageEnglish:"English",languageBulgarian:"Bulgarian",highlightToday:"Highlight today",headerColor:"Header colour",name:"Name",emoji:"Emoji",color:"Colour",daysOverride:"Days for this person",daysOverrideHint:"Leave empty to use the card's days",slots:"Time slots",addSlot:"Add slot",slotColumn:"Slot",addBlock:"Add block",addBlockNeedsActivity:"Add an activity first",activity:"Activity",start:"Start",end:"End",slot:"Slot",slotNone:"Not on the grid",moveUp:"Move up",moveDown:"Move down",moveToDay:"Move to another day",clearTime:"Clear this time (makes the block open-ended)",remove:"Remove",placeHint:"Tap an activity, then tap a day to add it there",label:"Label",newActivityLabel:"New activity name",addActivity:"Add activity",activityInUse:(r,t)=>`\u201C${r}\u201D is used by ${t} block${t===1?"":"s"}.`,confirmRemoveActivity:"Remove it anyway?",noSlots:"Add time slots to use the grid layout.",noBlocks:"Nothing scheduled",orphanActivity:"Unknown activity"}};function w(r,t){return r.language==="en"||r.language==="bg"?r.language:(t?.language??"en").toLowerCase().startsWith("bg")?"bg":"en"}function ut(r){return r==="bg"?Ht:Ot}var mt="custom:weekly-timetable-card",ht=["mon","tue","wed","thu","fri"],yt="#1e3a5f",mr="#888888";function ft(r){if(typeof r=="number"&&Number.isFinite(r)&&r>=0){let e=Math.floor(r/60),o=r%60;return`${String(e).padStart(2,"0")}:${String(o).padStart(2,"0")}`}if(typeof r!="string")return;let t=r.trim();return t.length>0?t:void 0}function gt(r){let t=r??{};if(!Array.isArray(t.people)||t.people.length===0)throw new Error("weekly-timetable-card: `people` must be a non-empty list");if(t.activities!==void 0&&!Array.isArray(t.activities))throw new Error("weekly-timetable-card: `activities` must be a list");let e=Bt(t.days,ht),o=(Array.isArray(t.activities)?t.activities:[]).map(hr).filter(i=>i!==null),n=t.people.map(i=>yr(i,e));return{type:typeof t.type=="string"?t.type:mt,title:typeof t.title=="string"?t.title:void 0,layout:t.layout==="grid"?"grid":"blocks",days:e,language:t.language==="en"||t.language==="bg"?t.language:"auto",highlight_today:t.highlight_today!==!1,header_color:typeof t.header_color=="string"&&t.header_color.trim().length>0?t.header_color.trim():yt,activities:o,people:n}}function hr(r){let t=r??{},e=typeof t.id=="string"?t.id.trim():"";if(e.length===0)return null;let o=typeof t.label=="string"&&t.label.trim().length>0?t.label.trim():e,n=typeof t.color=="string"&&t.color.trim().length>0?t.color.trim():mr;return{id:e,label:o,color:n}}function yr(r,t){let e=r??{},o=Array.isArray(e.days)?Bt(e.days,t):void 0,n=o??t,i=e.schedule??{},s={},a=new Set(n);for(let u of Object.keys(i))Lt(u)&&a.add(u);for(let u of L){if(!a.has(u))continue;let d=i[u];s[u]=Array.isArray(d)?d.map(gr).filter(h=>h!==null):[]}let l=Array.isArray(e.slots)?e.slots.map((u,d)=>vr(u,d)).filter(u=>u!==null):void 0,c={name:typeof e.name=="string"?e.name:"",schedule:s};return typeof e.emoji=="string"&&e.emoji.length>0&&(c.emoji=e.emoji),typeof e.color=="string"&&e.color.trim().length>0&&(c.color=e.color.trim()),o&&(c.days=o),l&&(c.slots=l),c}function gr(r){let t=r??{};if(typeof t.activity!="string"||t.activity.trim().length===0)return null;let e={activity:t.activity.trim()},o=ft(t.start),n=ft(t.end);return o&&(e.start=o),n&&(e.end=n),e}function vr(r,t){let e=r??{},o=ft(e.start),n=ft(e.end);return!o||!n?null:{slot:typeof e.slot=="number"&&Number.isFinite(e.slot)?e.slot:t+1,start:o,end:n}}var br={en:[{id:"english",label:"English",color:"#3b82f6"},{id:"daycare",label:"After-school club",color:"#64748b"},{id:"break",label:"Break and a snack",color:"#94a3b8"},{id:"judo",label:"Judo",color:"#f97316"},{id:"chess",label:"Chess",color:"#a855f7"},{id:"home",label:"Back home",color:"#22c55e"}],bg:[{id:"english",label:"\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438",color:"#3b82f6"},{id:"daycare",label:"\u0417\u0430\u043D\u0438\u043C\u0430\u043B\u043D\u044F",color:"#64748b"},{id:"break",label:"\u041F\u043E\u0447\u0438\u0432\u043A\u0430 \u0438 \u0445\u0430\u043F\u0432\u0430\u043D\u0435",color:"#94a3b8"},{id:"judo",label:"\u0414\u0436\u0443\u0434\u043E",color:"#f97316"},{id:"chess",label:"\u0428\u0430\u0445",color:"#a855f7"},{id:"home",label:"\u0412\u0440\u044A\u0449\u0430\u043D\u0435 \u0432\u043A\u044A\u0449\u0438",color:"#22c55e"}]},$r={en:"Sami",bg:"Sami"};function ge(r){let t=w({language:"auto"},r),e=o=>[{activity:"english",start:"15:20",end:"16:20"},{activity:"break",start:"16:20",end:"17:30"},{activity:o,start:"17:30",end:"18:30"},{activity:"home",start:"18:30"}];return{type:mt,title:void 0,layout:"blocks",days:[...ht],language:"auto",highlight_today:!0,header_color:yt,activities:br[t].map(o=>({...o})),people:[{name:$r[t],emoji:"\u{1F94B}",color:"#f472b6",schedule:{mon:e("judo"),tue:[{activity:"daycare",end:"16:00"}],wed:e("judo"),thu:[{activity:"daycare",end:"16:00"},{activity:"break",start:"16:00",end:"16:30"},{activity:"chess",start:"16:30",end:"17:30"}],fri:[{activity:"daycare",end:"16:00"},{activity:"break",start:"16:00",end:"16:30"},{activity:"chess",start:"16:30",end:"17:30"}]}}]}}function Mt(r,t){if(t<=0||r<=0)return"stacked";let e=r/t;return e>=110?"full":e>=72?"compact":"stacked"}var ve=F`
+ */var ne="important",or=" !"+ne,b=oe(class extends ot{constructor(r){if(super(r),r.type!==ie.ATTRIBUTE||r.name!=="style"||r.strings?.length>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(r){return Object.keys(r).reduce((t,e)=>{let i=r[e];return i==null?t:t+`${e=e.includes("-")?e:e.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${i};`},"")}update(r,[t]){let{style:e}=r.element;if(this.ft===void 0)return this.ft=new Set(Object.keys(t)),this.render(t);for(let i of this.ft)t[i]==null&&(this.ft.delete(i),i.includes("-")?e.removeProperty(i):e[i]=null);for(let i in t){let o=t[i];if(o!=null){this.ft.add(i);let n=typeof o=="string"&&o.endsWith(or);i.includes("-")||n?e.setProperty(i,n?o.slice(0,-11):o,n?ne:""):e[i]=o}}return x}});var nr=/^#?(?:([0-9a-f]{3})|([0-9a-f]{6}))$/i;var se="var(--card-background-color, #ffffff)";function ae(r){let t=nr.exec(r.trim());if(!t)return null;let e=t[1]?t[1].split("").map(i=>i+i).join(""):t[2];return{r:Number.parseInt(e.slice(0,2),16),g:Number.parseInt(e.slice(2,4),16),b:Number.parseInt(e.slice(4,6),16)}}function Et(r){let t=r/255;return t<=.03928?t/12.92:((t+.055)/1.055)**2.4}function sr({r,g:t,b:e}){return .2126*Et(r)+.7152*Et(t)+.0722*Et(e)}function le(r){let t=ae(r);return t&&sr(t)>.179?"#0f172a":"#ffffff"}function nt(r){return`color-mix(in srgb, ${r} 14%, ${se})`}function st(r){return`color-mix(in srgb, ${r} 35%, ${se})`}function at(r,t){let e=ae(r);if(!e)return t;let i=o=>o.toString(16).padStart(2,"0");return`#${i(e.r)}${i(e.g)}${i(e.b)}`}var P=["mon","tue","wed","thu","fri","sat","sun"];function Tt(r){return typeof r=="string"&&P.includes(r)}function ce(r,t){if(!Array.isArray(r))return[...t];let e=[];for(let i of r)Tt(i)&&!e.includes(i)&&e.push(i);return e.length>0?e:[...t]}function de(r=new Date){return P[(r.getDay()+6)%7]}var ar={monday:0,tuesday:1,wednesday:2,thursday:3,friday:4,saturday:5,sunday:6};function ue(r){let t=r?.locale?.first_weekday,e=0;return t&&t!=="language"?e=ar[t]:t==="language"&&(e=lr(r?.language)?6:0),P.map((i,o)=>P[(o+e)%7])}function lr(r){return r?r.toLowerCase().startsWith("en-us"):!1}function pe(r,t,e){if(r.includes(t))return r.length<=1?r:r.filter(s=>s!==t);let i=s=>e.indexOf(s),o=r.findIndex(s=>i(s)>i(t)),n=[...r];return n.splice(o===-1?n.length:o,0,t),n}var Rt={days:{mon:{full:"\u043F\u043E\u043D\u0435\u0434\u0435\u043B\u043D\u0438\u043A",short:"\u043F\u043D"},tue:{full:"\u0432\u0442\u043E\u0440\u043D\u0438\u043A",short:"\u0432\u0442"},wed:{full:"\u0441\u0440\u044F\u0434\u0430",short:"\u0441\u0440"},thu:{full:"\u0447\u0435\u0442\u0432\u044A\u0440\u0442\u044A\u043A",short:"\u0447\u0442"},fri:{full:"\u043F\u0435\u0442\u044A\u043A",short:"\u043F\u0442"},sat:{full:"\u0441\u044A\u0431\u043E\u0442\u0430",short:"\u0441\u0431"},sun:{full:"\u043D\u0435\u0434\u0435\u043B\u044F",short:"\u043D\u0434"}},until:r=>`\u0434\u043E ${r}`,after:r=>`\u0441\u043B\u0435\u0434 ${r}`,range:(r,t)=>`${r}\u2013${t}`,untilWord:"\u0434\u043E",afterWord:"\u0441\u043B\u0435\u0434",today:"\u0414\u043D\u0435\u0441",editor:{tabSettings:"\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",tabSchedule:"\u0420\u0430\u0437\u043F\u0438\u0441\u0430\u043D\u0438\u0435",tabActivities:"\u0414\u0435\u0439\u043D\u043E\u0441\u0442\u0438",title:"\u0417\u0430\u0433\u043B\u0430\u0432\u0438\u0435",layout:"\u0418\u0437\u0433\u043B\u0435\u0434",layoutBlocks:"\u0411\u043B\u043E\u043A\u043E\u0432\u0435",layoutGrid:"\u041C\u0440\u0435\u0436\u0430",days:"\u0414\u043D\u0438",language:"\u0415\u0437\u0438\u043A",languageAuto:"\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E",languageEnglish:"\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438",languageBulgarian:"\u0411\u044A\u043B\u0433\u0430\u0440\u0441\u043A\u0438",highlightToday:"\u041E\u0442\u0431\u0435\u043B\u044F\u0437\u0432\u0430\u0439 \u0434\u043D\u0435\u0448\u043D\u0438\u044F \u0434\u0435\u043D",headerColor:"\u0426\u0432\u044F\u0442 \u043D\u0430 \u0437\u0430\u0433\u043B\u0430\u0432\u043A\u0430\u0442\u0430",slots:"\u0427\u0430\u0441\u043E\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0438",addSlot:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B",slotColumn:"\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B",addBlock:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0431\u043B\u043E\u043A",addBlockNeedsActivity:"\u041F\u044A\u0440\u0432\u043E \u0434\u043E\u0431\u0430\u0432\u0435\u0442\u0435 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",activity:"\u0414\u0435\u0439\u043D\u043E\u0441\u0442",start:"\u041D\u0430\u0447\u0430\u043B\u043E",end:"\u041A\u0440\u0430\u0439",slot:"\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B",slotNone:"\u0418\u0437\u0432\u044A\u043D \u043C\u0440\u0435\u0436\u0430\u0442\u0430",moveUp:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u043D\u0430\u0433\u043E\u0440\u0435",moveDown:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u043D\u0430\u0434\u043E\u043B\u0443",moveToDay:"\u041F\u0440\u0435\u043C\u0435\u0441\u0442\u0438 \u0432 \u0434\u0440\u0443\u0433 \u0434\u0435\u043D",clearTime:"\u0418\u0437\u0447\u0438\u0441\u0442\u0438 \u0442\u043E\u0437\u0438 \u0447\u0430\u0441 (\u0431\u043B\u043E\u043A\u044A\u0442 \u0441\u0442\u0430\u0432\u0430 \u043E\u0442\u0432\u043E\u0440\u0435\u043D)",remove:"\u041F\u0440\u0435\u043C\u0430\u0445\u043D\u0438",placeHint:"\u0414\u043E\u043A\u043E\u0441\u043D\u0435\u0442\u0435 \u0434\u0435\u0439\u043D\u043E\u0441\u0442, \u0441\u043B\u0435\u0434 \u043A\u043E\u0435\u0442\u043E \u0434\u043E\u043A\u043E\u0441\u043D\u0435\u0442\u0435 \u0434\u0435\u043D, \u0437\u0430 \u0434\u0430 \u044F \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u0435 \u0442\u0430\u043C",activityTitle:"\u0417\u0430\u0433\u043B\u0430\u0432\u0438\u0435",activitySubtitle:"\u041F\u043E\u0434\u0437\u0430\u0433\u043B\u0430\u0432\u0438\u0435",newActivityTitle:"\u0418\u043C\u0435 \u043D\u0430 \u043D\u043E\u0432\u0430 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",addActivity:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0434\u0435\u0439\u043D\u043E\u0441\u0442",activityInUse:(r,t)=>`\u201E${r}\u201C \u0441\u0435 \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430 \u0432 ${t} ${t===1?"\u0431\u043B\u043E\u043A":"\u0431\u043B\u043E\u043A\u0430"}.`,confirmRemoveActivity:"\u0414\u0430 \u0441\u0435 \u043F\u0440\u0435\u043C\u0430\u0445\u043D\u0435 \u043B\u0438 \u0432\u044A\u043F\u0440\u0435\u043A\u0438 \u0442\u043E\u0432\u0430?",noSlots:"\u0414\u043E\u0431\u0430\u0432\u0435\u0442\u0435 \u0447\u0430\u0441\u043E\u0432\u0438 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0438, \u0437\u0430 \u0434\u0430 \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 \u0438\u0437\u0433\u043B\u0435\u0434\u0430 \u201E\u041C\u0440\u0435\u0436\u0430\u201C.",noBlocks:"\u041D\u044F\u043C\u0430 \u0437\u0430\u043D\u0438\u043C\u0430\u043D\u0438\u044F",orphanActivity:"\u041D\u0435\u043F\u043E\u0437\u043D\u0430\u0442\u0430 \u0434\u0435\u0439\u043D\u043E\u0441\u0442"}};var Dt={days:{mon:{full:"Monday",short:"Mon"},tue:{full:"Tuesday",short:"Tue"},wed:{full:"Wednesday",short:"Wed"},thu:{full:"Thursday",short:"Thu"},fri:{full:"Friday",short:"Fri"},sat:{full:"Saturday",short:"Sat"},sun:{full:"Sunday",short:"Sun"}},until:r=>`until ${r}`,after:r=>`after ${r}`,range:(r,t)=>`${r}\u2013${t}`,untilWord:"until",afterWord:"after",today:"Today",editor:{tabSettings:"Settings",tabSchedule:"Schedule",tabActivities:"Activities",title:"Title",layout:"Layout",layoutBlocks:"Blocks",layoutGrid:"Grid",days:"Days",language:"Language",languageAuto:"Automatic",languageEnglish:"English",languageBulgarian:"Bulgarian",highlightToday:"Highlight today",headerColor:"Header colour",slots:"Time slots",addSlot:"Add slot",slotColumn:"Slot",addBlock:"Add block",addBlockNeedsActivity:"Add an activity first",activity:"Activity",start:"Start",end:"End",slot:"Slot",slotNone:"Not on the grid",moveUp:"Move up",moveDown:"Move down",moveToDay:"Move to another day",clearTime:"Clear this time (makes the block open-ended)",remove:"Remove",placeHint:"Tap an activity, then tap a day to add it there",activityTitle:"Title",activitySubtitle:"Subtitle",newActivityTitle:"New activity name",addActivity:"Add activity",activityInUse:(r,t)=>`\u201C${r}\u201D is used by ${t} block${t===1?"":"s"}.`,confirmRemoveActivity:"Remove it anyway?",noSlots:"Add time slots to use the grid layout.",noBlocks:"Nothing scheduled",orphanActivity:"Unknown activity"}};function C(r,t){return r.language==="en"||r.language==="bg"?r.language:(t?.language??"en").toLowerCase().startsWith("bg")?"bg":"en"}function lt(r){return r==="bg"?Rt:Dt}var dt="custom:weekly-timetable-card",ut=["mon","tue","wed","thu","fri"],pt="#1e3a5f",cr="#888888";function ct(r){if(typeof r=="number"&&Number.isFinite(r)&&r>=0){let e=Math.floor(r/60),i=r%60;return`${String(e).padStart(2,"0")}:${String(i).padStart(2,"0")}`}if(typeof r!="string")return;let t=r.trim();return t.length>0?t:void 0}function ht(r){let t=r??{};if(t.people!==void 0)throw new Error("weekly-timetable-card: unknown key `people` \u2014 a card shows one timetable. Put `slots` and `schedule` at the top level.");if(t.activities!==void 0&&!Array.isArray(t.activities))throw new Error("weekly-timetable-card: `activities` must be a list");let e=ce(t.days,ut),i=(Array.isArray(t.activities)?t.activities:[]).map(dr).filter(c=>c!==null),o=t.schedule??{},n={},s=new Set(e);for(let c of Object.keys(o))Tt(c)&&s.add(c);for(let c of P){if(!s.has(c))continue;let p=o[c];n[c]=Array.isArray(p)?p.map(ur).filter(h=>h!==null):[]}let a=Array.isArray(t.slots)?t.slots.map((c,p)=>pr(c,p)).filter(c=>c!==null):void 0,l={type:typeof t.type=="string"?t.type:dt,title:typeof t.title=="string"?t.title:void 0,layout:t.layout==="grid"?"grid":"blocks",days:e,language:t.language==="en"||t.language==="bg"?t.language:"auto",highlight_today:t.highlight_today!==!1,header_color:typeof t.header_color=="string"&&t.header_color.trim().length>0?t.header_color.trim():pt,activities:i,schedule:n};return a&&(l.slots=a),l}function dr(r){let t=r??{},e=typeof t.id=="string"?t.id.trim():"";if(e.length===0)return null;typeof t.label=="string"&&typeof t.title!="string"&&console.warn(`weekly-timetable-card: activity "${e}" uses \`label\`, which is now \`title\`.`);let i=typeof t.title=="string"&&t.title.trim().length>0?t.title.trim():e,o=typeof t.color=="string"&&t.color.trim().length>0?t.color.trim():cr,n={id:e,title:i,color:o},s=typeof t.subtitle=="string"?t.subtitle.trim():"";return s.length>0&&(n.subtitle=s),n}function ur(r){let t=r??{};if(typeof t.activity!="string"||t.activity.trim().length===0)return null;let e={activity:t.activity.trim()},i=ct(t.start),o=ct(t.end);return i&&(e.start=i),o&&(e.end=o),e}function pr(r,t){let e=r??{},i=ct(e.start),o=ct(e.end);return!i||!o?null:{slot:typeof e.slot=="number"&&Number.isFinite(e.slot)?e.slot:t+1,start:i,end:o}}var hr={en:[{id:"english",title:"English",subtitle:"Room 12",color:"#3b82f6"},{id:"daycare",title:"After-school club",color:"#64748b"},{id:"break",title:"Break and a snack",color:"#94a3b8"},{id:"judo",title:"Judo",subtitle:"Sports hall",color:"#f97316"},{id:"chess",title:"Chess",color:"#a855f7"},{id:"home",title:"Back home",color:"#22c55e"}],bg:[{id:"english",title:"\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438",subtitle:"\u0421\u0442\u0430\u044F 12",color:"#3b82f6"},{id:"daycare",title:"\u0417\u0430\u043D\u0438\u043C\u0430\u043B\u043D\u044F",color:"#64748b"},{id:"break",title:"\u041F\u043E\u0447\u0438\u0432\u043A\u0430 \u0438 \u0445\u0430\u043F\u0432\u0430\u043D\u0435",color:"#94a3b8"},{id:"judo",title:"\u0414\u0436\u0443\u0434\u043E",subtitle:"\u0421\u043F\u043E\u0440\u0442\u043D\u0430 \u0437\u0430\u043B\u0430",color:"#f97316"},{id:"chess",title:"\u0428\u0430\u0445",color:"#a855f7"},{id:"home",title:"\u0412\u0440\u044A\u0449\u0430\u043D\u0435 \u0432\u043A\u044A\u0449\u0438",color:"#22c55e"}]},fr="Sami";function he(r){let t=C({language:"auto"},r),e=i=>[{activity:"english",start:"15:20",end:"16:20"},{activity:"break",start:"16:20",end:"17:30"},{activity:i,start:"17:30",end:"18:30"},{activity:"home",start:"18:30"}];return{type:dt,title:fr,layout:"blocks",days:[...ut],language:"auto",highlight_today:!0,header_color:pt,activities:hr[t].map(i=>({...i})),schedule:{mon:e("judo"),tue:[{activity:"daycare",end:"16:00"}],wed:e("judo"),thu:[{activity:"daycare",end:"16:00"},{activity:"break",start:"16:00",end:"16:30"},{activity:"chess",start:"16:30",end:"17:30"}],fri:[{activity:"daycare",end:"16:00"},{activity:"break",start:"16:00",end:"16:30"},{activity:"chess",start:"16:30",end:"17:30"}]}}}function Pt(r,t){if(t<=0||r<=0)return"stacked";let e=r/t;return e>=150?"full":e>=72?"compact":"stacked"}var fe=I`
   .block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     border-radius: 8px;
     padding: 8px 10px;
-    text-align: center;
-    /* The solid fallback is declared first so a browser without color-mix
-       still shows a readable block rather than a transparent one. */
+    text-align: left;
+    /* Not a color-mix fallback. --wtc-block-fill carries a color-mix() value,
+       and if a browser cannot resolve it the declaration below is invalid at
+       computed-value time: background becomes the initial value (transparent),
+       it does not revert to this one — the cascade already chose the later
+       declaration. What this line does cover is a browser with no custom
+       properties at all, where the var() below is unparseable and that whole
+       declaration is dropped at parse time instead, leaving this one to apply. */
     background: var(--secondary-background-color);
     background: var(--wtc-block-fill, var(--secondary-background-color));
     border: 1px solid var(--divider-color);
@@ -86,20 +94,39 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
     background: var(--secondary-background-color);
   }
 
+  /* Content-sized so the text column takes the remainder, and right-aligned so
+     the two stacked times line up with each other rather than with the title.
+     The words until/after are the widest content and set the column's floor. */
   .block-time {
+    flex: 0 0 auto;
+    text-align: right;
     font-size: 11px;
     line-height: 1.3;
     color: var(--secondary-text-color);
+    font-variant-numeric: tabular-nums;
   }
 
-  .block-label {
+  .block-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .block-title {
     font-size: 13px;
     line-height: 1.3;
     font-weight: 600;
     color: var(--primary-text-color);
+    overflow-wrap: break-word;
   }
-`,be=F`
-  ${ve}
+
+  .block-subtitle {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--secondary-text-color);
+    overflow-wrap: break-word;
+  }
+`,me=I`
+  ${fe}
 
   :host {
     display: block;
@@ -115,37 +142,6 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
     font-size: 18px;
     font-weight: 600;
     color: var(--primary-text-color);
-  }
-
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid var(--divider-color);
-    border-radius: 999px;
-    background: var(--card-background-color);
-    color: var(--primary-text-color);
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .tab[aria-selected="true"] {
-    border-color: var(--wtc-accent, var(--primary-color));
-    background: color-mix(
-      in srgb,
-      var(--wtc-accent, var(--primary-color)) 14%,
-      var(--card-background-color, #ffffff)
-    );
-    font-weight: 600;
   }
 
   .week {
@@ -211,13 +207,29 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
     gap: 6px;
     padding: 6px;
   }
+  /* Below the full threshold the two columns stop paying for themselves: a
+     ~129px day column leaves the title about 35px, and it shreds into two or
+     three characters per line. Stack the block internally instead — the time on
+     one line, in reading order, above the text at full block width. Verified in
+     the harness at 700px with seven days: all seven stay visible and titles wrap
+     at word boundaries. The stacked tier is deliberately untouched; there each
+     day has the card's full width, where two columns are the right shape. */
   [data-density="compact"] .block {
-    padding: 6px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 5px 7px;
+    gap: 2px;
   }
   [data-density="compact"] .block-time {
+    display: flex;
+    gap: 4px;
+    text-align: left;
+  }
+  [data-density="compact"] .block-time,
+  [data-density="compact"] .block-subtitle {
     font-size: 10px;
   }
-  [data-density="compact"] .block-label {
+  [data-density="compact"] .block-title {
     font-size: 12px;
   }
   [data-density="compact"] .grid-head {
@@ -335,8 +347,8 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
     color: var(--secondary-text-color);
     text-align: center;
   }
-`,$e=F`
-  ${ve}
+`,ge=I`
+  ${fe}
 
   :host {
     display: block;
@@ -508,29 +520,37 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
   .palette-chip[aria-pressed="true"] {
     outline: 2px solid var(--primary-color);
   }
-`;var xr=/[^\p{L}\p{N}]+/gu,_r=/^-+|-+$/g;function Ar(r){return r.toLowerCase().replace(xr,"-").replace(_r,"")}function xe(r,t){let e=Ar(r)||"activity";if(!t.includes(e))return e;let o=2;for(;t.includes(`${e}-${o}`);)o+=1;return`${e}-${o}`}function _e(r,t){return r.find(e=>e.id===t)}var Ce=/^(\d{1,2}):(\d{2})$/;function Ae(r){try{return new Intl.DateTimeFormat(r,{hour:"numeric"}).formatToParts(new Date(2020,0,1,13,0)).some(e=>e.type==="dayPeriod")}catch{return!1}}var Cr={en:"en-GB",bg:"bg"};function jt(r,t){return r?.language??Cr[t]}function kr(r,t){let e=r?.locale?.time_format;if(e==="12")return!0;if(e==="24")return!1;if(e==="system"){let o=typeof navigator>"u"?void 0:navigator.language;return Ae(o??jt(r,t))}return Ae(jt(r,t))}function Z(r,t,e){let o=r.trim(),n=Ce.exec(o);if(!n)return o;let i=Number(n[1]),s=Number(n[2]);if(i>23||s>59)return o;if(!kr(t,e))return`${String(i).padStart(2,"0")}:${n[2]}`;try{return new Intl.DateTimeFormat(jt(t,e),{hour:"numeric",minute:"2-digit",hour12:!0}).format(new Date(2020,0,1,i,s))}catch{return o}}var Nt=24*60;function ke(r,t){let e=Ce.exec(r.trim());if(!e)return r;let n=((Number(e[1])*60+Number(e[2])+t)%Nt+Nt)%Nt,i=Math.floor(n/60);return`${String(i).padStart(2,"0")}:${String(n%60).padStart(2,"0")}`}var wr="08:00",Sr=45;function we(r,t,e){return Math.min(Math.max(r,t),e)}function _(r,t,e){return{...r,people:r.people.map((o,n)=>n===t?e:o)}}function U(r,t){return r.schedule[t]??[]}function vt(r,t,e){return{...r,schedule:{...r.schedule,[t]:e}}}function B(r,t){return{...r,...t}}function Se(r,t){return{...r,people:[...r.people,{name:t,schedule:{}}]}}function Ee(r,t){return r.people.length<=1||!r.people[t]?r:{...r,people:r.people.filter((e,o)=>o!==t)}}function H(r,t,e){let o=r.people[t];if(!o)return r;let n={...o,schedule:{...o.schedule}};if(e.name!==void 0&&(n.name=e.name),e.emoji!==void 0&&(e.emoji===null||e.emoji===""?delete n.emoji:n.emoji=e.emoji),e.color!==void 0&&(e.color===null||e.color===""?delete n.color:n.color=e.color),e.slots!==void 0&&(e.slots===null?delete n.slots:n.slots=e.slots.map(i=>({...i}))),e.days!==void 0){e.days===null||e.days.length===0?delete n.days:n.days=[...e.days];for(let i of n.days??r.days)n.schedule[i]||(n.schedule[i]=[])}return _(r,t,n)}function Ut(r,t,e,o){let n=r.people[t];return n?_(r,t,vt(n,e,[...U(n,e),{...o}])):r}function S(r,t,e,o,n){let i=r.people[t],s=i?.schedule[e]?.[o];if(!i||!s)return r;let a={...s};n.activity!==void 0&&(a.activity=n.activity),n.start!==void 0&&(n.start===null||n.start===""?delete a.start:a.start=n.start),n.end!==void 0&&(n.end===null||n.end===""?delete a.end:a.end=n.end);let l=U(i,e).map((c,u)=>u===o?a:c);return _(r,t,vt(i,e,l))}function Pe(r,t,e,o){let n=r.people[t];if(!n||!n.schedule[e]?.[o])return r;let i=U(n,e).filter((s,a)=>a!==o);return _(r,t,vt(n,e,i))}function Kt(r,t,e,o){let n=r.people[t];if(!n)return r;let i=[...U(n,e.day)],s=i[e.index];if(!s)return r;if(i.splice(e.index,1),e.day===o.day)return i.splice(we(o.index,0,i.length),0,s),_(r,t,vt(n,e.day,i));let a=[...U(n,o.day)];return a.splice(we(o.index,0,a.length),0,s),_(r,t,{...n,schedule:{...n.schedule,[e.day]:i,[o.day]:a}})}function It(r,t,e,o,n){let i=r.people[t];if(!i)return r;let s=o+n;return s<0||s>=U(i,e).length?r:Kt(r,t,{day:e,index:o},{day:e,index:s})}function Te(r,t,e){let o=xe(t,r.activities.map(n=>n.id));return{...r,activities:[...r.activities,{id:o,label:t,color:e}]}}function Ft(r,t,e){return r.activities[t]?{...r,activities:r.activities.map((o,n)=>n===t?{...o,...e}:o)}:r}function Re(r,t){return r.activities[t]?{...r,activities:r.activities.filter((e,o)=>o!==t)}:r}function De(r,t){let e=0;for(let o of r.people)for(let n of Object.values(o.schedule))for(let i of n??[])i.activity===t&&(e+=1);return e}function Le(r,t){let e=r.people[t];if(!e)return r;let o=e.slots??[],i=o[o.length-1]?.end??wr,s=o.reduce((a,l)=>Math.max(a,l.slot),0)+1;return _(r,t,{...e,slots:[...o,{slot:s,start:i,end:ke(i,Sr)}]})}function zt(r,t,e,o){let n=r.people[t];return n?.slots?.[e]?_(r,t,{...n,slots:n.slots.map((i,s)=>s===e?{...i,...o}:i)}):r}function Be(r,t,e){let o=r.people[t];return o?.slots?.[e]?_(r,t,{...o,slots:o.slots.filter((n,i)=>i!==e)}):r}function m(r){return r.target.value}function bt(r){return r.target.checked}var He="#64748b";function Oe(r){let{config:t,strings:e,commit:o}=r,n=(i,s)=>{let a=De(t,s.id);if(a>0){let l=`${e.editor.activityInUse(s.label,a)} ${e.editor.confirmRemoveActivity}`;if(!window.confirm(l))return}o(Re(t,i))};return p`
+`;var mr=/[^\p{L}\p{N}]+/gu,gr=/^-+|-+$/g;function yr(r){return r.toLowerCase().replace(mr,"-").replace(gr,"")}function ye(r,t){let e=yr(r)||"activity";if(!t.includes(e))return e;let i=2;for(;t.includes(`${e}-${i}`);)i+=1;return`${e}-${i}`}function w(r){return r.title.trim()||r.id}function ve(r,t){return r.find(e=>e.id===t)}var $e=/^(\d{1,2}):(\d{2})$/;function be(r){try{return new Intl.DateTimeFormat(r,{hour:"numeric"}).formatToParts(new Date(2020,0,1,13,0)).some(e=>e.type==="dayPeriod")}catch{return!1}}var vr={en:"en-GB",bg:"bg"};function Bt(r,t){return r?.language??vr[t]}function br(r,t){let e=r?.locale?.time_format;if(e==="12")return!0;if(e==="24")return!1;if(e==="system"){let i=typeof navigator>"u"?void 0:navigator.language;return be(i??Bt(r,t))}return be(Bt(r,t))}function N(r,t,e){let i=r.trim(),o=$e.exec(i);if(!o)return i;let n=Number(o[1]),s=Number(o[2]);if(n>23||s>59)return i;if(!br(t,e))return`${String(n).padStart(2,"0")}:${o[2]}`;try{return new Intl.DateTimeFormat(Bt(t,e),{hour:"numeric",minute:"2-digit",hour12:!0}).format(new Date(2020,0,1,n,s))}catch{return i}}var Lt=24*60;function xe(r,t){let e=$e.exec(r.trim());if(!e)return r;let o=((Number(e[1])*60+Number(e[2])+t)%Lt+Lt)%Lt,n=Math.floor(o/60);return`${String(n).padStart(2,"0")}:${String(o%60).padStart(2,"0")}`}var $r="08:00",xr=45;function _e(r,t,e){return Math.min(Math.max(r,t),e)}function U(r,t){return r.schedule[t]??[]}function ft(r,t,e){return{...r,schedule:{...r.schedule,[t]:e}}}function L(r,t){return{...r,...t}}function Ht(r,t,e){return ft(r,t,[...U(r,t),{...e}])}function S(r,t,e,i){let o=r.schedule[t]?.[e];if(!o)return r;let n={...o};i.activity!==void 0&&(n.activity=i.activity),i.start!==void 0&&(i.start===null||i.start===""?delete n.start:n.start=i.start),i.end!==void 0&&(i.end===null||i.end===""?delete n.end:n.end=i.end);let s=U(r,t).map((a,l)=>l===e?n:a);return ft(r,t,s)}function Ae(r,t,e){if(!r.schedule[t]?.[e])return r;let i=U(r,t).filter((o,n)=>n!==e);return ft(r,t,i)}function Mt(r,t,e){let i=[...U(r,t.day)],o=i[t.index];if(!o)return r;if(i.splice(t.index,1),t.day===e.day)return i.splice(_e(e.index,0,i.length),0,o),ft(r,t.day,i);let n=[...U(r,e.day)];return n.splice(_e(e.index,0,n.length),0,o),{...r,schedule:{...r.schedule,[t.day]:i,[e.day]:n}}}function Ot(r,t,e,i){let o=e+i;return o<0||o>=U(r,t).length?r:Mt(r,{day:t,index:e},{day:t,index:o})}function Ce(r,t,e){let i=ye(t,r.activities.map(o=>o.id));return{...r,activities:[...r.activities,{id:i,title:t,color:e}]}}function mt(r,t,e){return r.activities[t]?{...r,activities:r.activities.map((i,o)=>o===t?{...i,...e}:i)}:r}function we(r,t){return r.activities[t]?{...r,activities:r.activities.filter((e,i)=>i!==t)}:r}function Se(r,t){let e=0;for(let i of Object.values(r.schedule))for(let o of i??[])o.activity===t&&(e+=1);return e}function ke(r){let t=r.slots??[],i=t[t.length-1]?.end??$r,o=t.reduce((n,s)=>Math.max(n,s.slot),0)+1;return{...r,slots:[...t,{slot:o,start:i,end:xe(i,xr)}]}}function Nt(r,t,e){return r.slots?.[t]?{...r,slots:r.slots.map((i,o)=>o===t?{...i,...e}:i)}:r}function Ee(r,t){return r.slots?.[t]?{...r,slots:r.slots.filter((e,i)=>i!==t)}:r}function f(r){return r.target.value}function Te(r){return r.target.checked}var Re="#64748b";function De(r){let{config:t,strings:e,commit:i}=r,o=(n,s)=>{let a=Se(t,s.id);if(a>0){let l=`${e.editor.activityInUse(w(s),a)} ${e.editor.confirmRemoveActivity}`;if(!window.confirm(l))return}i(we(t,n))};return d`
     <div class="panel">
-      ${t.activities.map((i,s)=>p`
-          <div class="row" data-activity=${i.id}>
+      ${t.activities.map((n,s)=>d`
+          <div class="row" data-activity=${n.id}>
             <input
               type="color"
               data-field="color"
-              .value=${j(i.color,He)}
-              @change=${a=>o(Ft(t,s,{color:m(a)}))}
+              .value=${at(n.color,Re)}
+              @change=${a=>i(mt(t,s,{color:f(a)}))}
             />
             <input
               class="grow"
               type="text"
-              data-field="label"
-              .value=${i.label}
-              @change=${a=>o(Ft(t,s,{label:m(a)}))}
+              data-field="title"
+              .value=${n.title}
+              @change=${a=>i(mt(t,s,{title:f(a).trim()}))}
+            />
+            <input
+              class="grow"
+              type="text"
+              data-field="subtitle"
+              placeholder=${e.editor.activitySubtitle}
+              .value=${n.subtitle??""}
+              @change=${a=>i(mt(t,s,{subtitle:f(a).trim()}))}
             />
             <button
               class="icon-button"
               type="button"
               data-action="remove-activity"
               title=${e.editor.remove}
-              @click=${()=>n(s,i)}
+              @click=${()=>o(s,n)}
             >
               ×
             </button>
@@ -541,155 +561,97 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         <input
           class="grow"
           type="text"
-          data-field="new-label"
-          placeholder=${e.editor.newActivityLabel}
+          data-field="new-title"
+          placeholder=${e.editor.newActivityTitle}
         />
         <button
           class="icon-button"
           type="button"
           data-action="add-activity"
           title=${e.editor.addActivity}
-          @click=${i=>{let a=i.currentTarget.parentElement.querySelector('[data-field="new-label"]'),l=a.value.trim();l.length!==0&&(a.value="",o(Te(t,l,He)))}}
+          @click=${n=>{let a=n.currentTarget.parentElement.querySelector('[data-field="new-title"]'),l=a.value.trim();l.length!==0&&(a.value="",i(Ce(t,l,Re)))}}
         >
           +
         </button>
       </div>
 
       <div class="palette">
-        ${t.activities.map(i=>p`
+        ${t.activities.map(n=>d`
             <div
               class="block"
-              style=${v({"--wtc-block-fill":lt(i.color),"--wtc-block-border":ct(i.color)})}
+              style=${b({"--wtc-block-fill":nt(n.color),"--wtc-block-border":st(n.color)})}
             >
-              <div class="block-label">${i.label}</div>
+              <div class="block-text">
+                <div class="block-title">${w(n)}</div>
+                ${n.subtitle?d`<div class="block-subtitle">${n.subtitle}</div>`:u}
+              </div>
             </div>
           `)}
       </div>
     </div>
-  `}function Me(r,t,e){r.dispatchEvent(new CustomEvent(t,{detail:e,bubbles:!0,composed:!0}))}function K(r){let t=!!r.start,e=!!r.end;return t&&e?"range":e?"until":t?"after":"bare"}function Vt(r,t){let e=o=>Z(o,r.hass,r.lang);switch(K(t)){case"range":return r.strings.range(e(t.start),e(t.end));case"until":return r.strings.until(e(t.end));case"after":return r.strings.after(e(t.start));case"bare":return""}}function Q(r,t){let e=_e(r.config.activities,t.activity),o=Vt(r,t),n=e?{"--wtc-block-fill":lt(e.color),"--wtc-block-border":ct(e.color)}:{};return p`
+  `}function Pe(r,t,e){r.dispatchEvent(new CustomEvent(t,{detail:e,bubbles:!0,composed:!0}))}function B(r){let t=!!r.start,e=!!r.end;return t&&e?"range":e?"until":t?"after":"bare"}function Le(r,t){let e=i=>N(i,r.hass,r.lang);switch(B(t)){case"range":return r.strings.range(e(t.start),e(t.end));case"until":return r.strings.until(e(t.end));case"after":return r.strings.after(e(t.start));case"bare":return""}}function _r(r,t){let e=i=>N(i,r.hass,r.lang);switch(B(t)){case"range":return{top:e(t.start),bottom:e(t.end)};case"until":return{top:r.strings.untilWord,bottom:e(t.end)};case"after":return{top:r.strings.afterWord,bottom:e(t.start)};case"bare":return null}}function G(r,t,e){let i=ve(r.config.activities,t.activity),o=e?.hideTime===!0?null:_r(r,t),n=i?{"--wtc-block-fill":nt(i.color),"--wtc-block-border":st(i.color)}:{};return d`
     <div
-      class=${e?"block":"block orphan"}
-      style=${v(n)}
-      title=${e?f:r.strings.editor.orphanActivity}
+      class=${i?"block":"block orphan"}
+      style=${b(n)}
+      title=${i?u:r.strings.editor.orphanActivity}
     >
-      ${o?p`<div class="block-time">${o}</div>`:f}
-      <div class="block-label">${e?e.label:t.activity}</div>
-    </div>
-  `}function Er(r){return{strings:r.strings,hass:r.hass,lang:w(r.config,r.hass)}}var Ne="#f472b6";function je(r,t){let{config:e,strings:o,commit:n}=r,{personIndex:i}=t,s=e.people[i];if(!s)return p``;let a=dt(r.hass),l=X(e,s);return p`
-    <div class="panel">
-      <div class="row">
-        <input
-          type="text"
-          class="grow"
-          data-field="name"
-          .value=${s.name}
-          placeholder=${o.editor.personNamePlaceholder}
-          @change=${c=>n(H(e,i,{name:m(c)}))}
-        />
-        <input
-          type="text"
-          data-field="emoji"
-          style="width: 3.5rem"
-          .value=${s.emoji??""}
-          placeholder=${o.editor.emoji}
-          @change=${c=>n(H(e,i,{emoji:m(c)||null}))}
-        />
-        <input
-          type="color"
-          data-field="person-color"
-          .value=${j(s.color??Ne,Ne)}
-          @change=${c=>n(H(e,i,{color:m(c)}))}
-        />
-        <button
-          class="icon-button"
-          type="button"
-          data-action="clear-person-color"
-          title=${o.editor.color}
-          @click=${()=>n(H(e,i,{color:null}))}
-        >
-          ⌫
-        </button>
-        <button
-          class="icon-button"
-          type="button"
-          data-action="remove-person"
-          title=${o.editor.removePerson}
-          ?disabled=${e.people.length<=1}
-          @click=${()=>n(Ee(e,i))}
-        >
-          ×
-        </button>
-      </div>
-
-      <label class="field inline">
-        <input
-          type="checkbox"
-          data-field="own-days"
-          .checked=${s.days!==void 0}
-          @change=${c=>n(H(e,i,{days:bt(c)?[...e.days]:null}))}
-        />
-        <span>${o.editor.daysOverride}</span>
-      </label>
-      ${s.days===void 0?p`<div class="hint">${o.editor.daysOverrideHint}</div>`:p`
-            <div class="chips">
-              ${a.map(c=>p`
-                  <button
-                    type="button"
-                    class="chip"
-                    data-person-day=${c}
-                    aria-pressed=${s.days.includes(c)?"true":"false"}
-                    @click=${()=>n(H(e,i,{days:pt(s.days,c,a)}))}
-                  >
-                    ${o.days[c].short}
-                  </button>
-                `)}
+      ${o?d`
+            <div class="block-time">
+              <div class="block-time-top">${o.top}</div>
+              <div class="block-time-bottom">${o.bottom}</div>
             </div>
-          `}
-
-      ${e.layout==="grid"?Pr(r,i,s):f}
+          `:u}
+      <div class="block-text">
+        <div class="block-title">${i?w(i):t.activity}</div>
+        ${i?.subtitle?d`<div class="block-subtitle">${i.subtitle}</div>`:u}
+      </div>
+    </div>
+  `}function Ar(r){return{strings:r.strings,hass:r.hass,lang:C(r.config,r.hass)}}function Be(r,t){let{config:e,strings:i}=r,o=e.days;return d`
+    <div class="panel">
+      ${e.layout==="grid"?Cr(r):u}
 
       <div class="palette">
-        ${e.activities.map(c=>p`
+        ${e.activities.map(n=>d`
             <button
               type="button"
               class="palette-chip"
-              data-palette-activity=${c.id}
-              aria-pressed=${t.selectedActivity===c.id?"true":"false"}
-              @click=${()=>t.onSelectActivity(t.selectedActivity===c.id?null:c.id)}
+              data-palette-activity=${n.id}
+              aria-pressed=${t.selectedActivity===n.id?"true":"false"}
+              @click=${()=>t.onSelectActivity(t.selectedActivity===n.id?null:n.id)}
             >
-              ${c.label}
+              ${w(n)}
             </button>
           `)}
       </div>
-      <div class="hint">${o.editor.placeHint}</div>
+      <div class="hint">${i.editor.placeHint}</div>
 
-      ${l.map(c=>Tr(r,t,s,c))}
+      ${o.map(n=>wr(r,t,n))}
     </div>
-  `}function Pr(r,t,e){let{config:o,strings:n,commit:i}=r,s=e.slots??[];return p`
+  `}function Cr(r){let{config:t,strings:e,commit:i}=r,o=t.slots??[];return d`
     <div class="day-group" data-section="slots">
-      <h4>${n.editor.slots}</h4>
+      <h4>${e.editor.slots}</h4>
       <div class="block-rows">
-        ${s.map((a,l)=>p`
-            <div class="row" data-slot-index=${l}>
-              <span class="hint" style="width: 2rem">${a.slot}</span>
+        ${o.map((n,s)=>d`
+            <div class="row" data-slot-index=${s}>
+              <span class="hint" style="width: 2rem">${n.slot}</span>
               <input
                 type="time"
                 data-field="slot-start"
-                .value=${a.start}
-                @change=${c=>i(zt(o,t,l,{start:m(c)}))}
+                .value=${n.start}
+                @change=${a=>i(Nt(t,s,{start:f(a)}))}
               />
               <input
                 type="time"
                 data-field="slot-end"
-                .value=${a.end}
-                @change=${c=>i(zt(o,t,l,{end:m(c)}))}
+                .value=${n.end}
+                @change=${a=>i(Nt(t,s,{end:f(a)}))}
               />
               <button
                 class="icon-button"
                 type="button"
                 data-action="remove-slot"
-                title=${n.editor.remove}
-                @click=${()=>i(Be(o,t,l))}
+                title=${e.editor.remove}
+                @click=${()=>i(Ee(t,s))}
               >
                 ×
               </button>
@@ -699,100 +661,100 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
           class="chip"
           type="button"
           data-action="add-slot"
-          @click=${()=>i(Le(o,t))}
+          @click=${()=>i(ke(t))}
         >
-          ＋ ${n.editor.addSlot}
+          ＋ ${e.editor.addSlot}
         </button>
       </div>
     </div>
-  `}function Tr(r,t,e,o){let{config:n,strings:i,commit:s}=r,{personIndex:a}=t,l=e.schedule[o]??[],c=n.activities[0]?.id;return p`
+  `}function wr(r,t,e){let{config:i,strings:o,commit:n}=r,s=i.schedule[e]??[],a=i.activities[0]?.id;return d`
     <div
       class="day-group"
-      data-day=${o}
-      @click=${()=>{t.selectedActivity&&(s(Ut(n,a,o,{activity:t.selectedActivity})),t.onSelectActivity(null))}}
+      data-day=${e}
+      @click=${()=>{t.selectedActivity&&(n(Ht(i,e,{activity:t.selectedActivity})),t.onSelectActivity(null))}}
     >
-      <h4>${i.days[o].full}</h4>
+      <h4>${o.days[e].full}</h4>
       <div class="block-rows">
-        ${l.map((u,d)=>Rr(r,t,o,u,d,l.length))}
-        ${c?p`
+        ${s.map((l,c)=>Sr(r,t,e,l,c,s.length))}
+        ${a?d`
               <button
                 class="chip"
                 type="button"
                 data-action="add-block"
-                @click=${u=>{u.stopPropagation(),s(Ut(n,a,o,{activity:c}))}}
+                @click=${l=>{l.stopPropagation(),n(Ht(i,e,{activity:a}))}}
               >
-                ＋ ${i.editor.addBlock}
+                ＋ ${o.editor.addBlock}
               </button>
-            `:p`
+            `:d`
               <button class="chip" type="button" data-action="add-block" disabled>
-                ＋ ${i.editor.addBlock}
+                ＋ ${o.editor.addBlock}
               </button>
-              <div class="hint">${i.editor.addBlockNeedsActivity}</div>
+              <div class="hint">${o.editor.addBlockNeedsActivity}</div>
             `}
       </div>
     </div>
-  `}function Rr(r,t,e,o,n,i){let{config:s,strings:a,commit:l}=r,{personIndex:c}=t,u=s.people[c];return p`
-    <div class="row" data-block-index=${n} @click=${d=>d.stopPropagation()}>
+  `}function Sr(r,t,e,i,o,n){let{config:s,strings:a,commit:l}=r;return d`
+    <div class="row" data-block-index=${o} @click=${c=>c.stopPropagation()}>
       <select
         class="grow"
         data-field="activity"
-        @change=${d=>l(S(s,c,e,n,{activity:m(d)}))}
+        @change=${c=>l(S(s,e,o,{activity:f(c)}))}
       >
-        ${s.activities.map(d=>p`
-            <option value=${d.id} .selected=${d.id===o.activity}>
-              ${d.label}
+        ${s.activities.map(c=>d`
+            <option value=${c.id} .selected=${c.id===i.activity}>
+              ${w(c)}
             </option>
           `)}
-        ${s.activities.some(d=>d.id===o.activity)?f:p`<option value=${o.activity} .selected=${!0}>${o.activity}</option>`}
+        ${s.activities.some(c=>c.id===i.activity)?u:d`<option value=${i.activity} .selected=${!0}>${i.activity}</option>`}
       </select>
 
       <select
         data-field="day"
         title=${a.editor.moveToDay}
-        @change=${d=>{let h=m(d);if(h===e)return;let y=(u.schedule[h]??[]).length;l(Kt(s,c,{day:e,index:n},{day:h,index:y}))}}
+        @change=${c=>{let p=f(c);if(p===e)return;let h=(s.schedule[p]??[]).length;l(Mt(s,{day:e,index:o},{day:p,index:h}))}}
       >
-        ${X(s,u).map(d=>p`
-            <option value=${d} .selected=${d===e}>
-              ${a.days[d].short}
+        ${s.days.map(c=>d`
+            <option value=${c} .selected=${c===e}>
+              ${a.days[c].short}
             </option>
           `)}
       </select>
 
-      ${s.layout==="grid"?Dr(r,c,e,o,n,u.slots??[]):p`
+      ${s.layout==="grid"?kr(r,e,i,o,s.slots??[]):d`
             <input
               type="time"
               data-field="start"
-              .value=${o.start??""}
-              @change=${d=>l(S(s,c,e,n,{start:m(d)||null}))}
+              .value=${i.start??""}
+              @change=${c=>l(S(s,e,o,{start:f(c)||null}))}
             />
-            ${o.start?p`
+            ${i.start?d`
                   <button
                     class="icon-button"
                     type="button"
                     data-action="clear-start"
                     title=${a.editor.clearTime}
-                    @click=${()=>l(S(s,c,e,n,{start:null}))}
+                    @click=${()=>l(S(s,e,o,{start:null}))}
                   >
                     ⌫
                   </button>
-                `:f}
+                `:u}
             <input
               type="time"
               data-field="end"
-              .value=${o.end??""}
-              @change=${d=>l(S(s,c,e,n,{end:m(d)||null}))}
+              .value=${i.end??""}
+              @change=${c=>l(S(s,e,o,{end:f(c)||null}))}
             />
-            ${o.end?p`
+            ${i.end?d`
                   <button
                     class="icon-button"
                     type="button"
                     data-action="clear-end"
                     title=${a.editor.clearTime}
-                    @click=${()=>l(S(s,c,e,n,{end:null}))}
+                    @click=${()=>l(S(s,e,o,{end:null}))}
                   >
                     ⌫
                   </button>
-                `:f}
+                `:u}
           `}
 
       <button
@@ -800,8 +762,8 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         type="button"
         data-action="move-up"
         title=${a.editor.moveUp}
-        ?disabled=${n===0}
-        @click=${()=>l(It(s,c,e,n,-1))}
+        ?disabled=${o===0}
+        @click=${()=>l(Ot(s,e,o,-1))}
       >
         ↑
       </button>
@@ -810,8 +772,8 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         type="button"
         data-action="move-down"
         title=${a.editor.moveDown}
-        ?disabled=${n>=i-1}
-        @click=${()=>l(It(s,c,e,n,1))}
+        ?disabled=${o>=n-1}
+        @click=${()=>l(Ot(s,e,o,1))}
       >
         ↓
       </button>
@@ -820,25 +782,25 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         type="button"
         data-action="remove-block"
         title=${a.editor.remove}
-        @click=${()=>l(Pe(s,c,e,n))}
+        @click=${()=>l(Ae(s,e,o))}
       >
         ×
       </button>
     </div>
-  `}function Dr(r,t,e,o,n,i){let{config:s,strings:a,commit:l}=r,c=K(o)==="range"?i.find(d=>d.start===o.start&&d.end===o.end):void 0,u=c===void 0&&(o.start!==void 0||o.end!==void 0);return p`
+  `}function kr(r,t,e,i,o){let{config:n,strings:s,commit:a}=r,l=B(e)==="range"?o.find(p=>p.start===e.start&&p.end===e.end):void 0,c=l===void 0&&(e.start!==void 0||e.end!==void 0);return d`
     <select
       data-field="slot"
-      @change=${d=>{let h=m(d);if(h===""){l(S(s,t,e,n,{start:null,end:null}));return}let y=i.find(O=>String(O.slot)===h);y&&l(S(s,t,e,n,{start:y.start,end:y.end}))}}
+      @change=${p=>{let h=f(p);if(h===""){a(S(n,t,i,{start:null,end:null}));return}let m=o.find(y=>String(y.slot)===h);m&&a(S(n,t,i,{start:m.start,end:m.end}))}}
     >
-      <option value="" .selected=${c===void 0}>${a.editor.slotNone}</option>
-      ${i.map(d=>p`
-          <option value=${String(d.slot)} .selected=${c?.slot===d.slot}>
-            ${d.slot}. ${d.start}–${d.end}
+      <option value="" .selected=${l===void 0}>${s.editor.slotNone}</option>
+      ${o.map(p=>d`
+          <option value=${String(p.slot)} .selected=${l?.slot===p.slot}>
+            ${p.slot}. ${p.start}–${p.end}
           </option>
         `)}
     </select>
-    ${u?p`<span class="hint">${Vt(Er(r),o)}</span>`:f}
-  `}function Ue(r){let{config:t,strings:e,commit:o}=r,n=dt(r.hass);return p`
+    ${c?d`<span class="hint">${Le(Ar(r),e)}</span>`:u}
+  `}function He(r){let{config:t,strings:e,commit:i}=r,o=ue(r.hass);return d`
     <div class="panel">
       <label class="field">
         <span>${e.editor.title}</span>
@@ -846,7 +808,7 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
           type="text"
           data-field="title"
           .value=${t.title??""}
-          @change=${i=>o(B(t,{title:m(i)||void 0}))}
+          @change=${n=>i(L(t,{title:f(n)||void 0}))}
         />
       </label>
 
@@ -854,7 +816,7 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         <span>${e.editor.layout}</span>
         <select
           data-field="layout"
-          @change=${i=>o(B(t,{layout:m(i)}))}
+          @change=${n=>i(L(t,{layout:f(n)}))}
         >
           <option value="blocks" .selected=${t.layout==="blocks"}>
             ${e.editor.layoutBlocks}
@@ -868,15 +830,15 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
       <div class="field">
         <span>${e.editor.days}</span>
         <div class="chips">
-          ${n.map(i=>p`
+          ${o.map(n=>d`
               <button
                 type="button"
                 class="chip"
-                data-day=${i}
-                aria-pressed=${t.days.includes(i)?"true":"false"}
-                @click=${()=>o(B(t,{days:pt(t.days,i,n)}))}
+                data-day=${n}
+                aria-pressed=${t.days.includes(n)?"true":"false"}
+                @click=${()=>i(L(t,{days:pe(t.days,n,o)}))}
               >
-                ${e.days[i].short}
+                ${e.days[n].short}
               </button>
             `)}
         </div>
@@ -886,7 +848,7 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         <span>${e.editor.language}</span>
         <select
           data-field="language"
-          @change=${i=>o(B(t,{language:m(i)}))}
+          @change=${n=>i(L(t,{language:f(n)}))}
         >
           <option value="auto" .selected=${t.language==="auto"}>
             ${e.editor.languageAuto}
@@ -905,7 +867,7 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
           type="checkbox"
           data-field="highlight_today"
           .checked=${t.highlight_today}
-          @change=${i=>o(B(t,{highlight_today:bt(i)}))}
+          @change=${n=>i(L(t,{highlight_today:Te(n)}))}
         />
         <span>${e.editor.highlightToday}</span>
       </label>
@@ -914,13 +876,13 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
         <input
           type="color"
           data-field="header_color"
-          .value=${j(t.header_color,yt)}
-          @change=${i=>o(B(t,{header_color:m(i)}))}
+          .value=${at(t.header_color,pt)}
+          @change=${n=>i(L(t,{header_color:f(n)}))}
         />
         <span>${e.editor.headerColor}</span>
       </label>
     </div>
-  `}var A=class extends b{constructor(){super(...arguments);this._tab="settings";this._selectedActivity=null}setConfig(e){this._config=gt(e),typeof this._tab=="object"&&!this._config.people[this._tab.person]&&(this._tab="settings")}_commit(e){let o=this._config;this._config=e,typeof this._tab=="object"&&(!e.people[this._tab.person]||o!==void 0&&e.people.length<o.people.length)&&(this._tab="settings",this._selectedActivity=null),Me(this,"config-changed",{config:e})}render(){let e=this._config;if(!e)return f;let o=ut(w(e,this.hass)),n={config:e,strings:o,hass:this.hass,commit:i=>this._commit(i)};return p`
+  `}var _=class extends v{constructor(){super(...arguments);this._tab="settings";this._selectedActivity=null}setConfig(e){this._config=ht(e),this._healSelection(this._config)}_healSelection(e){this._selectedActivity&&!e.activities.some(i=>i.id===this._selectedActivity)&&(this._selectedActivity=null)}_commit(e){this._config=e,this._healSelection(e),Pe(this,"config-changed",{config:e})}render(){let e=this._config;if(!e)return u;let i=lt(C(e,this.hass)),o={config:e,strings:i,hass:this.hass,commit:n=>this._commit(n)};return d`
       <div class="tabs" role="tablist">
         <button
           class="tab"
@@ -930,31 +892,18 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
           aria-selected=${this._tab==="settings"?"true":"false"}
           @click=${()=>{this._tab="settings"}}
         >
-          ${o.editor.tabSettings}
+          ${i.editor.tabSettings}
         </button>
-
-        ${e.people.map((i,s)=>p`
-            <button
-              class="tab"
-              type="button"
-              role="tab"
-              data-tab="person"
-              data-person-index=${s}
-              aria-selected=${typeof this._tab=="object"&&this._tab.person===s?"true":"false"}
-              @click=${()=>{this._tab={person:s}}}
-            >
-              ${i.emoji?`${i.emoji} `:""}${i.name||o.editor.personNamePlaceholder}
-            </button>
-          `)}
 
         <button
           class="tab"
           type="button"
-          data-tab="add"
-          title=${o.editor.addPerson}
-          @click=${()=>{let i=Se(e,"");this._tab={person:i.people.length-1},this._commit(i)}}
+          role="tab"
+          data-tab="schedule"
+          aria-selected=${this._tab==="schedule"?"true":"false"}
+          @click=${()=>{this._tab="schedule"}}
         >
-          ＋
+          ${i.editor.tabSchedule}
         </button>
 
         <button
@@ -965,76 +914,59 @@ var qe=Object.defineProperty;var Ye=Object.getOwnPropertyDescriptor;var g=(r,t,e
           aria-selected=${this._tab==="activities"?"true":"false"}
           @click=${()=>{this._tab="activities"}}
         >
-          ${o.editor.tabActivities}
+          ${i.editor.tabActivities}
         </button>
       </div>
 
-      ${this._renderPanel(n)}
-    `}_renderPanel(e){return this._tab==="settings"?Ue(e):this._tab==="activities"?Oe(e):je(e,{personIndex:this._tab.person,selectedActivity:this._selectedActivity,onSelectActivity:o=>{this._selectedActivity=o}})}};A.styles=$e,g([R({attribute:!1})],A.prototype,"hass",2),g([D()],A.prototype,"_config",2),g([D()],A.prototype,"_tab",2),g([D()],A.prototype,"_selectedActivity",2),A=g([it("weekly-timetable-card-editor")],A);function qt(r,t){let e=r.strings.days[t];return r.density==="compact"?e.short:e.full}function Ke(r){return p`
-    <div class="week" style=${v({"--wtc-day-count":String(r.days.length)})}>
-      ${r.days.map(t=>Lr(r,t))}
+      ${this._renderPanel(o)}
+    `}_renderPanel(e){return this._tab==="settings"?He(e):this._tab==="activities"?De(e):Be(e,{selectedActivity:this._selectedActivity,onSelectActivity:i=>{this._selectedActivity=i}})}};_.styles=ge,g([D({attribute:!1})],_.prototype,"hass",2),g([O()],_.prototype,"_config",2),g([O()],_.prototype,"_tab",2),g([O()],_.prototype,"_selectedActivity",2),_=g([rt("weekly-timetable-card-editor")],_);function Ut(r,t){let e=r.strings.days[t];return r.density==="compact"?e.short:e.full}function Me(r){return d`
+    <div class="week" style=${b({"--wtc-day-count":String(r.days.length)})}>
+      ${r.days.map(t=>Er(r,t))}
     </div>
-  `}function Lr(r,t){let e=r.person.schedule[t]??[];return p`
+  `}function Er(r,t){let e=r.config.schedule[t]??[];return d`
     <section class=${r.today===t?"day today":"day"}>
-      <header class="day-head">${qt(r,t)}</header>
+      <header class="day-head">${Ut(r,t)}</header>
       <div class="day-body">
-        ${e.length>0?e.map(o=>Q(r,o)):p`<div class="empty">${r.strings.editor.noBlocks}</div>`}
+        ${e.length>0?e.map(i=>G(r,i)):d`<div class="empty">${r.strings.editor.noBlocks}</div>`}
       </div>
     </section>
-  `}function Ie(r){let{config:t,hass:e,density:o,now:n}=r,i=Math.min(Math.max(r.personIndex,0),t.people.length-1),s=t.people[i],a=w(t,e);return{config:t,person:s,days:X(t,s),strings:ut(a),lang:a,hass:e,density:o,today:t.highlight_today?ye(n):null}}function Fe(r,t){let e=new Map,o=[];for(let n of t){let i=K(n)==="range"?r.find(a=>a.start===n.start&&a.end===n.end):void 0;if(!i){o.push(n);continue}let s=e.get(i.slot);s?s.push(n):e.set(i.slot,[n])}return{bySlot:e,loose:o}}function ze(r){let t=[...r.person.slots??[]].sort((s,a)=>s.slot-a.slot),e=new Map;for(let s of r.days)e.set(s,Fe(t,r.person.schedule[s]??[]));let o=r.days.some(s=>e.get(s).loose.length>0),n=v({"--wtc-day-count":String(r.days.length)}),i=r.days.map(s=>p`<div class=${r.today===s?"grid-head today":"grid-head"}>${qt(r,s)}</div>`);return p`
-    <div class="grid-wrap" style=${n}>
-      ${t.length===0?p`
+  `}function Oe(r){let{config:t,hass:e,density:i,now:o}=r,n=C(t,e);return{config:t,days:t.days,strings:lt(n),lang:n,hass:e,density:i,today:t.highlight_today?de(o):null}}function Ne(r,t){let e=new Map,i=[];for(let o of t){let n=B(o)==="range"?r.find(a=>a.start===o.start&&a.end===o.end):void 0;if(!n){i.push(o);continue}let s=e.get(n.slot);s?s.push(o):e.set(n.slot,[o])}return{bySlot:e,loose:i}}function Ue(r){let t=[...r.config.slots??[]].sort((s,a)=>s.slot-a.slot),e=new Map;for(let s of r.days)e.set(s,Ne(t,r.config.schedule[s]??[]));let i=r.days.some(s=>e.get(s).loose.length>0),o=b({"--wtc-day-count":String(r.days.length)}),n=r.days.map(s=>d`<div class=${r.today===s?"grid-head today":"grid-head"}>${Ut(r,s)}</div>`);return d`
+    <div class="grid-wrap" style=${o}>
+      ${t.length===0?d`
             <div class="grid-heads">
               <div class="grid-corner"></div>
-              ${i}
+              ${n}
             </div>
-          `:f}
-      ${o?p`
+          `:u}
+      ${i?d`
             <div class="strip">
               <div class="strip-label"></div>
-              ${r.days.map(s=>p`
+              ${r.days.map(s=>d`
                   <div class="strip-cell">
-                    ${e.get(s).loose.map(a=>Q(r,a))}
+                    ${e.get(s).loose.map(a=>G(r,a))}
                   </div>
                 `)}
             </div>
-          `:f}
-      ${t.length===0?p`<div class="no-slots">${r.strings.editor.noSlots}</div>`:p`
+          `:u}
+      ${t.length===0?d`<div class="no-slots">${r.strings.editor.noSlots}</div>`:d`
             <div class="grid">
               <div class="grid-corner"></div>
-              ${i}
-              ${t.flatMap(s=>[p`
+              ${n}
+              ${t.flatMap(s=>[d`
                   <div class="slot-label">
-                    ${r.strings.range(Z(s.start,r.hass,r.lang),Z(s.end,r.hass,r.lang))}
+                    ${r.strings.range(N(s.start,r.hass,r.lang),N(s.end,r.hass,r.lang))}
                   </div>
-                `,...r.days.map(a=>p`
+                `,...r.days.map(a=>d`
                     <div class=${r.today===a?"grid-cell today":"grid-cell"}>
-                      ${(e.get(a).bySlot.get(s.slot)??[]).map(l=>Q(r,l))}
+                      ${(e.get(a).bySlot.get(s.slot)??[]).map(l=>G(r,l,{hideTime:!0}))}
                     </div>
                   `)])}
             </div>
           `}
     </div>
-  `}var Ve="0.1.0";var C=class extends b{constructor(){super(...arguments);this.density="full";this._personIndex=0;this._measuredWidth=0}static getConfigElement(){return document.createElement("weekly-timetable-card-editor")}static getStubConfig(e){return ge(e)}static getLayoutOptions(){return{grid_columns:"full",grid_rows:"auto"}}setConfig(e){this._config=gt(e),this._personIndex=Math.min(this._personIndex,this._config.people.length-1)}getCardSize(){return 6}connectedCallback(){super.connectedCallback(),!(typeof ResizeObserver>"u")&&(this._observer=new ResizeObserver(e=>{let o=e[0]?.contentRect.width??0;this._measuredWidth=o;let n=Mt(o,this._dayCount());n!==this.density&&(this.density=n)}),this._observer.observe(this))}disconnectedCallback(){this._observer?.disconnect(),this._observer=void 0,super.disconnectedCallback()}willUpdate(e){if(super.willUpdate(e),this._measuredWidth<=0)return;let o=Mt(this._measuredWidth,this._dayCount());o!==this.density&&(this.density=o)}_dayCount(){let e=this._config;return e?(e.people[Math.min(this._personIndex,e.people.length-1)]?.days??e.days).length:ht.length}render(){let e=this._config;if(!e)return f;let o=Ie({config:e,personIndex:this._personIndex,hass:this.hass,density:this.density}),n=this.density==="stacked"||e.layout==="blocks"?Ke(o):ze(o),i=v({"--wtc-header-color":e.header_color,"--wtc-header-text":he(e.header_color),"--wtc-accent":o.person.color??"var(--primary-color)"});return p`
-      <ha-card style=${i}>
-        ${e.title?p`<h1 class="card-title">${e.title}</h1>`:f}
-        ${e.people.length>1?this._renderTabs(e):f}
-        <div class="body" data-density=${this.density}>${n}</div>
+  `}var je="0.1.0";var k=class extends v{constructor(){super(...arguments);this.density="full";this._measuredWidth=0}static getConfigElement(){return document.createElement("weekly-timetable-card-editor")}static getStubConfig(e){return he(e)}static getLayoutOptions(){return{grid_columns:"full",grid_rows:"auto"}}setConfig(e){this._config=ht(e)}getCardSize(){return 6}connectedCallback(){super.connectedCallback(),!(typeof ResizeObserver>"u")&&(this._observer=new ResizeObserver(e=>{let i=e[0]?.contentRect.width??0;this._measuredWidth=i;let o=Pt(i,this._dayCount());o!==this.density&&(this.density=o)}),this._observer.observe(this))}disconnectedCallback(){this._observer?.disconnect(),this._observer=void 0,super.disconnectedCallback()}willUpdate(e){if(super.willUpdate(e),this._measuredWidth<=0)return;let i=Pt(this._measuredWidth,this._dayCount());i!==this.density&&(this.density=i)}_dayCount(){return this._config?.days.length??ut.length}render(){let e=this._config;if(!e)return u;let i=Oe({config:e,hass:this.hass,density:this.density}),o=this.density==="stacked"||e.layout==="blocks"?Me(i):Ue(i),n=b({"--wtc-header-color":e.header_color,"--wtc-header-text":le(e.header_color)});return d`
+      <ha-card style=${n}>
+        ${e.title?d`<h1 class="card-title">${e.title}</h1>`:u}
+        <div class="body" data-density=${this.density}>${o}</div>
       </ha-card>
-    `}_renderTabs(e){return p`
-      <div class="tabs" role="tablist">
-        ${e.people.map((o,n)=>p`
-            <button
-              class="tab"
-              role="tab"
-              type="button"
-              aria-selected=${n===this._personIndex?"true":"false"}
-              style=${v({"--wtc-accent":o.color??"var(--primary-color)"})}
-              @click=${()=>{this._personIndex=n}}
-            >
-              ${o.emoji?p`<span>${o.emoji}</span>`:f}
-              <span>${o.name}</span>
-            </button>
-          `)}
-      </div>
-    `}};C.styles=be,g([R({attribute:!1})],C.prototype,"hass",2),g([R({attribute:!1})],C.prototype,"density",2),g([D()],C.prototype,"_config",2),g([D()],C.prototype,"_personIndex",2),C=g([it("weekly-timetable-card")],C);console.info(`%c WEEKLY-TIMETABLE-CARD %c v${Ve} `,"color:#fff;background:#1e3a5f;padding:2px 4px;border-radius:3px 0 0 3px","color:#1e3a5f;background:#e2e8f0;padding:2px 4px;border-radius:0 3px 3px 0");window.customCards=window.customCards??[];window.customCards.push({type:mt.replace(/^custom:/,""),name:"Weekly Timetable Card",description:"Weekly timetable for one or more people, in English or Bulgarian",preview:!0,documentationURL:"https://github.com/vmlinuz82/weekly-timetable-card"});export{C as WeeklyTimetableCard};
+    `}};k.styles=me,g([D({attribute:!1})],k.prototype,"hass",2),g([D({attribute:!1})],k.prototype,"density",2),g([O()],k.prototype,"_config",2),k=g([rt("weekly-timetable-card")],k);console.info(`%c WEEKLY-TIMETABLE-CARD %c v${je} `,"color:#fff;background:#1e3a5f;padding:2px 4px;border-radius:3px 0 0 3px","color:#1e3a5f;background:#e2e8f0;padding:2px 4px;border-radius:0 3px 3px 0");window.customCards=window.customCards??[];window.customCards.push({type:dt.replace(/^custom:/,""),name:"Weekly Timetable Card",description:"Weekly timetable in English or Bulgarian",preview:!0,documentationURL:"https://github.com/vmlinuz82/weekly-timetable-card"});export{k as WeeklyTimetableCard};

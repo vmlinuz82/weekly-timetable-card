@@ -13,13 +13,13 @@ export const bg: Strings = {
   until: (time) => `до ${time}`,
   after: (time) => `след ${time}`,
   range: (start, end) => `${start}–${end}`,
+  untilWord: "до",
+  afterWord: "след",
   today: "Днес",
   editor: {
     tabSettings: "Настройки",
+    tabSchedule: "Разписание",
     tabActivities: "Дейности",
-    addPerson: "Добави човек",
-    removePerson: "Премахни човек",
-    personNamePlaceholder: "Нов човек",
 
     title: "Заглавие",
     layout: "Изглед",
@@ -33,11 +33,6 @@ export const bg: Strings = {
     highlightToday: "Отбелязвай днешния ден",
     headerColor: "Цвят на заглавката",
 
-    name: "Име",
-    emoji: "Емоджи",
-    color: "Цвят",
-    daysOverride: "Дни за този човек",
-    daysOverrideHint: "Оставете празно, за да се използват дните на картата",
     slots: "Часови интервали",
     addSlot: "Добави интервал",
     slotColumn: "Интервал",
@@ -56,11 +51,12 @@ export const bg: Strings = {
     remove: "Премахни",
     placeHint: "Докоснете дейност, след което докоснете ден, за да я добавите там",
 
-    label: "Название",
-    newActivityLabel: "Име на нова дейност",
+    activityTitle: "Заглавие",
+    activitySubtitle: "Подзаглавие",
+    newActivityTitle: "Име на нова дейност",
     addActivity: "Добави дейност",
-    activityInUse: (label, count) =>
-      `„${label}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
+    activityInUse: (title, count) =>
+      `„${title}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
     confirmRemoveActivity: "Да се премахне ли въпреки това?",
 
     noSlots: `Добавете часови интервали, за да използвате изгледа „Мрежа“.`,

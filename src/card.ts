@@ -20,15 +20,14 @@ export class WeeklyTimetableCard extends LitElement {
   @property({ attribute: false }) density: Density = "full";
 
   @state() private _config?: CardConfig;
-  @state() private _personIndex = 0;
 
   private _observer?: ResizeObserver;
-  // Cached from the last ResizeObserver reading. `_dayCount()` also changes
-  // when a person with their own `days` override is selected or edited, with
-  // no resize in between, so density must be re-derived from this cached
-  // width on every update — not only inside the observer callback. Left at 0
-  // until the first real measurement (jsdom never provides one), which the
-  // guard in `willUpdate` treats as "don't know yet" rather than "stacked".
+  // Cached from the last ResizeObserver reading. `_dayCount()` also changes when
+  // the day list is edited with no resize in between, so density must be
+  // re-derived from this cached width on every update — not only inside the
+  // observer callback. Left at 0 until the first real measurement (jsdom never
+  // provides one), which the guard in `willUpdate` treats as "don't know yet"
+  // rather than "stacked".
   private _measuredWidth = 0;
 
   static getConfigElement(): HTMLElement {
@@ -45,7 +44,6 @@ export class WeeklyTimetableCard extends LitElement {
 
   setConfig(config: unknown): void {
     this._config = normaliseConfig(config);
-    this._personIndex = Math.min(this._personIndex, this._config.people.length - 1);
   }
 
   getCardSize(): number {
@@ -78,10 +76,7 @@ export class WeeklyTimetableCard extends LitElement {
   }
 
   private _dayCount(): number {
-    const config = this._config;
-    if (!config) return DEFAULT_DAYS.length;
-    const person = config.people[Math.min(this._personIndex, config.people.length - 1)];
-    return (person?.days ?? config.days).length;
+    return this._config?.days.length ?? DEFAULT_DAYS.length;
   }
 
   override render(): TemplateResult | typeof nothing {
@@ -90,7 +85,6 @@ export class WeeklyTimetableCard extends LitElement {
 
     const ctx = buildContext({
       config,
-      personIndex: this._personIndex,
       hass: this.hass,
       density: this.density,
     });
@@ -103,39 +97,13 @@ export class WeeklyTimetableCard extends LitElement {
     const cardStyle = styleMap({
       "--wtc-header-color": config.header_color,
       "--wtc-header-text": contrastTextColor(config.header_color),
-      "--wtc-accent": ctx.person.color ?? "var(--primary-color)",
     });
 
     return html`
       <ha-card style=${cardStyle}>
         ${config.title ? html`<h1 class="card-title">${config.title}</h1>` : nothing}
-        ${config.people.length > 1 ? this._renderTabs(config) : nothing}
         <div class="body" data-density=${this.density}>${body}</div>
       </ha-card>
-    `;
-  }
-
-  private _renderTabs(config: CardConfig): TemplateResult {
-    return html`
-      <div class="tabs" role="tablist">
-        ${config.people.map(
-          (person, index) => html`
-            <button
-              class="tab"
-              role="tab"
-              type="button"
-              aria-selected=${index === this._personIndex ? "true" : "false"}
-              style=${styleMap({ "--wtc-accent": person.color ?? "var(--primary-color)" })}
-              @click=${() => {
-                this._personIndex = index;
-              }}
-            >
-              ${person.emoji ? html`<span>${person.emoji}</span>` : nothing}
-              <span>${person.name}</span>
-            </button>
-          `,
-        )}
-      </div>
     `;
   }
 }
@@ -159,7 +127,7 @@ window.customCards = window.customCards ?? [];
 window.customCards.push({
   type: CARD_TYPE.replace(/^custom:/, ""),
   name: "Weekly Timetable Card",
-  description: "Weekly timetable for one or more people, in English or Bulgarian",
+  description: "Weekly timetable in English or Bulgarian",
   preview: true,
   documentationURL: "https://github.com/vmlinuz82/weekly-timetable-card",
 });

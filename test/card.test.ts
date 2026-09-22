@@ -1,18 +1,16 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import "../src/card.js";
 import type { WeeklyTimetableCard } from "../src/card.js";
+import { getStubConfig } from "../src/config.js";
 import { BG_24H, EN_12H } from "./helpers.js";
 
 const raw = {
   days: ["mon", "tue"],
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "maths", label: "Математика", color: "#22c55e" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "maths", title: "Математика", color: "#22c55e" },
   ],
-  people: [
-    { name: "Иван", emoji: "🥋", schedule: { mon: [{ activity: "english" }], tue: [] } },
-    { name: "Мария", emoji: "🎻", schedule: { mon: [{ activity: "maths" }], tue: [] } },
-  ],
+  schedule: { mon: [{ activity: "english" }], tue: [] },
 };
 
 async function makeCard(config: unknown, hass = BG_24H): Promise<WeeklyTimetableCard> {
@@ -47,7 +45,7 @@ describe("WeeklyTimetableCard", () => {
 
   it("propagates a config error from setConfig so HA can display it", () => {
     const card = document.createElement("weekly-timetable-card") as WeeklyTimetableCard;
-    expect(() => card.setConfig({})).toThrow(/people/);
+    expect(() => card.setConfig({ people: [] })).toThrow(/people/);
   });
 
   it("renders the blocks layout by default", async () => {
@@ -60,13 +58,8 @@ describe("WeeklyTimetableCard", () => {
     const card = await makeCard({
       ...raw,
       layout: "grid",
-      people: [
-        {
-          name: "Иван",
-          slots: [{ slot: 1, start: "08:00", end: "08:45" }],
-          schedule: { mon: [{ activity: "english", start: "08:00", end: "08:45" }], tue: [] },
-        },
-      ],
+      slots: [{ slot: 1, start: "08:00", end: "08:45" }],
+      schedule: { mon: [{ activity: "english", start: "08:00", end: "08:45" }], tue: [] },
     });
     expect(shadow(card).querySelector(".grid")).not.toBeNull();
   });
@@ -93,23 +86,14 @@ describe("WeeklyTimetableCard", () => {
       .toBe("Седмична програма");
   });
 
-  it("shows tabs only when there is more than one person", async () => {
-    const many = await makeCard(raw);
-    expect(shadow(many).querySelectorAll(".tab")).toHaveLength(2);
+  it("renders no tab strip", async () => {
+    const el = document.createElement("weekly-timetable-card") as WeeklyTimetableCard;
+    document.body.append(el);
+    el.setConfig(getStubConfig());
+    await el.updateComplete;
 
-    const one = await makeCard({ ...raw, people: [raw.people[0]] });
-    expect(shadow(one).querySelector(".tabs")).toBeNull();
-  });
-
-  it("switches person when a tab is clicked", async () => {
-    const card = await makeCard(raw);
-    const tabs = shadow(card).querySelectorAll<HTMLButtonElement>(".tab");
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Английски");
-
-    tabs[1]!.click();
-    await card.updateComplete;
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Математика");
-    expect(tabs[1]!.getAttribute("aria-selected")).toBe("true");
+    expect(el.shadowRoot!.querySelector(".tabs")).toBeNull();
+    el.remove();
   });
 
   it("re-renders in the viewer's language when hass changes", async () => {
@@ -119,16 +103,6 @@ describe("WeeklyTimetableCard", () => {
     card.hass = EN_12H;
     await card.updateComplete;
     expect(shadow(card).querySelector(".day-head")!.textContent!.trim()).toBe("Monday");
-  });
-
-  it("clamps the active person when the config shrinks", async () => {
-    const card = await makeCard(raw);
-    shadow(card).querySelectorAll<HTMLButtonElement>(".tab")[1]!.click();
-    await card.updateComplete;
-
-    card.setConfig({ ...raw, people: [raw.people[0]] });
-    await card.updateComplete;
-    expect(shadow(card).querySelector(".block-label")!.textContent!.trim()).toBe("Английски");
   });
 
   it("sets the header colour and a contrasting header text colour", async () => {
@@ -147,16 +121,12 @@ describe("WeeklyTimetableCard", () => {
     (card as unknown as { _measuredWidth: number })._measuredWidth = 400;
     card.requestUpdate();
     await card.updateComplete;
-    // 400px / 5 days = 80px per column: compact (>=72, <110).
+    // 400px / 5 days = 80px per column: compact (>=72, <150).
     expect(card.density).toBe("compact");
 
     card.setConfig({
       ...raw,
-      days: ["mon", "tue", "wed", "thu", "fri"],
-      people: [
-        { ...raw.people[0], days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] },
-        raw.people[1],
-      ],
+      days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     });
     await card.updateComplete;
     // Same 400px, but now 7 days: 400/7 ≈ 57px per column: stacked (<72).
@@ -166,7 +136,7 @@ describe("WeeklyTimetableCard", () => {
   it("offers a stub config for the card picker", () => {
     const stub = (customElements.get("weekly-timetable-card") as typeof WeeklyTimetableCard)
       .getStubConfig(BG_24H);
-    expect(stub.people).toHaveLength(1);
+    expect(stub.schedule.mon).toBeDefined();
     expect(stub.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);
   });
 });

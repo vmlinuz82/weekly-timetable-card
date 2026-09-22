@@ -7,7 +7,8 @@ export type Density = "full" | "compact" | "stacked";
 
 export interface Activity {
   id: string;
-  label: string;
+  title: string;
+  subtitle?: string;
   color: string;
 }
 
@@ -23,15 +24,6 @@ export interface Slot {
   end: string;
 }
 
-export interface Person {
-  name: string;
-  emoji?: string;
-  color?: string;
-  days?: DayKey[];
-  slots?: Slot[];
-  schedule: Partial<Record<DayKey, Block[]>>;
-}
-
 export interface CardConfig {
   type: string;
   title?: string;
@@ -41,7 +33,8 @@ export interface CardConfig {
   highlight_today: boolean;
   header_color: string;
   activities: Activity[];
-  people: Person[];
+  slots?: Slot[];
+  schedule: Partial<Record<DayKey, Block[]>>;
 }
 
 export type TimeFormatSetting = "12" | "24" | "language" | "system";
