@@ -1,9 +1,9 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { blockForm } from "../block.js";
+import { blockTimeLabel, type TimeLabelContext } from "../renderers/block.js";
 import { toHexInputValue } from "../color.js";
 import { daysFromFirstWeekday, effectiveDays, toggleDayList } from "../days.js";
 import { resolveLang } from "../i18n/index.js";
-import { formatTime } from "../time.js";
 import type { Block, DayKey, Person, Slot } from "../types.js";
 import {
   addBlock,
@@ -18,6 +18,10 @@ import {
   updateSlot,
 } from "./mutations.js";
 import { checkboxValue, inputValue, type PanelContext } from "./panel-context.js";
+
+function timeLabelContext(ctx: PanelContext): TimeLabelContext {
+  return { strings: ctx.strings, hass: ctx.hass, lang: resolveLang(ctx.config, ctx.hass) };
+}
 
 const DEFAULT_PERSON_COLOR = "#f472b6";
 
@@ -366,16 +370,6 @@ function renderBlockRow(
   `;
 }
 
-/** `start`/`end` formatted for display, without a describing word — the dropdown next to it already says "Not on the grid". */
-function rawTimesLabel(ctx: PanelContext, block: Block): string {
-  const lang = resolveLang(ctx.config, ctx.hass);
-  const fmt = (value: string) => formatTime(value, ctx.hass, lang);
-  if (block.start && block.end) return `${fmt(block.start)}–${fmt(block.end)}`;
-  if (block.end) return fmt(block.end);
-  if (block.start) return fmt(block.start);
-  return "";
-}
-
 function renderSlotSelect(
   ctx: PanelContext,
   personIndex: number,
@@ -419,6 +413,8 @@ function renderSlotSelect(
         `,
       )}
     </select>
-    ${showRawTimes ? html`<span class="hint">${rawTimesLabel(ctx, block)}</span>` : nothing}
+    ${showRawTimes
+      ? html`<span class="hint">${blockTimeLabel(timeLabelContext(ctx), block)}</span>`
+      : nothing}
   `;
 }

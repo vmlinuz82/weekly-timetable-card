@@ -4,10 +4,24 @@ import { findActivity } from "../activity.js";
 import { blockForm } from "../block.js";
 import { activityBorder, activityFill } from "../color.js";
 import { formatTime } from "../time.js";
-import type { Block } from "../types.js";
+import type { Strings } from "../i18n/types.js";
+import type { Block, Hass, Lang } from "../types.js";
 import type { RenderContext } from "./context.js";
 
-export function blockTimeLabel(ctx: RenderContext, block: Block): string {
+/**
+ * Everything needed to word a block's time line. Narrower than RenderContext so
+ * the editor can call this too — the mapping from a block's times to its wording
+ * must exist in exactly one place, or the two drift (and once did: the editor's
+ * copy dropped the until/after wording entirely, leaving a start-only and an
+ * end-only block indistinguishable).
+ */
+export interface TimeLabelContext {
+  strings: Strings;
+  hass?: Hass;
+  lang: Lang;
+}
+
+export function blockTimeLabel(ctx: TimeLabelContext, block: Block): string {
   const fmt = (value: string) => formatTime(value, ctx.hass, ctx.lang);
   switch (blockForm(block)) {
     case "range":
