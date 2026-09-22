@@ -100,7 +100,7 @@ describe("normaliseConfig", () => {
 
   it("keeps an activity id that matches no activity, for the orphan renderer", () => {
     const config = normaliseConfig({
-      activities: [{ id: "judo", label: "Джудо", color: "#f97316" }],
+      activities: [{ id: "judo", title: "Джудо", color: "#f97316" }],
       schedule: { mon: [{ activity: "gone" }] },
     });
     expect(config.schedule.mon).toEqual([{ activity: "gone" }]);
@@ -117,14 +117,14 @@ describe("normaliseConfig", () => {
     const config = normaliseConfig({
       ...minimal,
       activities: [
-        { id: "judo", label: "Джудо", color: "#f97316" },
-        { id: "", label: "No id", color: "#000" },
-        { label: "No id at all" },
-        { id: "chess", label: "", color: "" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+        { id: "", title: "No id", color: "#000" },
+        { title: "No id at all" },
+        { id: "chess", title: "", color: "" },
       ],
     });
     expect(config.activities.map((a) => a.id)).toEqual(["judo", "chess"]);
-    expect(config.activities[1]).toEqual({ id: "chess", label: "chess", color: "#888888" });
+    expect(config.activities[1]).toEqual({ id: "chess", title: "chess", color: "#888888" });
   });
 
   it("normalises slots and drops ones without both times", () => {
@@ -177,6 +177,39 @@ describe("normaliseConfig", () => {
     });
     expect(config.schedule.sat).toEqual([{ activity: "judo" }]);
   });
+
+  it("reads an activity title and trims an optional subtitle", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", title: "  English  ", subtitle: "  Room 12  ", color: "#3b82f6" }],
+    });
+    expect(config.activities[0]).toEqual({
+      id: "english",
+      title: "English",
+      subtitle: "Room 12",
+      color: "#3b82f6",
+    });
+  });
+
+  it("omits an empty subtitle entirely rather than passing an empty string on", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "judo", title: "Judo", subtitle: "   ", color: "#f97316" }],
+    });
+    expect(config.activities[0]).not.toHaveProperty("subtitle");
+  });
+
+  it("does not accept `label` as an alias for `title`", () => {
+    const config = normaliseConfig({
+      type: CARD_TYPE,
+      schedule: {},
+      activities: [{ id: "english", label: "English", color: "#3b82f6" }],
+    });
+    // With no title, the id stands in — the author sees the raw id and knows.
+    expect(config.activities[0]!.title).toBe("english");
+  });
 });
 
 describe("getStubConfig", () => {
@@ -190,14 +223,14 @@ describe("getStubConfig", () => {
     expect(config.days).toEqual(["mon", "tue", "wed", "thu", "fri"]);
   });
 
-  it("uses Bulgarian example labels for a Bulgarian user", () => {
+  it("uses Bulgarian example titles for a Bulgarian user", () => {
     const config = getStubConfig({ language: "bg" });
-    expect(config.activities.some((a) => a.label === "Английски")).toBe(true);
+    expect(config.activities.some((a) => a.title === "Английски")).toBe(true);
   });
 
-  it("uses English example labels otherwise", () => {
+  it("uses English example titles otherwise", () => {
     const config = getStubConfig({ language: "de" });
-    expect(config.activities.some((a) => a.label === "English")).toBe(true);
+    expect(config.activities.some((a) => a.title === "English")).toBe(true);
   });
 
   it("returns a config that survives normalisation unchanged", () => {

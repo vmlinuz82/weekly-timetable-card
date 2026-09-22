@@ -99,13 +99,16 @@ function normaliseActivity(raw: unknown): Activity | null {
   const source = (raw ?? {}) as Record<string, unknown>;
   const id = typeof source.id === "string" ? source.id.trim() : "";
   if (id.length === 0) return null;
-  const label = typeof source.label === "string" && source.label.trim().length > 0
-    ? source.label.trim()
+  const title = typeof source.title === "string" && source.title.trim().length > 0
+    ? source.title.trim()
     : id;
   const color = typeof source.color === "string" && source.color.trim().length > 0
     ? source.color.trim()
     : FALLBACK_ACTIVITY_COLOR;
-  return { id, label, color };
+  const activity: Activity = { id, title, color };
+  const subtitle = typeof source.subtitle === "string" ? source.subtitle.trim() : "";
+  if (subtitle.length > 0) activity.subtitle = subtitle;
+  return activity;
 }
 
 function normaliseBlock(raw: unknown): Block | null {
@@ -134,20 +137,20 @@ function normaliseSlot(raw: unknown, index: number): Slot | null {
 
 const STUB_ACTIVITIES: Record<Lang, Activity[]> = {
   en: [
-    { id: "english", label: "English", color: "#3b82f6" },
-    { id: "daycare", label: "After-school club", color: "#64748b" },
-    { id: "break", label: "Break and a snack", color: "#94a3b8" },
-    { id: "judo", label: "Judo", color: "#f97316" },
-    { id: "chess", label: "Chess", color: "#a855f7" },
-    { id: "home", label: "Back home", color: "#22c55e" },
+    { id: "english", title: "English", subtitle: "Room 12", color: "#3b82f6" },
+    { id: "daycare", title: "After-school club", color: "#64748b" },
+    { id: "break", title: "Break and a snack", color: "#94a3b8" },
+    { id: "judo", title: "Judo", subtitle: "Sports hall", color: "#f97316" },
+    { id: "chess", title: "Chess", color: "#a855f7" },
+    { id: "home", title: "Back home", color: "#22c55e" },
   ],
   bg: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "daycare", label: "Занималня", color: "#64748b" },
-    { id: "break", label: "Почивка и хапване", color: "#94a3b8" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
-    { id: "chess", label: "Шах", color: "#a855f7" },
-    { id: "home", label: "Връщане вкъщи", color: "#22c55e" },
+    { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
+    { id: "daycare", title: "Занималня", color: "#64748b" },
+    { id: "break", title: "Почивка и хапване", color: "#94a3b8" },
+    { id: "judo", title: "Джудо", subtitle: "Спортна зала", color: "#f97316" },
+    { id: "chess", title: "Шах", color: "#a855f7" },
+    { id: "home", title: "Връщане вкъщи", color: "#22c55e" },
   ],
 };
 

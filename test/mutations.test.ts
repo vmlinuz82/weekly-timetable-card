@@ -21,8 +21,8 @@ const base = (): CardConfig =>
   normaliseConfig({
     days: ["mon", "tue"],
     activities: [
-      { id: "english", label: "Английски", color: "#3b82f6" },
-      { id: "judo", label: "Джудо", color: "#f97316" },
+      { id: "english", title: "Английски", color: "#3b82f6" },
+      { id: "judo", title: "Джудо", color: "#f97316" },
     ],
     slots: [{ slot: 1, start: "08:00", end: "08:45" }],
     schedule: {
@@ -153,7 +153,7 @@ describe("moving blocks", () => {
 describe("activities", () => {
   it("adds an activity with a generated id", () => {
     const next = immutable((config) => addActivity(config, "Шах", "#a855f7"));
-    expect(next.activities[2]).toEqual({ id: "шах", label: "Шах", color: "#a855f7" });
+    expect(next.activities[2]).toEqual({ id: "шах", title: "Шах", color: "#a855f7" });
   });
 
   it("suffixes a colliding generated id", () => {
@@ -163,8 +163,8 @@ describe("activities", () => {
   });
 
   it("renaming does not change the id, so blocks keep resolving", () => {
-    const next = immutable((config) => updateActivity(config, 0, { label: "English" }));
-    expect(next.activities[0]).toEqual({ id: "english", label: "English", color: "#3b82f6" });
+    const next = immutable((config) => updateActivity(config, 0, { title: "English" }));
+    expect(next.activities[0]).toEqual({ id: "english", title: "English", color: "#3b82f6" });
     expect(countActivityUses(next, "english")).toBe(2);
   });
 
@@ -182,7 +182,7 @@ describe("activities", () => {
 
   it("ignores out-of-range activity indices", () => {
     const config = base();
-    expect(updateActivity(config, 9, { label: "X" })).toBe(config);
+    expect(updateActivity(config, 9, { title: "X" })).toBe(config);
     expect(removeActivity(config, 9)).toBe(config);
   });
 });

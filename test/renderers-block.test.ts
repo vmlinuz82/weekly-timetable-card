@@ -4,10 +4,10 @@ import { BG_24H, EN_12H, makeContext, renderToHost, textOf } from "./helpers.js"
 
 const raw = {
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "daycare", label: "Занималня", color: "#64748b" },
-    { id: "home", label: "Връщане вкъщи", color: "#22c55e" },
-    { id: "free", label: "Свободен следобед", color: "#22c55e" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "daycare", title: "Занималня", color: "#64748b" },
+    { id: "home", title: "Връщане вкъщи", color: "#22c55e" },
+    { id: "free", title: "Свободен следобед", color: "#22c55e" },
   ],
   schedule: {},
 };
@@ -40,7 +40,7 @@ describe("blockTimeLabel", () => {
 });
 
 describe("renderBlock", () => {
-  it("shows the activity label and the time line", () => {
+  it("shows the activity title and the time line", () => {
     const host = renderToHost(
       renderBlock(bg, { activity: "english", start: "15:20", end: "16:20" }),
     );

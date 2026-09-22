@@ -52,7 +52,7 @@ export function renderBlock(ctx: RenderContext, block: Block): TemplateResult {
       title=${activity ? nothing : ctx.strings.editor.orphanActivity}
     >
       ${time ? html`<div class="block-time">${time}</div>` : nothing}
-      <div class="block-label">${activity ? activity.label : block.activity}</div>
+      <div class="block-label">${activity ? activity.title : block.activity}</div>
     </div>
   `;
 }

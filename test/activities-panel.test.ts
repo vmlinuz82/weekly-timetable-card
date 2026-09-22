@@ -7,8 +7,8 @@ import { renderToHost } from "./helpers.js";
 
 const raw = {
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
   schedule: { mon: [{ activity: "english" }] },
 };
@@ -27,21 +27,21 @@ afterEach(() => {
 });
 
 describe("renderActivitiesPanel", () => {
-  it("lists every activity with its label and colour", () => {
+  it("lists every activity with its title and colour", () => {
     const { host } = mount();
-    const labels = [...host.querySelectorAll<HTMLInputElement>('[data-field="label"]')];
-    expect(labels.map((input) => input.value)).toEqual(["Английски", "Джудо"]);
+    const titles = [...host.querySelectorAll<HTMLInputElement>('[data-field="title"]')];
+    expect(titles.map((input) => input.value)).toEqual(["Английски", "Джудо"]);
     expect(host.querySelector<HTMLInputElement>('[data-field="color"]')!.value).toBe("#3b82f6");
   });
 
   it("renames without changing the id", () => {
     const { commit, host } = mount();
-    const input = host.querySelectorAll<HTMLInputElement>('[data-field="label"]')[0]!;
+    const input = host.querySelectorAll<HTMLInputElement>('[data-field="title"]')[0]!;
     input.value = "English";
     input.dispatchEvent(new Event("change"));
 
     const next = commit.mock.calls[0]![0];
-    expect(next.activities[0]).toEqual({ id: "english", label: "English", color: "#3b82f6" });
+    expect(next.activities[0]).toEqual({ id: "english", title: "English", color: "#3b82f6" });
   });
 
   it("commits a colour change", () => {
@@ -54,17 +54,17 @@ describe("renderActivitiesPanel", () => {
 
   it("adds an activity from the new-activity field", () => {
     const { commit, host } = mount();
-    const input = host.querySelector<HTMLInputElement>('[data-field="new-label"]')!;
+    const input = host.querySelector<HTMLInputElement>('[data-field="new-title"]')!;
     input.value = "Шах";
     host.querySelector<HTMLButtonElement>('[data-action="add-activity"]')!.click();
 
     const next = commit.mock.calls[0]![0];
-    expect(next.activities[2]).toMatchObject({ id: "шах", label: "Шах" });
+    expect(next.activities[2]).toMatchObject({ id: "шах", title: "Шах" });
   });
 
-  it("ignores an add with a blank label", () => {
+  it("ignores an add with a blank title", () => {
     const { commit, host } = mount();
-    host.querySelector<HTMLInputElement>('[data-field="new-label"]')!.value = "   ";
+    host.querySelector<HTMLInputElement>('[data-field="new-title"]')!.value = "   ";
     host.querySelector<HTMLButtonElement>('[data-action="add-activity"]')!.click();
     expect(commit).not.toHaveBeenCalled();
   });

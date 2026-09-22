@@ -49,11 +49,12 @@ export const en: Strings = {
     remove: "Remove",
     placeHint: "Tap an activity, then tap a day to add it there",
 
-    label: "Label",
-    newActivityLabel: "New activity name",
+    activityTitle: "Title",
+    activitySubtitle: "Subtitle",
+    newActivityTitle: "New activity name",
     addActivity: "Add activity",
-    activityInUse: (label, count) =>
-      `“${label}” is used by ${count} block${count === 1 ? "" : "s"}.`,
+    activityInUse: (title, count) =>
+      `“${title}” is used by ${count} block${count === 1 ? "" : "s"}.`,
     confirmRemoveActivity: "Remove it anyway?",
 
     noSlots: "Add time slots to use the grid layout.",

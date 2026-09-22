@@ -18,7 +18,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
   const onRemove = (index: number, activity: Activity) => {
     const uses = countActivityUses(config, activity.id);
     if (uses > 0) {
-      const message = `${strings.editor.activityInUse(activity.label, uses)} ${
+      const message = `${strings.editor.activityInUse(activity.title, uses)} ${
         strings.editor.confirmRemoveActivity
       }`;
       if (!window.confirm(message)) return;
@@ -41,10 +41,10 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
             <input
               class="grow"
               type="text"
-              data-field="label"
-              .value=${activity.label}
+              data-field="title"
+              .value=${activity.title}
               @change=${(event: Event) =>
-                commit(updateActivity(config, index, { label: inputValue(event) }))}
+                commit(updateActivity(config, index, { title: inputValue(event) }))}
             />
             <button
               class="icon-button"
@@ -63,8 +63,8 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
         <input
           class="grow"
           type="text"
-          data-field="new-label"
-          placeholder=${strings.editor.newActivityLabel}
+          data-field="new-title"
+          placeholder=${strings.editor.newActivityTitle}
         />
         <button
           class="icon-button"
@@ -74,12 +74,12 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
           @click=${(event: Event) => {
             const button = event.currentTarget as HTMLElement;
             const field = button.parentElement!.querySelector<HTMLInputElement>(
-              '[data-field="new-label"]',
+              '[data-field="new-title"]',
             )!;
-            const label = field.value.trim();
-            if (label.length === 0) return;
+            const title = field.value.trim();
+            if (title.length === 0) return;
             field.value = "";
-            commit(addActivity(config, label, NEW_ACTIVITY_COLOR));
+            commit(addActivity(config, title, NEW_ACTIVITY_COLOR));
           }}
         >
           +
@@ -96,7 +96,7 @@ export function renderActivitiesPanel(ctx: PanelContext): TemplateResult {
                 "--wtc-block-border": activityBorder(activity.color),
               })}
             >
-              <div class="block-label">${activity.label}</div>
+              <div class="block-label">${activity.title}</div>
             </div>
           `,
         )}

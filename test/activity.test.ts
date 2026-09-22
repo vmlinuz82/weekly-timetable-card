@@ -39,12 +39,12 @@ describe("uniqueActivityId", () => {
 
 describe("findActivity", () => {
   const activities: Activity[] = [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ];
 
   it("finds by id", () => {
-    expect(findActivity(activities, "judo")?.label).toBe("Джудо");
+    expect(findActivity(activities, "judo")?.title).toBe("Джудо");
   });
 
   it("returns undefined for an orphaned reference", () => {

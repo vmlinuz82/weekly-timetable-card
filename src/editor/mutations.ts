@@ -103,12 +103,12 @@ export function moveBlockBy(
   return moveBlock(config, { day, index }, { day, index: target });
 }
 
-export function addActivity(config: CardConfig, label: string, color: string): CardConfig {
+export function addActivity(config: CardConfig, title: string, color: string): CardConfig {
   const id = uniqueActivityId(
-    label,
+    title,
     config.activities.map((activity) => activity.id),
   );
-  return { ...config, activities: [...config.activities, { id, label, color }] };
+  return { ...config, activities: [...config.activities, { id, title, color }] };
 }
 
 /** `id` is intentionally not patchable — see "Activity ids" in the spec. */

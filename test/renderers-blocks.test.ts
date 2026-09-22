@@ -5,9 +5,9 @@ import { BG_24H, makeContext, renderToHost, textsOf } from "./helpers.js";
 const raw = {
   days: ["mon", "tue", "wed", "thu", "fri"],
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "daycare", label: "Занималня", color: "#64748b" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "daycare", title: "Занималня", color: "#64748b" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
   schedule: {
     mon: [

@@ -48,7 +48,7 @@ export function renderSchedulePanel(
                   options.selectedActivity === activity.id ? null : activity.id,
                 )}
             >
-              ${activity.label}
+              ${activity.title}
             </button>
           `,
         )}
@@ -180,7 +180,7 @@ function renderBlockRow(
         ${config.activities.map(
           (activity) => html`
             <option value=${activity.id} .selected=${activity.id === block.activity}>
-              ${activity.label}
+              ${activity.title}
             </option>
           `,
         )}

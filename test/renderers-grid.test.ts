@@ -8,9 +8,9 @@ const raw = {
   layout: "grid",
   days: ["mon", "tue"],
   activities: [
-    { id: "maths", label: "Математика", color: "#3b82f6" },
-    { id: "daycare", label: "Занималня", color: "#64748b" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "maths", title: "Математика", color: "#3b82f6" },
+    { id: "daycare", title: "Занималня", color: "#64748b" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
   slots: [
     { slot: 1, start: "08:00", end: "08:45" },

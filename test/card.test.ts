@@ -7,8 +7,8 @@ import { BG_24H, EN_12H } from "./helpers.js";
 const raw = {
   days: ["mon", "tue"],
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "maths", label: "Математика", color: "#22c55e" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "maths", title: "Математика", color: "#22c55e" },
   ],
   schedule: { mon: [{ activity: "english" }], tue: [] },
 };

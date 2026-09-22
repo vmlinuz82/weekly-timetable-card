@@ -7,7 +7,7 @@ import { BG_24H, EN_12H } from "./helpers.js";
 
 const raw = {
   days: ["mon", "tue"],
-  activities: [{ id: "english", label: "Английски", color: "#3b82f6" }],
+  activities: [{ id: "english", title: "Английски", color: "#3b82f6" }],
   schedule: { mon: [{ activity: "english" }], tue: [] },
 };
 
@@ -61,7 +61,7 @@ describe("WeeklyTimetableCardEditor", () => {
     const { editor, shadow } = await mount();
     shadow.querySelector<HTMLButtonElement>('[data-tab="activities"]')!.click();
     await editor.updateComplete;
-    expect(shadow.querySelector('[data-field="new-label"]')).not.toBeNull();
+    expect(shadow.querySelector('[data-field="new-title"]')).not.toBeNull();
   });
 
   it("fires config-changed with a new object when a panel commits", async () => {

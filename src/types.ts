@@ -7,7 +7,8 @@ export type Density = "full" | "compact" | "stacked";
 
 export interface Activity {
   id: string;
-  label: string;
+  title: string;
+  subtitle?: string;
   color: string;
 }
 

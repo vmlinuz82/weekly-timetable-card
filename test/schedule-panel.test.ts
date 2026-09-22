@@ -8,8 +8,8 @@ import { renderToHost } from "./helpers.js";
 const raw = {
   days: ["mon", "tue"],
   activities: [
-    { id: "english", label: "Английски", color: "#3b82f6" },
-    { id: "judo", label: "Джудо", color: "#f97316" },
+    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "judo", title: "Джудо", color: "#f97316" },
   ],
   slots: [
     { slot: 1, start: "08:00", end: "08:45" },

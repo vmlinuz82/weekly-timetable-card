@@ -40,10 +40,11 @@ export interface EditorStrings {
   remove: string;
   placeHint: string;
 
-  label: string;
-  newActivityLabel: string;
+  activityTitle: string;
+  activitySubtitle: string;
+  newActivityTitle: string;
   addActivity: string;
-  activityInUse: (label: string, count: number) => string;
+  activityInUse: (title: string, count: number) => string;
   confirmRemoveActivity: string;
 
   noSlots: string;

@@ -49,11 +49,12 @@ export const bg: Strings = {
     remove: "Премахни",
     placeHint: "Докоснете дейност, след което докоснете ден, за да я добавите там",
 
-    label: "Название",
-    newActivityLabel: "Име на нова дейност",
+    activityTitle: "Заглавие",
+    activitySubtitle: "Подзаглавие",
+    newActivityTitle: "Име на нова дейност",
     addActivity: "Добави дейност",
-    activityInUse: (label, count) =>
-      `„${label}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
+    activityInUse: (title, count) =>
+      `„${title}“ се използва в ${count} ${count === 1 ? "блок" : "блока"}.`,
     confirmRemoveActivity: "Да се премахне ли въпреки това?",
 
     noSlots: `Добавете часови интервали, за да използвате изгледа „Мрежа“.`,
