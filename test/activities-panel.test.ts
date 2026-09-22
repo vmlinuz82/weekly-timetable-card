@@ -143,4 +143,15 @@ describe("renderActivitiesPanel", () => {
     // the round-trip.
     expect(commit.mock.calls[0]![0].activities[0]!.subtitle).toBe("");
   });
+
+  it("edits the second row's subtitle without touching the first", () => {
+    const { config, commit, host } = mount();
+    const input = host.querySelectorAll<HTMLInputElement>('[data-field="subtitle"]')[1]!;
+    input.value = "Зала 2";
+    input.dispatchEvent(new Event("change"));
+
+    const next = commit.mock.calls[0]![0];
+    expect(next.activities[1]!.subtitle).toBe("Зала 2");
+    expect(next.activities[0]).toEqual(config.activities[0]);
+  });
 });
