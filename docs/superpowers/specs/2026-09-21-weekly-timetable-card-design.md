@@ -486,9 +486,11 @@ input; deleting a referenced activity raises the warning; a slot dropdown change
 writes both `start` and `end`; reorder helpers are correct at both ends of a list
 and moving a block to another day removes it from the source day exactly once.
 
-**Manual.** Drag-and-drop with mouse and touch; real Home Assistant installation,
-theming and editor dialog. Automating pointer-event sequences costs more than it
-catches.
+**Manual.** Real Home Assistant installation, theming and the editor dialog —
+the parts no harness reproduces. This is where drag-and-drop was lost: it passed
+every check the harness could make and still failed in HA, because the harness
+had one shadow root and owned its own scrolling while HA has three nested shadow
+roots inside a dialog it scrolls itself. See the Removed section.
 
 ## Risks
 
