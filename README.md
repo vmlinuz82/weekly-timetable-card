@@ -17,8 +17,8 @@ numbered-slot grid. One card, several people, configured visually.
 - **English and Bulgarian** — the interface follows each Home Assistant user's
   own language, so the same dashboard reads in Bulgarian for one person and
   English for another. Times follow their 12/24-hour preference too.
-- **Visual editor** — buttons for everything, with drag-and-drop and
-  tap-to-place on top.
+- **Visual editor** — a button or field for every operation, plus
+  tap-to-place: tap an activity, then tap a day to add it there.
 - **Responsive** — full day names, then short ones, then a stacked single column,
   measured from the card's own width rather than the screen's.
 - **Theme-aware** — activity colours are mixed into the card background, so one

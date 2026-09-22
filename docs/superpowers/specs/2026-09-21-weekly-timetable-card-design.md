@@ -8,8 +8,8 @@
 A Home Assistant Lovelace custom card that renders a weekly timetable for one or
 more people, in English or Bulgarian, in either of two layouts: free-form
 activity blocks (the reference design) or a classic slot grid. All data lives in
-the card's own Lovelace config and is edited through a visual editor with
-drag-and-drop. No entities, no calendars, no backend.
+the card's own Lovelace config and is edited through a visual editor. No
+entities, no calendars, no backend.
 
 The card is inspired by `AyKay35/lovelace-timetable-card` (MIT) but is a separate
 implementation. That card is German-only, hardcodes its day keys as German
@@ -27,8 +27,7 @@ reference design.
 - Present all card and editor chrome in English or Bulgarian, chosen
   automatically from the viewing Home Assistant user's own language.
 - Also offer a classic numbered-slot grid layout.
-- Configure everything visually, including drag-and-drop placement. YAML remains
-  available but is never required.
+- Configure everything visually. YAML remains available but is never required.
 - Work on phone, tablet and desktop, in light and dark themes.
 
 ## Non-goals
@@ -37,7 +36,9 @@ reference design.
   and render identically in both languages.
 - Reading schedules from Home Assistant entities or `calendar.*` entities.
 - Duration-proportional timeline rendering. See "Sequence, not timeline".
-- Automated tests for drag-and-drop interactions.
+- Drag-and-drop. It was built, shipped in v0.0.2 and v0.0.3, and never worked in
+  a real Home Assistant editor dialog despite working in the dev harness; it was
+  removed in v0.0.4 rather than iterated on further. See the Removed section.
 - Languages beyond English and Bulgarian in v1. The string-table structure
   accepts more without restructuring.
 
@@ -56,7 +57,7 @@ reference design.
 | 9 | Open-ended blocks render in a strip above the grid in `grid` layout | A block with no start has no position on a slot ruler; a strip keeps it visible rather than silently dropped. |
 | 10 | Times honour `hass.locale.time_format` | Times are stored structured, so an English user on 12-hour sees `3:20 PM` and a Bulgarian user `15:20` from one config. |
 | 11 | Distinct element name `weekly-timetable-card` | `customElements.define` throws on a duplicate name; the reference card registers `timetable-card`. |
-| 12 | Both the list editor and drag-and-drop in the initial build | Requested. Drag is the fast path layered over a complete set of buttons; nothing is reachable only by dragging. |
+| 12 | ~~Both the list editor and drag-and-drop in the initial build~~ — drag-and-drop removed in v0.0.4 | The list editor was always complete on its own, which is why removing drag cost no capability. See the Removed section. |
 | 13 | Standalone mock dev harness, no Home Assistant in the loop | Fastest iteration on layout and language. Real HA integration is verified manually by the author. |
 
 ## Data model
@@ -353,36 +354,37 @@ strip: **Settings** · one tab per person · **＋** · **Activities**.
 ### Editing the schedule
 
 Each day panel lists its blocks as rows: activity dropdown, start field, end
-field, move-up and move-down buttons, remove button, and a drag handle; plus an
+field, a day dropdown, move-up and move-down buttons and a remove button; plus an
 **＋ Add block** control. Clearing a time field produces the `until` or `after`
 form; clearing both produces the bare form. In `grid` layout the two time fields
 are replaced by a single slot dropdown, which writes that slot's `start` and
 `end` into the block — the same data, a different input.
 
 The list editor is complete on its own: every operation — add, edit, reorder,
-move to another day, remove — has a button or field. Drag-and-drop is layered on
-top as a faster route to the same mutations, never as the only route. That keeps
-the editor usable by keyboard and assistive technology, and keeps it working when
-a touch drag fails to register on a wall-mounted tablet.
+move to another day, remove — has a button or field. That was originally a
+constraint so drag-and-drop could be layered on as a faster route without ever
+being the only route; when drag was removed it meant no capability was lost.
 
-### Drag and drop
+### Removed: drag and drop
 
-`editor/dnd.ts` owns all pointer handling, driven by Pointer Events so mouse and
-touch share one path.
+Drag-and-drop was specified, built, and shipped in v0.0.2 and v0.0.3. It worked
+in the dev harness and under synthetic pointer events in a real browser, and it
+never worked in Home Assistant's card-config dialog. Two rounds of fixes
+addressed real defects found from screencasts — a 12px grip as the only drag
+source, and no scrolling so off-screen days were unreachable — and it still did
+not work in the target environment. It was removed in v0.0.4.
 
-- Drag an activity from the palette into a day panel to append a block.
-- Tap an activity then tap a day panel to do the same without dragging, which is
-  the reliable path on touch.
-- Drag a block within a day to reorder it, or across days to move it.
-- A drop indicator shows the insertion point; dropping outside any target cancels.
+What the attempt cost and what it teaches: the pointer logic was verifiable and
+verified, and that verification never touched the thing that mattered. The drag
+ran inside three nested shadow roots and a dialog whose scroll container belongs
+to Home Assistant, and none of that is reproducible from a harness. A feature
+whose correctness depends on the host's DOM cannot be validated against a
+substitute for that host.
 
-Every drop produces a new config object and fires `config-changed` once, so a drag
-is a single undoable edit rather than a stream of them.
-
-`dnd.ts` holds no schedule logic of its own. It resolves a gesture to a target and
-then calls the same `mutations.ts` helpers the buttons call, so reordering and
-moving are unit-tested as pure functions and the drag layer has nothing left to
-get wrong beyond hit-testing.
+The list editor was deliberately built to be complete without dragging, so
+removing it cost no capability: reordering uses the move-up and move-down
+buttons, moving between days uses the day dropdown on each row, and adding uses
+tap-to-place (tap an activity, then tap a day) or the Add block control.
 
 ### Config-changed contract
 
@@ -494,7 +496,7 @@ catches.
 |---|---|
 | HA internal form components change across releases | Avoided outright: the editor uses native form elements themed with HA CSS variables, so there is no dependency on HA's internal components. "Show code editor" remains as a fallback |
 | Seven columns are dense on a tablet | Density tiers with authored short day names; stacked layout below 72px per column |
-| Drag-and-drop on touch is fragile | Pointer Events for one shared path; tap-to-place and a full set of buttons as always-available alternatives, with the drag layer calling the same mutations |
+| ~~Drag-and-drop on touch is fragile~~ | Realised, and worse than predicted: it failed on desktop too, inside HA's dialog. Mitigation held — the buttons and the day dropdown were always the primary route, so removing drag in v0.0.4 lost nothing |
 | Lovelace resource caching hides a deployment | Version banner on load; versioned resource URL documented in the README |
 | HACS filename / repo name mismatch | All three names fixed to `weekly-timetable-card`, asserted in CI |
 | `color-mix` support | Baseline in all browsers HA supports; a solid-colour fallback is declared before the `color-mix` rule |

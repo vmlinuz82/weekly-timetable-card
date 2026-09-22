@@ -5,9 +5,8 @@ import { resolveLang, stringsFor } from "../i18n/index.js";
 import { editorStyles } from "../styles.js";
 import type { CardConfig, Hass } from "../types.js";
 import { renderActivitiesPanel } from "./activities-panel.js";
-import { DndController } from "./dnd.js";
 import { fireEvent } from "./fire-event.js";
-import { addPerson, insertBlock, moveBlock } from "./mutations.js";
+import { addPerson } from "./mutations.js";
 import type { PanelContext } from "./panel-context.js";
 import { renderPersonPanel } from "./person-panel.js";
 import { renderSettingsPanel } from "./settings-panel.js";
@@ -23,25 +22,6 @@ export class WeeklyTimetableCardEditor extends LitElement {
   @state() private _config?: CardConfig;
   @state() private _tab: Tab = "settings";
   @state() private _selectedActivity: string | null = null;
-
-  private readonly _dnd = new DndController(
-    () => this.shadowRoot,
-    {
-      moveBlock: (from, to) => {
-        const config = this._config;
-        if (!config || typeof this._tab !== "object") return;
-        this._commit(moveBlock(config, this._tab.person, from, to));
-      },
-      insertActivity: (activityId, to) => {
-        const config = this._config;
-        if (!config || typeof this._tab !== "object") return;
-        this._commit(
-          insertBlock(config, this._tab.person, to.day, to.index, { activity: activityId }),
-        );
-      },
-      requestUpdate: () => this.requestUpdate(),
-    },
-  );
 
   setConfig(config: unknown): void {
     this._config = normaliseConfig(config);
@@ -70,11 +50,6 @@ export class WeeklyTimetableCardEditor extends LitElement {
       this._selectedActivity = null;
     }
     fireEvent(this, "config-changed", { config: next });
-  }
-
-  override disconnectedCallback(): void {
-    this._dnd.cancel();
-    super.disconnectedCallback();
   }
 
   override render(): TemplateResult | typeof nothing {
@@ -153,7 +128,7 @@ export class WeeklyTimetableCardEditor extends LitElement {
         </button>
       </div>
 
-      <div @pointerdown=${this._dnd.onPointerDown}>${this._renderPanel(ctx)}</div>
+      ${this._renderPanel(ctx)}
     `;
   }
 
@@ -166,7 +141,6 @@ export class WeeklyTimetableCardEditor extends LitElement {
       onSelectActivity: (id) => {
         this._selectedActivity = id;
       },
-      hoverDay: this._dnd.hoverDay,
     });
   }
 }

@@ -54,7 +54,7 @@ export const en: Strings = {
     moveToDay: "Move to another day",
     clearTime: "Clear this time (makes the block open-ended)",
     remove: "Remove",
-    dragHint: "Drag an activity onto a day, or tap it and then tap a day",
+    placeHint: "Tap an activity, then tap a day to add it there",
 
     label: "Label",
     newActivityLabel: "New activity name",

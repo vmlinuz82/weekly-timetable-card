@@ -29,7 +29,6 @@ export interface PersonPanelOptions {
   personIndex: number;
   selectedActivity: string | null;
   onSelectActivity: (id: string | null) => void;
-  hoverDay: DayKey | null;
 }
 
 export function renderPersonPanel(
@@ -152,7 +151,7 @@ export function renderPersonPanel(
           `,
         )}
       </div>
-      <div class="hint">${strings.editor.dragHint}</div>
+      <div class="hint">${strings.editor.placeHint}</div>
 
       ${days.map((day) => renderDayGroup(ctx, options, person, day))}
     </div>
@@ -226,7 +225,7 @@ function renderDayGroup(
 
   return html`
     <div
-      class=${options.hoverDay === day ? "day-group drop-target" : "day-group"}
+      class="day-group"
       data-day=${day}
       @click=${() => {
         if (!options.selectedActivity) return;
@@ -278,7 +277,6 @@ function renderBlockRow(
 
   return html`
     <div class="row" data-block-index=${index} @click=${(event: Event) => event.stopPropagation()}>
-      <span class="drag-handle" data-drag-block=${index} data-drag-day=${day}>⠿</span>
       <select
         class="grow"
         data-field="activity"
