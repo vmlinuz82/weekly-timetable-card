@@ -40,8 +40,34 @@ numbered-slot grid. One card, several people, configured visually.
    `/local/weekly-timetable-card.js?v=1` as a **JavaScript module**
 3. Hard-refresh the browser
 
-Lovelace caches resources by URL. If a change does not appear, bump the `?v=`
-number, and check the browser console — the card logs its version on load.
+### Updating
+
+**HACS:** HACS → **Weekly Timetable Card** → **Update**. If no update is offered
+but you know there is a newer release, use the three-dot menu → **Redownload**.
+Hard-refresh afterwards (`Ctrl+Shift+R`). HACS rewrites the resource URL on every
+update, so the browser cache clears itself.
+
+**Manual:** replace the file, then bump the `?v=` number on the resource entry
+under Settings → Dashboards → ⋮ → **Resources**, and hard-refresh:
+
+```bash
+curl -L -o /config/www/weekly-timetable-card.js \
+  https://github.com/vmlinuz82/weekly-timetable-card/releases/latest/download/weekly-timetable-card.js
+```
+
+**Confirm which version is live.** Open the browser console; the card logs its
+version as it loads:
+
+```
+WEEKLY-TIMETABLE-CARD v0.0.2
+```
+
+This matters more than it looks. Lovelace caches resources by URL indefinitely,
+so replacing the file without changing the URL can leave the browser serving the
+old copy however many times you refresh — you would see the previous behaviour
+and reasonably conclude the update failed. If the banner still shows the old
+version, the problem is caching, not the card: change the query string to force a
+real fetch.
 
 ## Usage
 
