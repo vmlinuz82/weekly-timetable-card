@@ -60,9 +60,13 @@ export function blockTimeLines(
   }
 }
 
-export function renderBlock(ctx: RenderContext, block: Block): TemplateResult {
+export function renderBlock(
+  ctx: RenderContext,
+  block: Block,
+  opts?: { hideTime?: boolean },
+): TemplateResult {
   const activity = findActivity(ctx.config.activities, block.activity);
-  const time = blockTimeLabel(ctx, block);
+  const lines = opts?.hideTime === true ? null : blockTimeLines(ctx, block);
   const styles = activity
     ? {
         "--wtc-block-fill": activityFill(activity.color),
@@ -76,8 +80,20 @@ export function renderBlock(ctx: RenderContext, block: Block): TemplateResult {
       style=${styleMap(styles)}
       title=${activity ? nothing : ctx.strings.editor.orphanActivity}
     >
-      ${time ? html`<div class="block-time">${time}</div>` : nothing}
-      <div class="block-label">${activity ? activity.title : block.activity}</div>
+      ${lines
+        ? html`
+            <div class="block-time">
+              <div class="block-time-top">${lines.top}</div>
+              <div class="block-time-bottom">${lines.bottom}</div>
+            </div>
+          `
+        : nothing}
+      <div class="block-text">
+        <div class="block-title">${activity ? activity.title : block.activity}</div>
+        ${activity?.subtitle
+          ? html`<div class="block-subtitle">${activity.subtitle}</div>`
+          : nothing}
+      </div>
     </div>
   `;
 }

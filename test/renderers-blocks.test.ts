@@ -75,7 +75,7 @@ describe("renderBlocks", () => {
     });
     const host = renderToHost(renderBlocks(ctx));
     const monday = host.querySelectorAll(".day")[0]!;
-    expect([...monday.querySelectorAll(".block-label")].map((n) => n.textContent))
+    expect([...monday.querySelectorAll(".block-title")].map((n) => n.textContent))
       .toEqual(["Английски", "Джудо"]);
   });
 

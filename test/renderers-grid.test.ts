@@ -40,14 +40,14 @@ describe("renderGrid", () => {
   it("places a matching range block in its slot cell", () => {
     const host = renderToHost(renderGrid(makeContext({ raw, hass: BG_24H, now: MONDAY })));
     const firstRowMonday = host.querySelectorAll(".grid-cell")[0]!;
-    expect(firstRowMonday.querySelector(".block-label")!.textContent!.trim())
+    expect(firstRowMonday.querySelector(".block-title")!.textContent!.trim())
       .toBe("Математика");
   });
 
   it("puts open-ended and unmatched blocks in the strip above the grid", () => {
     const host = renderToHost(renderGrid(makeContext({ raw, hass: BG_24H, now: MONDAY })));
     const strip = host.querySelector(".strip")!;
-    expect([...strip.querySelectorAll(".block-label")].map((n) => n.textContent!.trim()))
+    expect([...strip.querySelectorAll(".block-title")].map((n) => n.textContent!.trim()))
       .toEqual(["Занималня", "Джудо"]);
     // The strip precedes the grid in document order.
     expect(strip.compareDocumentPosition(host.querySelector(".grid")!))

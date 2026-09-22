@@ -4,7 +4,7 @@ import { BG_24H, EN_12H, makeContext, renderToHost, textOf } from "./helpers.js"
 
 const raw = {
   activities: [
-    { id: "english", title: "Английски", color: "#3b82f6" },
+    { id: "english", title: "Английски", subtitle: "Стая 12", color: "#3b82f6" },
     { id: "daycare", title: "Занималня", color: "#64748b" },
     { id: "home", title: "Връщане вкъщи", color: "#22c55e" },
     { id: "free", title: "Свободен следобед", color: "#22c55e" },
@@ -44,14 +44,15 @@ describe("renderBlock", () => {
     const host = renderToHost(
       renderBlock(bg, { activity: "english", start: "15:20", end: "16:20" }),
     );
-    expect(textOf(host, ".block-label")).toBe("Английски");
-    expect(textOf(host, ".block-time")).toBe("15:20–16:20");
+    expect(textOf(host, ".block-title")).toBe("Английски");
+    expect(textOf(host, ".block-time-top")).toBe("15:20");
+    expect(textOf(host, ".block-time-bottom")).toBe("16:20");
   });
 
   it("omits the time element entirely for a bare block", () => {
     const host = renderToHost(renderBlock(bg, { activity: "free" }));
     expect(host.querySelector(".block-time")).toBeNull();
-    expect(textOf(host, ".block-label")).toBe("Свободен следобед");
+    expect(textOf(host, ".block-title")).toBe("Свободен следобед");
   });
 
   it("sets the derived fill and border custom properties", () => {
@@ -66,7 +67,7 @@ describe("renderBlock", () => {
     const host = renderToHost(renderBlock(bg, { activity: "gone" }));
     const block = host.querySelector(".block")!;
     expect(block.classList.contains("orphan")).toBe(true);
-    expect(textOf(host, ".block-label")).toBe("gone");
+    expect(textOf(host, ".block-title")).toBe("gone");
     expect(block.getAttribute("title")).toBe(bg.strings.editor.orphanActivity);
   });
 
@@ -75,6 +76,39 @@ describe("renderBlock", () => {
     const block = host.querySelector(".block")!;
     expect(block.classList.contains("orphan")).toBe(false);
     expect(block.hasAttribute("title")).toBe(false);
+  });
+
+  it("renders the time as two stacked lines beside a title and subtitle", () => {
+    const host = renderToHost(
+      renderBlock(bg, { activity: "english", start: "15:20", end: "16:20" }),
+    );
+    expect(textOf(host, ".block-time-top")).toBe("15:20");
+    expect(textOf(host, ".block-time-bottom")).toBe("16:20");
+    expect(textOf(host, ".block-title")).toBe("Английски");
+    expect(textOf(host, ".block-subtitle")).toBe("Стая 12");
+    expect(host.querySelector(".block-label")).toBeNull();
+  });
+
+  it("omits the subtitle element when the activity has none", () => {
+    const host = renderToHost(
+      renderBlock(bg, { activity: "daycare", start: "15:20", end: "16:20" }),
+    );
+    expect(textOf(host, ".block-title")).toBe("Занималня");
+    expect(host.querySelector(".block-subtitle")).toBeNull();
+  });
+
+  it("omits the whole time column for a block with no times", () => {
+    const host = renderToHost(renderBlock(bg, { activity: "free" }));
+    expect(host.querySelector(".block-time")).toBeNull();
+    expect(textOf(host, ".block-title")).toBe("Свободен следобед");
+  });
+
+  it("omits the time column when asked to hide it", () => {
+    const host = renderToHost(
+      renderBlock(bg, { activity: "english", start: "15:20", end: "16:20" }, { hideTime: true }),
+    );
+    expect(host.querySelector(".block-time")).toBeNull();
+    expect(textOf(host, ".block-title")).toBe("Английски");
   });
 });
 

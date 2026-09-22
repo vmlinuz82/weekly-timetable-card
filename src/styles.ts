@@ -8,9 +8,12 @@ import { css } from "lit";
  */
 export const blockStyles = css`
   .block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     border-radius: 8px;
     padding: 8px 10px;
-    text-align: center;
+    text-align: left;
     /* The solid fallback is declared first so a browser without color-mix
        still shows a readable block rather than a transparent one. */
     background: var(--secondary-background-color);
@@ -24,17 +27,34 @@ export const blockStyles = css`
     background: var(--secondary-background-color);
   }
 
+  /* Content-sized so the text column takes the remainder, and right-aligned so
+     the two stacked times line up with each other rather than with the title.
+     The words until/after are the widest content and set the column's floor. */
   .block-time {
+    flex: 0 0 auto;
+    text-align: right;
     font-size: 11px;
     line-height: 1.3;
     color: var(--secondary-text-color);
+    font-variant-numeric: tabular-nums;
   }
 
-  .block-label {
+  .block-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .block-title {
     font-size: 13px;
     line-height: 1.3;
     font-weight: 600;
     color: var(--primary-text-color);
+  }
+
+  .block-subtitle {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--secondary-text-color);
   }
 `;
 
@@ -121,12 +141,14 @@ export const cardStyles = css`
     padding: 6px;
   }
   [data-density="compact"] .block {
-    padding: 6px;
+    padding: 5px 7px;
+    gap: 6px;
   }
-  [data-density="compact"] .block-time {
+  [data-density="compact"] .block-time,
+  [data-density="compact"] .block-subtitle {
     font-size: 10px;
   }
-  [data-density="compact"] .block-label {
+  [data-density="compact"] .block-title {
     font-size: 12px;
   }
   [data-density="compact"] .grid-head {

@@ -23,6 +23,7 @@ describe("compact density coverage", () => {
       '[data-density="compact"] .day-head',
       '[data-density="compact"] .day-body',
       '[data-density="compact"] .block',
+      '[data-density="compact"] .block-title',
       '[data-density="compact"] .grid-head',
       '[data-density="compact"] .slot-label',
       '[data-density="compact"] .grid-cell',
