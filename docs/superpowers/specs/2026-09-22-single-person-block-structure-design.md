@@ -225,7 +225,7 @@ id as the title with no subtitle.
 
 `normaliseConfig` remains the single trust boundary.
 
-- `activities[].title` is required and non-empty, as `label` was.
+- `activities[].title` falls back to the activity's `id` when missing or empty.
 - `activities[].subtitle` is optional: trimmed, and omitted entirely when
   empty, so an empty string never reaches the renderer.
 - `slots` and `schedule` are read from the top level and validated exactly as

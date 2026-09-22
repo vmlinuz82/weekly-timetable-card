@@ -109,9 +109,9 @@ ever hidden.
 
 One consequence worth knowing: in `grid` layout the editor replaces a block's two
 time fields with a single slot dropdown, so a block that sits in the strip shows
-only "Not on the grid" and its actual times cannot be edited there. The times are
-preserved and still render on the card — switch the card to `blocks` layout to
-edit them.
+"Not on the grid" and its times are displayed but not editable there. The times
+are preserved and still render on the card — switch the card to `blocks` layout
+to edit them.
 
 Saving from the visual editor rewrites the config in normalised form, which
 makes hand-curated YAML more verbose.
