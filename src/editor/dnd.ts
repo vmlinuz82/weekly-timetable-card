@@ -3,6 +3,40 @@ import type { DayKey } from "../types.js";
 
 const DRAG_THRESHOLD_PX = 5;
 
+/** How close to a scroll container's edge the pointer must get to auto-scroll. */
+const AUTO_SCROLL_EDGE_PX = 56;
+const AUTO_SCROLL_STEP_PX = 14;
+const AUTO_SCROLL_INTERVAL_MS = 16;
+
+/**
+ * The nearest scrollable ancestor, crossing shadow boundaries via `host`.
+ *
+ * Home Assistant renders this editor inside its card-config dialog, whose
+ * content area is the scroll container — outside our shadow root entirely. Only
+ * about two day groups fit there at once, and elementFromPoint is viewport-based,
+ * so without scrolling during a drag any day the author cannot currently see is
+ * unreachable and the drop silently does nothing.
+ */
+function scrollableAncestor(start: Element | null): Element | null {
+  let node: Element | null = start;
+  while (node) {
+    const overflowY = getComputedStyle(node).overflowY;
+    if (
+      (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") &&
+      node.scrollHeight > node.clientHeight + 1
+    ) {
+      return node;
+    }
+    if (node.parentElement) {
+      node = node.parentElement;
+      continue;
+    }
+    const root = node.getRootNode();
+    node = root instanceof ShadowRoot ? root.host : null;
+  }
+  return document.scrollingElement;
+}
+
 export type DragSource =
   | { kind: "block"; day: DayKey; index: number }
   | { kind: "activity"; activityId: string };
@@ -70,6 +104,9 @@ export class DndController {
   private _origin = { x: 0, y: 0 };
   private _active = false;
   private _hoverDay: DayKey | null = null;
+  private _scroller: Element | null = null;
+  private _scrollTimer: ReturnType<typeof setInterval> | null = null;
+  private _scrollDirection = 0;
 
   constructor(
     private readonly getRoot: () => ShadowRoot | null,
@@ -91,6 +128,7 @@ export class DndController {
     this._source = source;
     this._origin = { x: event.clientX, y: event.clientY };
     this._active = false;
+    this._scroller = scrollableAncestor(event.target as Element | null);
     window.addEventListener("pointermove", this._onPointerMove);
     window.addEventListener("pointerup", this._onPointerUp);
     window.addEventListener("pointercancel", this._onPointerCancel);
@@ -105,6 +143,7 @@ export class DndController {
       this._active = true;
     }
     event.preventDefault();
+    this._updateAutoScroll(event.clientY);
     const day = this._dayUnder(event.clientX, event.clientY);
     if (day !== this._hoverDay) {
       this._hoverDay = day;
@@ -149,7 +188,44 @@ export class DndController {
     this._teardown();
   }
 
+  /**
+   * Scroll while the pointer is held near an edge, not merely once per move
+   * event: a drag that has reached the edge has stopped generating moves, which
+   * is exactly when the scrolling needs to continue.
+   */
+  private _updateAutoScroll(clientY: number): void {
+    const container = this._scroller;
+    if (!container) return;
+
+    const isRoot = container === document.scrollingElement;
+    const top = isRoot ? 0 : container.getBoundingClientRect().top;
+    const bottom = isRoot ? window.innerHeight : container.getBoundingClientRect().bottom;
+
+    let direction = 0;
+    if (clientY < top + AUTO_SCROLL_EDGE_PX) direction = -1;
+    else if (clientY > bottom - AUTO_SCROLL_EDGE_PX) direction = 1;
+
+    if (direction === this._scrollDirection) return;
+    this._scrollDirection = direction;
+    this._stopAutoScroll();
+    if (direction === 0) return;
+
+    this._scrollTimer = setInterval(() => {
+      container.scrollTop += direction * AUTO_SCROLL_STEP_PX;
+    }, AUTO_SCROLL_INTERVAL_MS);
+  }
+
+  private _stopAutoScroll(): void {
+    if (this._scrollTimer !== null) {
+      clearInterval(this._scrollTimer);
+      this._scrollTimer = null;
+    }
+  }
+
   private _teardown(): void {
+    this._stopAutoScroll();
+    this._scrollDirection = 0;
+    this._scroller = null;
     window.removeEventListener("pointermove", this._onPointerMove);
     window.removeEventListener("pointerup", this._onPointerUp);
     window.removeEventListener("pointercancel", this._onPointerCancel);
