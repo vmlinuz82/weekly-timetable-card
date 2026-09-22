@@ -24,17 +24,31 @@ export class WeeklyTimetableCardEditor extends LitElement {
 
   setConfig(config: unknown): void {
     this._config = normaliseConfig(config);
+    this._healSelection(this._config);
+  }
+
+  /**
+   * A tap-to-place selection survives a re-render by design, including the
+   * re-render that follows deleting the armed activity. Nothing on screen still
+   * shows it as armed, so the next tap on a day group would silently append a
+   * block referencing an id that no longer exists — an orphan written into the
+   * user's saved dashboard.
+   *
+   * Both entry points need this, because a config can arrive by either door.
+   * `_commit` covers deleting the activity on the Activities tab. `setConfig`
+   * covers Home Assistant re-entering on a still-mounted element: toggling
+   * "Edit in YAML" and back does not unmount the editor, so a deletion made in
+   * the YAML view arrives here with `_selectedActivity` still set.
+   */
+  private _healSelection(config: CardConfig): void {
+    if (this._selectedActivity && !config.activities.some((a) => a.id === this._selectedActivity)) {
+      this._selectedActivity = null;
+    }
   }
 
   private _commit(next: CardConfig): void {
     this._config = next;
-    // A tap-to-place selection survives a re-render by design, including the
-    // re-render that follows deleting the armed activity on the Activities tab.
-    // Nothing on screen still shows it as armed, so the next tap on a day group
-    // would silently append a block referencing an id that no longer exists.
-    if (this._selectedActivity && !next.activities.some((a) => a.id === this._selectedActivity)) {
-      this._selectedActivity = null;
-    }
+    this._healSelection(next);
     fireEvent(this, "config-changed", { config: next });
   }
 

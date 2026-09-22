@@ -144,4 +144,41 @@ describe("WeeklyTimetableCardEditor", () => {
     expect(events).toHaveLength(1);
     expect(events[0]!.schedule.mon).toEqual([]);
   });
+
+  it("drops a tap-to-place selection when setConfig re-enters without that activity", async () => {
+    // The other door into the same orphan write. Home Assistant's "Edit in
+    // YAML" toggle calls setConfig again on a still-mounted element rather than
+    // routing through _commit, so a deletion made in the YAML view arrives with
+    // the selection still armed and nothing on screen showing it.
+    const { editor, events, shadow } = await mount({
+      days: ["mon", "tue"],
+      activities: [
+        { id: "english", title: "Английски", color: "#3b82f6" },
+        { id: "judo", title: "Джудо", color: "#f97316" },
+      ],
+      schedule: { mon: [], tue: [] },
+    });
+
+    shadow.querySelector<HTMLButtonElement>('[data-tab="schedule"]')!.click();
+    await editor.updateComplete;
+    shadow.querySelector<HTMLButtonElement>('[data-palette-activity="judo"]')!.click();
+    await editor.updateComplete;
+    expect(
+      shadow.querySelector('[data-palette-activity="judo"]')!.getAttribute("aria-pressed"),
+    ).toBe("true");
+
+    // No _commit anywhere in this path: the element stays mounted throughout.
+    editor.setConfig({
+      days: ["mon", "tue"],
+      activities: [{ id: "english", title: "Английски", color: "#3b82f6" }],
+      schedule: { mon: [], tue: [] },
+    });
+    await editor.updateComplete;
+    expect(shadow.querySelector('[data-palette-activity="judo"]')).toBeNull();
+
+    shadow.querySelector<HTMLElement>('[data-day="mon"]')!.click();
+    await editor.updateComplete;
+
+    expect(events).toEqual([]);
+  });
 });
